@@ -13,15 +13,17 @@
         .btn-danger { background: #ff4444; color: white; }
         
         .tweet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 15px; border-radius: 12px; overflow: hidden; transition: transform 0.2s; }
+        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 15px; border-radius: 12px; overflow: hidden; transition: transform 0.2s; position: relative; }
         .tweet-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .tweet-user { font-weight: bold; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .tweet-text { margin-bottom: 10px; line-height: 1.5; font-size: 0.95rem; white-space: pre-wrap; }
         .tweet-img { width: 100%; border-radius: 8px; display: block; margin-top: 10px; background: #222; min-height: 50px; }
+        .tweet-video { width: 100%; border-radius: 8px; margin-top: 10px; }
+        .media-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
         .empty-state { text-align: center; color: #666; margin-top: 50px; padding: 40px; border: 2px dashed #333; border-radius: 20px; }
 
         .generator-box { background: #111; padding: 30px; border-radius: 20px; margin-bottom: 40px; text-align: center; border: 1px solid #333; }
-        .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 1.2rem; }
+        .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 1.2rem; flex-wrap: wrap; }
         .stat-item { background: #222; padding: 10px 20px; border-radius: 10px; }
         
         .changelog { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary); }
@@ -31,66 +33,55 @@
         .drag-instruction { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px dashed var(--primary); text-align: center; }
         .drag-instruction h3 { color: var(--primary); margin: 0 0 10px 0; }
         .drag-instruction p { color: #aaa; margin: 5px 0; }
-        
-        .warning-box { background: #2a1a1a; padding: 15px; border-radius: 10px; margin-top: 20px; border: 2px solid #ff4444; }
-        .warning-box h4 { color: #ff4444; margin-top: 0; }
     </style>
 </head>
 <body>
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🚀 Jetzt mit CSP-Bypass!</h3>
-        <p><strong>1.</strong> Ziehe den grünen Button in deine Lesezeichenleiste</p>
-        <p><strong>2.</strong> Gehe auf Twitter/X und klicke das Bookmarklet</p>
-        <p><strong>3.</strong> Button erscheint unten rechts!</p>
-        <p style="color: var(--primary); margin-top: 15px; font-weight: bold;">✨ Umgeht Twitter's Content Security Policy!</p>
+        <h3>🎉 Version 4.0 - Video & GIF Support!</h3>
+        <p><strong>NEU:</strong> Speichert jetzt auch Videos und GIFs!</p>
+        <p><strong>NEU:</strong> Download-Button direkt auf Twitter!</p>
+        <p><strong>NEU:</strong> ZIP-Export mit getrennten Ordnern!</p>
     </div>
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 3.5 - CSP Bypass</h3>
+        <h3>🆕 Version 4.0 - Full Media Support</h3>
         <ul>
-            <li>✅ <strong>Blob-URL Methode</strong>: Code wird als Blob eingebettet (umgeht Twitter CSP)</li>
-            <li>✅ <strong>Funktioniert garantiert</strong>: Kein externes Script-Laden mehr</li>
-            <li>✅ <strong>Komprimierter Code</strong>: Super klein aber vollständig</li>
-            <li>✅ <strong>Console-Logging</strong>: Du siehst genau was passiert (F12)</li>
+            <li>🎥 <strong>Videos & GIFs</strong>: Werden jetzt auch erfasst und gespeichert</li>
+            <li>💾 <strong>Download-Button auf Twitter</strong>: Direkter Download ohne Dashboard öffnen</li>
+            <li>🗂️ <strong>ZIP-Export</strong>: Bilder/Videos/GIFs in getrennten Ordnern</li>
+            <li>⚙️ <strong>Settings</strong>: Download-Button kann ein/ausgeschaltet werden</li>
+            <li>📊 <strong>Media-Stats</strong>: Sieht wie viele Bilder/Videos/GIFs gespeichert sind</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v3.5</h1>
+        <h1>🐦 CleanTwitter Dashboard v4.0</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v3.5</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.0</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
-        
-        <div class="warning-box">
-            <h4>⚠️ Wichtig für Vivaldi-Nutzer:</h4>
-            <p style="color: #aaa;">Falls der Button sich nicht ziehen lässt:</p>
-            <ol style="color: #aaa; text-align: left; max-width: 500px; margin: 10px auto;">
-                <li>Klicke auf "Code kopieren"</li>
-                <li>Rechtsklick auf Lesezeichenleiste → "Neues Lesezeichen"</li>
-                <li>Name: <code>CleanTwitter</code></li>
-                <li>URL: <strong>Einfügen</strong> (Strg+V)</li>
-                <li>Speichern</li>
-            </ol>
-        </div>
     </div>
 
     <!-- VIEWER TEIL -->
     <div id="viewer">
         <h2 style="margin-top: 50px;">📦 Gespeicherte Tweets</h2>
         <div class="stats">
-            <div class="stat-item">📦 <span id="countDisplay">0</span> Tweets im Cache</div>
+            <div class="stat-item">📦 <span id="countDisplay">0</span> Tweets</div>
+            <div class="stat-item">🖼️ <span id="imgCount">0</span> Bilder</div>
+            <div class="stat-item">🎥 <span id="vidCount">0</span> Videos</div>
+            <div class="stat-item">🎬 <span id="gifCount">0</span> GIFs</div>
         </div>
 
         <div style="text-align: center;">
-            <button class="btn" onclick="downloadArchive()">📥 Archiv herunterladen (HTML)</button>
+            <button class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
+            <button class="btn" onclick="downloadZIP()" style="background: #4444ff;">🗂️ ZIP-Export (Medien getrennt)</button>
             <button class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
         </div>
 
@@ -98,10 +89,11 @@
         
         <div id="empty" class="empty-state">
             <h3>Noch leer hier! 🕸️</h3>
-            <p>Geh auf Twitter, aktiviere das Bookmarklet und klicke dann auf den neuen Button "👀 View Dashboard".</p>
+            <p>Geh auf Twitter, aktiviere das Bookmarklet und browsing!</p>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // --- VIEW LOGIC ---
         function loadCache() {
@@ -111,6 +103,17 @@
             const empty = document.getElementById('empty');
             
             document.getElementById('countDisplay').innerText = data.length;
+            
+            // Count media types
+            let imgCount = 0, vidCount = 0, gifCount = 0;
+            data.forEach(t => {
+                if(t.img) imgCount++;
+                if(t.video) vidCount++;
+                if(t.gif) gifCount++;
+            });
+            document.getElementById('imgCount').innerText = imgCount;
+            document.getElementById('vidCount').innerText = vidCount;
+            document.getElementById('gifCount').innerText = gifCount;
 
             if(data.length > 0) {
                 empty.style.display = 'none';
@@ -122,10 +125,25 @@
                     const safeText = t.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     const safeUser = t.user.replace(/</g, "&lt;");
                     
+                    let mediaHTML = '';
+                    let badge = '';
+                    
+                    if(t.video) {
+                        mediaHTML = `<video src="${t.video}" class="tweet-video" controls></video>`;
+                        badge = '<div class="media-badge">🎥 VIDEO</div>';
+                    } else if(t.gif) {
+                        mediaHTML = `<video src="${t.gif}" class="tweet-video" autoplay loop muted></video>`;
+                        badge = '<div class="media-badge">🎬 GIF</div>';
+                    } else if(t.img) {
+                        mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`;
+                        badge = '<div class="media-badge">🖼️ IMG</div>';
+                    }
+                    
                     card.innerHTML = `
+                        ${badge}
                         <div class="tweet-user">👤 ${safeUser}</div>
                         <div class="tweet-text">${safeText}</div>
-                        ${t.img ? `<img src="${t.img}" class="tweet-img" loading="lazy">` : ''}
+                        ${mediaHTML}
                         <div style="font-size:0.75rem; color:#555; margin-top:10px; border-top:1px solid #333; padding-top:5px;">
                             🕒 ${new Date(t.date).toLocaleString()}
                         </div>
@@ -150,10 +168,15 @@
             if(!raw) return alert('Cache ist leer!');
             const data = JSON.parse(raw);
             
-            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv (${new Date().toLocaleDateString()})</title><style>body{font-family:system-ui,sans-serif;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img{max-width:100%;border-radius:10px;margin-top:10px;} .meta{color:#666;font-size:0.8em;margin-bottom:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
+            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv (${new Date().toLocaleDateString()})</title><style>body{font-family:system-ui,sans-serif;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .meta{color:#666;font-size:0.8em;margin-bottom:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
             
             data.forEach(t => {
-                html += `<div class="card"><div class="meta">👤 ${t.user} • ${new Date(t.date).toLocaleString()}</div><div>${t.text.replace(/\n/g, '<br>')}</div>${t.img ? '<img src="'+t.img+'">' : ''}</div>`;
+                let media = '';
+                if(t.video) media = `<video src="${t.video}" controls></video>`;
+                else if(t.gif) media = `<video src="${t.gif}" autoplay loop muted></video>`;
+                else if(t.img) media = `<img src="${t.img}">`;
+                
+                html += `<div class="card"><div class="meta">👤 ${t.user} • ${new Date(t.date).toLocaleString()}</div><div>${t.text.replace(/\n/g, '<br>')}</div>${media}</div>`;
             });
             html += '</body></html>';
             
@@ -164,9 +187,55 @@
             a.download = `twitter_archive_${Date.now()}.html`;
             a.click();
         }
+        
+        async function downloadZIP() {
+            const raw = localStorage.getItem('twitter_clean_cache');
+            if(!raw) return alert('Cache ist leer!');
+            const data = JSON.parse(raw);
+            
+            const zip = new JSZip();
+            const imgFolder = zip.folder('images');
+            const vidFolder = zip.folder('videos');
+            const gifFolder = zip.folder('gifs');
+            
+            let imgIdx = 1, vidIdx = 1, gifIdx = 1;
+            
+            alert('🔄 Lade Medien herunter... Das kann etwas dauern!');
+            
+            for(const t of data) {
+                try {
+                    if(t.img) {
+                        const response = await fetch(t.img);
+                        const blob = await response.blob();
+                        const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                        imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                    } else if(t.video) {
+                        const response = await fetch(t.video);
+                        const blob = await response.blob();
+                        vidFolder.file(`video_${vidIdx++}.mp4`, blob);
+                    } else if(t.gif) {
+                        const response = await fetch(t.gif);
+                        const blob = await response.blob();
+                        gifFolder.file(`gif_${gifIdx++}.mp4`, blob);
+                    }
+                } catch(e) {
+                    console.error('Download failed:', e);
+                }
+            }
+            
+            // Generate ZIP
+            const content = await zip.generateAsync({type: 'blob'});
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `twitter_media_${Date.now()}.zip`;
+            a.click();
+            
+            alert('✅ ZIP-Download abgeschlossen!');
+        }
 
-        // --- BOOKMARKLET v3.5 (Blob-URL CSP Bypass) ---
-        const code = `(function(){console.log('[CT]Start');var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 12px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:60px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 16px!important;border-radius:20px!important;font:bold 13px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){b.innerText='🔴 '+c.length},2e3)}},800)}else alert('Enable popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk());console.log('[CT]Injected')}}setInterval(chk,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]');if(u&&(txt||img)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){c.push({user:user,text:text,img:img?img.src:null,date:Date.now()});a++}}}});if(a>0){if(c.length>200)c=c.slice(-200);localStorage.setItem('tw_clean_cache',JSON.stringify(c));if(B){B.innerText='🔴 '+c.length;B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+ '+a)}}setInterval(sc,1500);chk();sc();console.log('[CT]OK');alert('🐦 CleanTwitter v3.5!\\nButton unten rechts.')})();`;
+        // --- BOOKMARKLET v4.0 ---
+        const code = `(function(){console.log('[CT]v4 Start');var cfg={dl:true};try{var s=localStorage.getItem('ct_cfg');if(s)cfg=JSON.parse(s)}catch(e){}var P,B,D,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important;cursor:pointer!important';b.onclick=function(){cfg.dl=!cfg.dl;localStorage.setItem('ct_cfg',JSON.stringify(cfg));alert(cfg.dl?'✅ Download-Button aktiviert':'❌ Download-Button deaktiviert');upd()};var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}}  ,800)}else alert('Enable popups!')};var d=document.createElement('button');d.id='ct-dl';d.innerText='💾 DL';d.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:8px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:'+(cfg.dl?'block':'none')+'!important';d.onclick=function(){dl()};p.appendChild(b);p.appendChild(s);p.appendChild(d);P=p;B=b;D=d;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length;if(D)D.style.display=cfg.dl?'block':'none'}function dl(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(c.length===0)return alert('Cache leer!');var txt='';c.forEach(function(t){txt+='User: '+t.user+'\\n';txt+='Text: '+t.text+'\\n';if(t.img)txt+='Img: '+t.img+'\\n';if(t.video)txt+='Video: '+t.video+'\\n';if(t.gif)txt+='GIF: '+t.gif+'\\n';txt+='Date: '+new Date(t.date).toLocaleString()+'\\n\\n---\\n\\n'});var blob=new Blob([txt],{type:'text/plain'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='twitter_cache_'+Date.now()+'.txt';a.click();alert('✅ Als TXT gespeichert! Für ZIP nutze das Dashboard.');}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk());console.log('[CT]Injected')}}setInterval(chk,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;c.push(item);a++}}}});if(a>0){if(c.length>300)c=c.slice(-300);localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+ '+a)}}setInterval(sc,1500);chk();sc();console.log('[CT]v4 OK');alert('🐦 CleanTwitter v4.0!\\n\\nBadge klicken = Download-Button ein/aus\\nButton unten rechts!')})();`;
 
         document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
 
@@ -174,9 +243,9 @@
             const fullCode = 'javascript:' + code;
             navigator.clipboard.writeText(fullCode)
                 .then(() => {
-                    alert('✅ Bookmarklet kopiert!\n\nFüge es so ein:\n1. Rechtsklick Lesezeichenleiste\n2. Neues Lesezeichen\n3. Name: CleanTwitter\n4. URL: Einfügen (Strg+V)');
+                    alert('✅ Bookmarklet kopiert!\n\nFüge es als neues Lesezeichen ein.');
                 })
-                .catch(() => alert('❌ Kopieren fehlgeschlagen. Nutze Drag & Drop.'));
+                .catch(() => alert('❌ Kopieren fehlgeschlagen.'));
         }
 
         // --- LISTENER ---
@@ -197,12 +266,14 @@
                     localStorage.setItem('twitter_clean_cache', JSON.stringify(currentCache));
                     loadCache();
                     const stat = document.querySelector('.stat-item');
-                    stat.style.backgroundColor = '#00ff88';
-                    stat.style.color = '#000';
-                    setTimeout(() => {
-                        stat.style.backgroundColor = '#222';
-                        stat.style.color = '#fff';
-                    }, 1000);
+                    if(stat) {
+                        stat.style.backgroundColor = '#00ff88';
+                        stat.style.color = '#000';
+                        setTimeout(() => {
+                            stat.style.backgroundColor = '#222';
+                            stat.style.color = '#fff';
+                        }, 1000);
+                    }
                 }
             }
         });
