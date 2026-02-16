@@ -27,28 +27,46 @@
         .changelog { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary); }
         .changelog h3 { color: var(--primary); margin-top: 0; }
         .changelog ul { color: #aaa; line-height: 1.8; }
+        
+        .debug-info { background: #2a1a1a; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #ff4444; }
+        .debug-info h4 { color: #ff4444; margin-top: 0; }
+        .debug-info code { background: #000; padding: 2px 6px; border-radius: 4px; color: #00ff88; }
     </style>
 </head>
 <body>
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 3.2 - Shadow DOM Update</h3>
+        <h3>🆕 Version 3.3 - Multi-Strategy Fix</h3>
         <ul>
-            <li>✅ <strong>Shadow DOM Integration</strong>: Button ist jetzt komplett isoliert vom Twitter-DOM</li>
-            <li>✅ <strong>MutationObserver</strong>: Button wird automatisch neu eingefügt, falls Twitter ihn entfernt</li>
-            <li>✅ <strong>Verbesserte Sichtbarkeit</strong>: Keine CSS-Konflikte mehr mit Twitter's React-App</li>
-            <li>✅ <strong>Pointer-Events Fix</strong>: Host ist transparent, nur Panel ist klickbar</li>
+            <li>✅ <strong>Entfernt Shadow DOM</strong>: War zu restriktiv für Bookmarklets</li>
+            <li>✅ <strong>Heartbeat-System</strong>: Button wird alle 2 Sekunden neu geprüft und ggf. eingefügt</li>
+            <li>✅ <strong>Force-Visibility</strong>: Aggressive CSS-Styles erzwingen Sichtbarkeit</li>
+            <li>✅ <strong>Console-Logging</strong>: Debugging-Meldungen für Fehlersuche</li>
+            <li>✅ <strong>Alert-Bestätigung</strong>: Du siehst sofort, ob das Script läuft</li>
         </ul>
+    </div>
+
+    <!-- DEBUG INFO -->
+    <div class="debug-info">
+        <h4>🐛 Debugging-Hilfe</h4>
+        <p><strong>Falls der Button nicht erscheint:</strong></p>
+        <ol style="color: #aaa; line-height: 1.8;">
+            <li>Öffne die <strong>Browser-Konsole</strong> (F12 → Console-Tab)</li>
+            <li>Du solltest sehen: <code>[CleanTwitter] v3.3 loaded successfully!</code></li>
+            <li>Alle 2 Sekunden erscheint: <code>[CleanTwitter] Button check...</code></li>
+            <li>Falls Fehler erscheinen → Screenshot machen und mir schicken</li>
+        </ol>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v3.2</h1>
+        <h1>🐦 CleanTwitter Dashboard v3.3</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             1. Ziehe den Button in deine Leiste.<br>
             2. Nutze ihn auf Twitter.<br>
-            3. Unten rechts auf Twitter erscheint ein Button "👀 View Dashboard" (jetzt im Shadow DOM!).
+            3. Unten rechts auf Twitter erscheint ein Button "👀 View Dashboard".<br>
+            <strong style="color: #ff4444;">⚠️ Nach dem Klick erscheint ein Alert → das ist normal!</strong>
         </p>
         
         <a id="bookmarkletBtn" class="btn" href="#">💾 CleanTwitter + Record</a>
@@ -140,8 +158,8 @@
             a.click();
         }
 
-        // --- BOOKMARKLET CODE GENERATION (v3.2 - Shadow DOM) ---
-        const code = `javascript:(function(){'use strict';var e=document.getElementById('clean-tw-host');if(e)e.remove();var t=document.createElement('div');t.id='clean-tw-host';t.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;pointer-events:none!important;';var o=t.attachShadow({mode:'open'}),n=document.createElement('style');n.textContent=':host{all:initial}.panel{display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:auto}.badge{background:rgba(0,0,0,0.95);color:#ff4444;padding:8px 12px;border-radius:8px;font-weight:bold;font-family:monospace;border:2px solid #333;font-size:12px;min-width:70px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.5)}.btn{background:#00ff88;color:#000;border:none;padding:10px 16px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:system-ui;box-shadow:0 4px 12px rgba(0,255,136,0.5);font-size:13px;transition:transform 0.1s}.btn:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(0,255,136,0.7)}';var a=document.createElement('div');a.className='panel';var r=document.createElement('div');r.className='badge';r.innerText='🔴 Rec: 0';var i=document.createElement('button');i.className='btn';i.innerText='👀 View Dashboard';i.onclick=function(){var e=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),t=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_viewer');if(t){r.innerText='⏳ Sending...';var o=0,n=setInterval(function(){t.postMessage({type:'import_tweets',data:e},'*');o++;if(o>8){clearInterval(n);r.innerText='✅ Sent!';setTimeout(()=>r.innerText='🔴 Rec: '+e.length,2e3)}},800)}else{alert('Popup blocked! Enable popups for Twitter.')}};a.appendChild(r);a.appendChild(i);o.appendChild(n);o.appendChild(a);document.body.appendChild(t);var c=new MutationObserver(function(){if(!document.body.contains(t)){document.body.appendChild(t)}});c.observe(document.body,{childList:true,subtree:false});try{Object.defineProperty(navigator,'userAgent',{get:()=>'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1'})}catch(e){}var l=new Set;function d(){document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]').forEach(e=>e.remove());var e=document.querySelectorAll('article[data-testid="tweet"]'),t=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),o=0;e.forEach(e=>{var n=e.querySelector('[data-testid="tweetText"]'),a=e.querySelector('[data-testid="User-Name"]'),i=e.querySelector('img[src*="media"]');if(a&&(n||i)){var c=n?n.innerText:'',d=a.innerText.split('\\n')[0],s=d+'|'+c.substring(0,30);if(!l.has(s)){l.add(s);if(!t.some(e=>e.text===c&&e.user===d)){t.push({user:d,text:c,img:i?i.src:null,date:Date.now()});o++}}}});if(o>0){if(t.length>200)t=t.slice(t.length-200);localStorage.setItem('tw_clean_cache',JSON.stringify(t));r.innerText='🔴 Rec: '+t.length;r.style.borderColor='#00ff88';setTimeout(()=>r.style.borderColor='#333',500)}}setInterval(d,1500);d();alert('🐦 CleanTwitter v3.2 loaded!\\nButton ist jetzt im Shadow DOM (unten rechts).')})();`;
+        // --- BOOKMARKLET CODE GENERATION (v3.3 - ROBUST) ---
+        const code = `javascript:(function(){var log=function(msg){console.log('[CleanTwitter] '+msg);};log('v3.3 initializing...');var cleanup=function(){var old=document.getElementById('clean-tw-panel');if(old){old.remove();log('Removed old panel');}};cleanup();var createPanel=function(){var panel=document.createElement('div');panel.id='clean-tw-panel';panel.style.cssText='all:initial!important;position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important;align-items:flex-end!important;pointer-events:auto!important;font-family:system-ui,sans-serif!important;';var badge=document.createElement('div');badge.id='clean-tw-badge';badge.innerText='🔴 Rec: 0';badge.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#ff4444!important;padding:8px 12px!important;border-radius:8px!important;font-weight:bold!important;font-family:monospace!important;border:2px solid #333!important;font-size:12px!important;min-width:70px!important;text-align:center!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important;display:block!important;visibility:visible!important;opacity:1!important;';var btn=document.createElement('button');btn.innerText='👀 View Dashboard';btn.style.cssText='all:initial!important;background:#00ff88!important;color:#000!important;border:none!important;padding:10px 16px!important;border-radius:20px!important;font-weight:bold!important;cursor:pointer!important;font-family:system-ui!important;box-shadow:0 4px 12px rgba(0,255,136,0.5)!important;font-size:13px!important;display:block!important;visibility:visible!important;opacity:1!important;';btn.onmouseover=function(){this.style.transform='scale(1.08)';};btn.onmouseout=function(){this.style.transform='scale(1)';};btn.onclick=function(){log('Button clicked!');var stored=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var win=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_viewer');if(win){badge.innerText='⏳ Sending...';var attempts=0;var interval=setInterval(function(){win.postMessage({type:'import_tweets',data:stored},'*');attempts++;if(attempts>8){clearInterval(interval);badge.innerText='✅ Sent!';setTimeout(function(){badge.innerText='🔴 Rec: '+stored.length;},2000);}},800);}else{alert('Popup blocked! Enable popups for Twitter.');}};panel.appendChild(badge);panel.appendChild(btn);return panel;};var ensureButton=function(){var existing=document.getElementById('clean-tw-panel');if(!existing||!document.body.contains(existing)){log('Button missing, re-injecting...');var panel=createPanel();document.body.appendChild(panel);log('Button injected!');}};var heartbeat=setInterval(function(){log('Button check...');ensureButton();},2000);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15';}});}catch(e){log('UA spoofing failed: '+e);}var seenIds=new Set();var scan=function(){document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]').forEach(function(el){el.remove();});var tweets=document.querySelectorAll('article[data-testid="tweet"]');var cache=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var newCount=0;tweets.forEach(function(t){var txtEl=t.querySelector('[data-testid="tweetText"]');var userEl=t.querySelector('[data-testid="User-Name"]');var imgEl=t.querySelector('img[src*="media"]');if(userEl&&(txtEl||imgEl)){var txt=txtEl?txtEl.innerText:'';var user=userEl.innerText.split('\\n')[0];var id=user+'|'+txt.substring(0,30);if(!seenIds.has(id)){seenIds.add(id);if(!cache.some(function(c){return c.text===txt&&c.user===user;})){cache.push({user:user,text:txt,img:imgEl?imgEl.src:null,date:Date.now()});newCount++;}}}});if(newCount>0){if(cache.length>200)cache=cache.slice(cache.length-200);localStorage.setItem('tw_clean_cache',JSON.stringify(cache));var badge=document.getElementById('clean-tw-badge');if(badge){badge.innerText='🔴 Rec: '+cache.length;badge.style.borderColor='#00ff88';setTimeout(function(){badge.style.borderColor='#333';},500);}log('Captured '+newCount+' new tweets');}};setInterval(scan,1500);scan();ensureButton();log('v3.3 loaded successfully!');alert('🐦 CleanTwitter v3.3 gestartet!\\n\\nButton ist unten rechts.\\nÖffne die Konsole (F12) für Debug-Infos.');})();`;
 
         document.getElementById('bookmarkletBtn').href = code;
 
