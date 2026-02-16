@@ -57,6 +57,10 @@
             margin-bottom: 10px;
         }
         select:focus, input[type="text"]:focus { border-color: var(--primary); outline: none; }
+
+        /* Checkbox */
+        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: pointer; }
+        .checkbox-wrapper input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
         
         .help-links { font-size: 0.85rem; margin-top: 5px; color: var(--text-dim); }
         .help-links a { color: var(--primary); text-decoration: none; }
@@ -165,7 +169,7 @@
 
         <!-- Config: Selectors -->
         <div class="card">
-            <h2>🧹 Lösch-Regeln (CSS Selectors)</h2>
+            <h2>🧹 Lösch-Regeln & Extras</h2>
             <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Diese Elemente werden von der Webseite entfernt.</p>
             
             <div class="list-builder">
@@ -175,6 +179,14 @@
             
             <div class="list-items" id="selectorList">
                 <!-- Javascript will populate this -->
+            </div>
+
+            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="showInfo" checked onchange="generateCode()">
+                    <span>ℹ️ Info-Banner alle 5 Tweets anzeigen</span>
+                </label>
+                <p style="font-size: 0.8rem; color: #aaa; margin-left: 30px; margin-top: 5px;">Zeigt einen grünen Balken "CleanTwitter Active" im Feed an.</p>
             </div>
         </div>
 
@@ -240,6 +252,7 @@
         const selectorList = document.getElementById('selectorList');
         const bookmarkletBtn = document.getElementById('bookmarkletBtn');
         const newSelectorInput = document.getElementById('newSelector');
+        const showInfoCheckbox = document.getElementById('showInfo');
 
         function updateUA() {
             if (uaSelect.value === 'custom') {
@@ -280,57 +293,66 @@
         // Generator Core
         function generateCode() {
             let ua = uaInput.value;
-            if (!ua) ua = uaSelect.value; // Fallback if input empty
-            if (ua === 'custom') ua = ''; // Should not happen if logic correct
+            if (!ua) ua = uaSelect.value;
+            if (ua === 'custom') ua = '';
 
-            const uaSafe = ua.replace(/'/g, "\\'"); // Escape quotes
-            const selString = JSON.stringify(selectors).replace(/"/g, "'"); // Use single quotes in array
-            
-            // Determine platform from UA for better spoofing
-            let platform = 'Linux x86_64'; // Default fallback
+            const uaSafe = ua.replace(/'/g, "\\'"); 
+            const selString = JSON.stringify(selectors).replace(/"/g, "'"); 
+            const showInfo = showInfoCheckbox.checked;
+
+            let platform = 'Linux x86_64'; 
             if (uaSafe.includes('Win')) platform = 'Win32';
             if (uaSafe.includes('Mac')) platform = 'MacIntel';
             if (uaSafe.includes('iPhone') || uaSafe.includes('iPad')) platform = 'iPhone';
             if (uaSafe.includes('Android')) platform = 'Linux armv81';
 
-            // Minified Logic with __defineGetter__ (older but sometimes stronger fallback) and Proxy
             const code = `javascript:(function(){
                 var ua = '${uaSafe}';
                 var p = '${platform}';
+                var showInfo = ${showInfo};
+                var counter = 0;
                 
                 try {
-                    // Method 1: Object.defineProperty (Standard)
                     Object.defineProperty(navigator, 'userAgent', { get: function(){ return ua; }, configurable: true });
                     Object.defineProperty(navigator, 'platform', { get: function(){ return p; }, configurable: true });
-                    
-                    // Method 2: Prototype override (Aggressive)
                     try { Navigator.prototype.__defineGetter__('userAgent', function(){ return ua; }); } catch(e){}
-                    try { Navigator.prototype.__defineGetter__('platform', function(){ return p; }); } catch(e){}
-                    
-                    // Method 3: Delete and Recreate (Brute Force)
-                    if(navigator.userAgent !== ua) {
-                        try { delete navigator.userAgent; navigator.userAgent = ua; } catch(e){}
-                    }
+                    if(navigator.userAgent !== ua) { try { delete navigator.userAgent; navigator.userAgent = ua; } catch(e){} }
+                } catch(e) {}
 
-                } catch(e) { console.log('UA Spoof blocked partly', e); }
-
-                // Clean logic
                 document.cookie.split(";").forEach(c => document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"));
                 localStorage.clear(); sessionStorage.clear();
 
                 function clean() {
+                    // Remove Garbage
                     const s = ${selString};
                     s.forEach(sel => document.querySelectorAll(sel).forEach(el => el.remove()));
                     document.body.style.overflow = 'auto';
                     document.documentElement.style.overflow = 'auto';
+
+                    // Info Banner Logic (Every 5 Tweets)
+                    if(showInfo) {
+                        const rows = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+                        rows.forEach(row => {
+                            if(row.hasAttribute('data-clean-checked')) return;
+                            row.setAttribute('data-clean-checked', 'true');
+                            
+                            // Only count actual tweets/posts, not just any div
+                            if(row.querySelector('[data-testid="tweet"]')) {
+                                counter++;
+                                if(counter % 5 === 0) {
+                                    const banner = document.createElement('div');
+                                    banner.style.cssText = 'margin: 10px 0; padding: 8px; background: rgba(0,255,136,0.15); border: 1px solid #00ff88; border-radius: 8px; color: #00ff88; text-align: center; font-family: system-ui; font-size: 13px; font-weight: bold;';
+                                    banner.innerHTML = '🛡️ CleanTwitter: ' + counter + ' Posts gescannt • UA: ' + (ua.length > 20 ? ua.substring(0,20)+'...' : ua);
+                                    row.after(banner);
+                                }
+                            }
+                        });
+                    }
                 }
                 
                 setInterval(clean, 1000);
                 clean();
-                
-                // Verify
-                console.log('Spoofed UA:', navigator.userAgent);
-                alert('🐦 Twitter Clean + UA Spoof Active!\\n(Check Console for Debug)');
+                alert('🐦 CleanTwitter Active!\\n' + (showInfo ? 'Info-Banner: AN' : 'Info-Banner: AUS'));
             })();`.replace(/\s+/g, ' ').trim();
 
             bookmarkletBtn.setAttribute('href', code);
@@ -345,7 +367,6 @@
             });
         }
 
-        // Tabs
         function showTab(id) {
             document.querySelectorAll('.instruction-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -353,9 +374,7 @@
             event.target.classList.add('active');
         }
 
-        // Init
         uaInput.addEventListener('input', generateCode);
-        // Set initial UA value to match first option
         uaInput.value = uaSelect.options[0].value;
         renderList();
     </script>
