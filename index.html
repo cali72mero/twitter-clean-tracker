@@ -85,7 +85,7 @@
         <ul>
             <li>✅ <strong>Kein Ban-Risiko!</strong> Unser Tool macht KEINE API-Calls</li>
             <li>🐌 <strong>Stealth Mode</strong>: Zufällige Delays & langsame Scans</li>
-            <li>⏱️ <strong>Auto-Pause</strong>: Nach X Tweets automatisch pausieren</li>
+            <li>♾️ <strong>UNBEGRENZT</strong>: Scrolle so lange du willst!</li>
             <li>🎯 <strong>Safe Mode</strong>: Empfohlene Settings für maximale Sicherheit</li>
             <li>🔒 <strong>Unsichtbar</strong>: Twitter merkt nichts von unserem Tool!</li>
         </ul>
@@ -111,14 +111,15 @@
             <li>✅ <strong>Retweets werden automatisch übersprungen</strong></li>
             <li>🧵 <strong>Threads werden erkannt & gruppiert</strong></li>
             <li>🔗 <strong>Links werden separat extrahiert</strong></li>
+            <li>♾️ <strong>KEIN Limit!</strong> Scrolle so weit du willst!</li>
             <li>🛡️ <strong>Badge anklicken = Pause/Resume</strong></li>
         </ul>
     </div>
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🎉 Version 5.1.1 - Auto-Pause Fix!</h3>
-        <p><strong>NEU:</strong> Badge anklicken funktioniert jetzt richtig • Keine automatische Dauerblockade!</p>
+        <h3>🎉 Version 5.1.2 - Unbegrenzt!</h3>
+        <p><strong>NEU:</strong> KEIN Tweet-Limit mehr • Scrolle so weit du willst • Tausende Tweets möglich!</p>
     </div>
 
     <!-- SETTINGS -->
@@ -163,41 +164,33 @@
             </select>
         </div>
         
-        <div class="setting-item">
-            <label>Max. Tweets pro Session:</label>
-            <input type="number" id="maxPerSession" value="1000" min="10" max="10000" step="10" onchange="saveSettings()">
-        </div>
-        
-        <div class="setting-item">
-            <input type="checkbox" id="autoPause" onchange="saveSettings()">
-            <label for="autoPause"><strong>Auto-Pause</strong> nach Max. Tweets (empfohlen AUS!)</label>
-        </div>
-        
         <p style="color: #00ff88; font-size: 0.85rem; margin-top: 15px; border: 2px solid #00ff88; padding: 10px; border-radius: 8px;">
-            🛡️ <strong>Empfehlung:</strong> Stealth Mode AN, Intervall 3-5s, Auto-Pause AUS, Max: 1000 = KEIN BAN!
+            🛡️ <strong>Empfehlung:</strong> Stealth Mode AN, Intervall 3-5s = KEIN BAN!
+            <br>♾️ <strong>Scrolle so lange du willst - KEIN LIMIT!</strong>
         </p>
     </div>
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 5.1.1 - Auto-Pause Fix</h3>
+        <h3>🆕 Version 5.1.2 - Unbegrenzt!</h3>
         <ul>
-            <li>🐛 <strong>GEFIXT</strong>: Tool macht nicht mehr dauernd Pause!</li>
+            <li>♾️ <strong>UNBEGRENZT</strong>: Kein Tweet-Limit mehr!</li>
+            <li>🚀 <strong>Scrolle so weit du willst</strong> - 1000, 5000, 10000 Tweets möglich!</li>
+            <li>🐛 <strong>Auto-Pause entfernt</strong> - Läuft durch ohne Stopp</li>
             <li>✅ <strong>Badge anklicken</strong> für manuelle Pause/Resume</li>
-            <li>🎯 <strong>Auto-Pause Default OFF</strong> (nur noch optional)</li>
-            <li>📊 <strong>Max. Tweets</strong> auf 1000 erhöht (Standard)</li>
             <li>🛡️ <strong>Stealth Mode</strong> bleibt aktiv (Zufällige Delays)</li>
+            <li>💾 <strong>Storage-Warnung</strong> bei >80% Cache</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter v5.1.1</h1>
+        <h1>🐦 CleanTwitter v5.1.2</h1>
         <p style="color: #aaa; margin-bottom: 15px;">
             <strong style="color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v5.1.1</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v5.1.2</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa;" onclick="copyCode()">📋 Code kopieren</button>
     </div>
@@ -251,9 +244,7 @@
             detectThreads: true, 
             extractLinks: true,
             stealthMode: true,
-            scanInterval: 3000,
-            maxPerSession: 1000,
-            autoPause: false
+            scanInterval: 3000
         };
         
         function loadSettings() {
@@ -265,8 +256,6 @@
             document.getElementById('extractLinks').checked = settings.extractLinks;
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('scanInterval').value = settings.scanInterval;
-            document.getElementById('maxPerSession').value = settings.maxPerSession;
-            document.getElementById('autoPause').checked = settings.autoPause;
             updateBookmarklet();
         }
         
@@ -277,8 +266,6 @@
             settings.extractLinks = document.getElementById('extractLinks').checked;
             settings.stealthMode = document.getElementById('stealthMode').checked;
             settings.scanInterval = parseInt(document.getElementById('scanInterval').value);
-            settings.maxPerSession = parseInt(document.getElementById('maxPerSession').value);
-            settings.autoPause = document.getElementById('autoPause').checked;
             localStorage.setItem('ct_settings', JSON.stringify(settings));
             updateBookmarklet();
             alert('✅ Einstellungen gespeichert! Bookmarklet neu ziehen.');
@@ -519,7 +506,7 @@
 
         function updateBookmarklet() {
             const cfg = JSON.stringify(settings);
-            const code = `(function(){console.log('[CT]v5.1.1 FIX');var CFG=${cfg};var P,B,seen=new Set(),threads=new Map(),count=0,paused=false;function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🛡️ 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#0f8!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #0f8!important;text-align:center!important;display:block!important;min-width:70px!important;cursor:pointer!important';b.onclick=function(){paused=!paused;alert(paused?'⏸️ PAUSIERT':'▶️ FORTSETZEN');upd()};var s=document.createElement('button');s.innerText='👀';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B){B.innerText=(paused?'⏸️':'🛡️')+' '+c.length;B.style.color=paused?'#ff4':count>=CFG.maxPerSession&&CFG.autoPause?'#f44':'#0f8'}}function dlMedia(url,name){fetch(url).then(r=>r.blob()).then(blob=>{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(()=>alert('Fail'))}function addDL(){if(!CFG.showDlButtons)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(t=>{if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='vid_'+Date.now()+'.mp4'}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4'}else if(img){media=img.src;var ext=media.match(/\\.(jpg|jpeg|png|webp)/i);name='img_'+Date.now()+'.'+(ext?ext[1]:'jpg')}if(media){var btn=document.createElement('button');btn.innerText='💾';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;padding:6px 10px!important;border-radius:8px!important;font:bold 10px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=e=>{e.stopPropagation();e.preventDefault();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){if(!document.getElementById('ct-p'))document.body.appendChild(mk())}setInterval(chk,2e3);var dlInt=setInterval(addDL,2e3);function sc(){if(paused){console.log('[CT]PAUSED');return}if(CFG.autoPause&&count>=CFG.maxPerSession){paused=true;alert('⏸️ AUTO-PAUSE! '+CFG.maxPerSession+' Tweets erreicht.\\nBadge klicken zum Fortsetzen.');upd();return}document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(e=>e.remove());var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),links=JSON.parse(localStorage.getItem('tw_links')||'[]'),a=0;ts.forEach(t=>{var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0];if(CFG.skipRetweets&&text.startsWith('RT @'))return;var id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(x=>x.text===text&&x.user===user)){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;if(CFG.detectThreads){var tKey=user+'_'+text.substring(0,10);if(threads.has(tKey)){item.isThread=true;threads.set(tKey,(threads.get(tKey)||0)+1)}else threads.set(tKey,1)}if(CFG.extractLinks){var urls=text.match(/https?:\\/\\/[^\\s]+/g);if(urls)urls.forEach(url=>{if(!links.some(l=>l.url===url))links.push({url:url,date:Date.now()})})}c.push(item);a++;count++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));if(CFG.extractLinks)localStorage.setItem('tw_links',JSON.stringify(links));upd();if(B){B.style.borderColor='#0f8';setTimeout(()=>B.style.borderColor='#0f8',500)}console.log('[CT]+'+a+' S:'+count+'/'+CFG.maxPerSession)}}var delay=CFG.stealthMode?Math.floor(Math.random()*3000+2000):CFG.scanInterval;var scanInt=setInterval(function(){sc();if(CFG.stealthMode){clearInterval(scanInt);delay=Math.floor(Math.random()*3000+2000);scanInt=setInterval(sc,delay)}},delay);chk();sc();addDL();console.log('[CT]v5.1.1 SAFE | Interval:'+delay+'ms | Max:'+CFG.maxPerSession+' | AutoPause:'+(CFG.autoPause?'ON':'OFF'))})();`;
+            const code = `(function(){console.log('[CT]v5.1.2 UNLIMITED');var CFG=${cfg};var P,B,seen=new Set(),threads=new Map(),count=0,paused=false;function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='♾️ 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#0f8!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #0f8!important;text-align:center!important;display:block!important;min-width:70px!important;cursor:pointer!important';b.onclick=function(){paused=!paused;alert(paused?'⏸️ PAUSIERT':'▶️ FORTSETZEN');upd()};var s=document.createElement('button');s.innerText='👀';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B){B.innerText=(paused?'⏸️':'♾️')+' '+c.length;B.style.color=paused?'#ff4':'#0f8'}}function dlMedia(url,name){fetch(url).then(r=>r.blob()).then(blob=>{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(()=>alert('Fail'))}function addDL(){if(!CFG.showDlButtons)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(t=>{if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='vid_'+Date.now()+'.mp4'}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4'}else if(img){media=img.src;var ext=media.match(/\\.(jpg|jpeg|png|webp)/i);name='img_'+Date.now()+'.'+(ext?ext[1]:'jpg')}if(media){var btn=document.createElement('button');btn.innerText='💾';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;padding:6px 10px!important;border-radius:8px!important;font:bold 10px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=e=>{e.stopPropagation();e.preventDefault();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){if(!document.getElementById('ct-p'))document.body.appendChild(mk())}setInterval(chk,2e3);var dlInt=setInterval(addDL,2e3);function sc(){if(paused){console.log('[CT]PAUSED');return}document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(e=>e.remove());var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),links=JSON.parse(localStorage.getItem('tw_links')||'[]'),a=0;ts.forEach(t=>{var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0];if(CFG.skipRetweets&&text.startsWith('RT @'))return;var id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(x=>x.text===text&&x.user===user)){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;if(CFG.detectThreads){var tKey=user+'_'+text.substring(0,10);if(threads.has(tKey)){item.isThread=true;threads.set(tKey,(threads.get(tKey)||0)+1)}else threads.set(tKey,1)}if(CFG.extractLinks){var urls=text.match(/https?:\\/\\/[^\\s]+/g);if(urls)urls.forEach(url=>{if(!links.some(l=>l.url===url))links.push({url:url,date:Date.now()})})}c.push(item);a++;count++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));if(CFG.extractLinks)localStorage.setItem('tw_links',JSON.stringify(links));upd();if(B){B.style.borderColor='#0f8';setTimeout(()=>B.style.borderColor='#0f8',500)}console.log('[CT]+'+a+' T:'+count)}}var delay=CFG.stealthMode?Math.floor(Math.random()*3000+2000):CFG.scanInterval;var scanInt=setInterval(function(){sc();if(CFG.stealthMode){clearInterval(scanInt);delay=Math.floor(Math.random()*3000+2000);scanInt=setInterval(sc,delay)}},delay);chk();sc();addDL();console.log('[CT]v5.1.2 UNLIMITED | Interval:'+delay+'ms | KEIN LIMIT!')})();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
