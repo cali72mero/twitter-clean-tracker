@@ -8,7 +8,7 @@
         :root { --primary: #00ff88; --bg: #0a0a0a; --surface: #161616; --text: #fff; }
         body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; max-width: 1200px; margin: 0 auto; }
         h1, h2 { text-align: center; color: var(--primary); }
-        .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; }
+        .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: move; font-weight: bold; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; }
         .btn:hover { opacity: 0.9; transform: scale(1.05); transition: 0.2s; }
         .btn-danger { background: #ff4444; color: white; }
         
@@ -31,20 +31,44 @@
         .debug-info { background: #2a1a1a; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #ff4444; }
         .debug-info h4 { color: #ff4444; margin-top: 0; }
         .debug-info code { background: #000; padding: 2px 6px; border-radius: 4px; color: #00ff88; }
+        
+        .drag-instruction { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px dashed var(--primary); text-align: center; }
+        .drag-instruction h3 { color: var(--primary); margin: 0 0 10px 0; }
+        .drag-instruction p { color: #aaa; margin: 5px 0; }
     </style>
 </head>
 <body>
 
+    <!-- DRAG INSTRUCTION -->
+    <div class="drag-instruction">
+        <h3>👆 Anleitung</h3>
+        <p><strong>1.</strong> Halte den grünen Button unten gedrückt</p>
+        <p><strong>2.</strong> Ziehe ihn in deine Vivaldi-Lesezeichenleiste</p>
+        <p><strong>3.</strong> Gehe auf Twitter und klicke das Bookmarklet</p>
+        <p style="color: #ff4444; margin-top: 10px;"><strong>⚠️ Funktioniert nicht?</strong> Nutze den "Code kopieren" Button und füge ihn manuell ein!</p>
+    </div>
+
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 3.3 - Multi-Strategy Fix</h3>
+        <h3>🆕 Version 3.3.1 - Drag & Drop Fix</h3>
         <ul>
-            <li>✅ <strong>Entfernt Shadow DOM</strong>: War zu restriktiv für Bookmarklets</li>
-            <li>✅ <strong>Heartbeat-System</strong>: Button wird alle 2 Sekunden neu geprüft und ggf. eingefügt</li>
-            <li>✅ <strong>Force-Visibility</strong>: Aggressive CSS-Styles erzwingen Sichtbarkeit</li>
-            <li>✅ <strong>Console-Logging</strong>: Debugging-Meldungen für Fehlersuche</li>
-            <li>✅ <strong>Alert-Bestätigung</strong>: Du siehst sofort, ob das Script läuft</li>
+            <li>✅ <strong>Ziehbar</strong>: Button hat jetzt <code>cursor: move</code> und optimiertes href</li>
+            <li>✅ <strong>Kompakter Code</strong>: Bookmarklet ist jetzt kleiner und funktioniert besser</li>
+            <li>✅ <strong>Fallback</strong>: Code-kopieren Button als Alternative</li>
         </ul>
+    </div>
+
+    <!-- GENERATOR TEIL -->
+    <div class="generator-box">
+        <h1>🐦 CleanTwitter Dashboard v3.3.1</h1>
+        <p style="color: #aaa; margin-bottom: 20px;">
+            <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
+        </p>
+        
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter Bookmarklet</a>
+        <br><br>
+        <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren (Fallback)</button>
+        <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">Ziehen funktioniert nicht? Nutze "Code kopieren" und füge es als neues Lesezeichen ein.</p>
     </div>
 
     <!-- DEBUG INFO -->
@@ -53,29 +77,14 @@
         <p><strong>Falls der Button nicht erscheint:</strong></p>
         <ol style="color: #aaa; line-height: 1.8;">
             <li>Öffne die <strong>Browser-Konsole</strong> (F12 → Console-Tab)</li>
-            <li>Du solltest sehen: <code>[CleanTwitter] v3.3 loaded successfully!</code></li>
-            <li>Alle 2 Sekunden erscheint: <code>[CleanTwitter] Button check...</code></li>
+            <li>Du solltest sehen: <code>[CleanTwitter] Loaded!</code></li>
             <li>Falls Fehler erscheinen → Screenshot machen und mir schicken</li>
         </ol>
     </div>
 
-    <!-- GENERATOR TEIL -->
-    <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v3.3</h1>
-        <p style="color: #aaa; margin-bottom: 20px;">
-            1. Ziehe den Button in deine Leiste.<br>
-            2. Nutze ihn auf Twitter.<br>
-            3. Unten rechts auf Twitter erscheint ein Button "👀 View Dashboard".<br>
-            <strong style="color: #ff4444;">⚠️ Nach dem Klick erscheint ein Alert → das ist normal!</strong>
-        </p>
-        
-        <a id="bookmarkletBtn" class="btn" href="#">💾 CleanTwitter + Record</a>
-        <br><br>
-        <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa;" onclick="copyCode()">📋 Code kopieren (für Vivaldi)</button>
-    </div>
-
     <!-- VIEWER TEIL -->
     <div id="viewer">
+        <h2 style="margin-top: 50px;">📦 Gespeicherte Tweets</h2>
         <div class="stats">
             <div class="stat-item">📦 <span id="countDisplay">0</span> Tweets im Cache</div>
         </div>
@@ -107,11 +116,9 @@
                 empty.style.display = 'none';
                 grid.innerHTML = '';
                 
-                // Show newest first
                 data.slice().reverse().forEach(t => {
                     const card = document.createElement('div');
                     card.className = 'tweet-card';
-                    // Sanitize basic HTML to prevent injection in viewer
                     const safeText = t.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     const safeUser = t.user.replace(/</g, "&lt;");
                     
@@ -158,15 +165,19 @@
             a.click();
         }
 
-        // --- BOOKMARKLET CODE GENERATION (v3.3 - ROBUST) ---
-        const code = `javascript:(function(){var log=function(msg){console.log('[CleanTwitter] '+msg);};log('v3.3 initializing...');var cleanup=function(){var old=document.getElementById('clean-tw-panel');if(old){old.remove();log('Removed old panel');}};cleanup();var createPanel=function(){var panel=document.createElement('div');panel.id='clean-tw-panel';panel.style.cssText='all:initial!important;position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important;align-items:flex-end!important;pointer-events:auto!important;font-family:system-ui,sans-serif!important;';var badge=document.createElement('div');badge.id='clean-tw-badge';badge.innerText='🔴 Rec: 0';badge.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#ff4444!important;padding:8px 12px!important;border-radius:8px!important;font-weight:bold!important;font-family:monospace!important;border:2px solid #333!important;font-size:12px!important;min-width:70px!important;text-align:center!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important;display:block!important;visibility:visible!important;opacity:1!important;';var btn=document.createElement('button');btn.innerText='👀 View Dashboard';btn.style.cssText='all:initial!important;background:#00ff88!important;color:#000!important;border:none!important;padding:10px 16px!important;border-radius:20px!important;font-weight:bold!important;cursor:pointer!important;font-family:system-ui!important;box-shadow:0 4px 12px rgba(0,255,136,0.5)!important;font-size:13px!important;display:block!important;visibility:visible!important;opacity:1!important;';btn.onmouseover=function(){this.style.transform='scale(1.08)';};btn.onmouseout=function(){this.style.transform='scale(1)';};btn.onclick=function(){log('Button clicked!');var stored=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var win=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_viewer');if(win){badge.innerText='⏳ Sending...';var attempts=0;var interval=setInterval(function(){win.postMessage({type:'import_tweets',data:stored},'*');attempts++;if(attempts>8){clearInterval(interval);badge.innerText='✅ Sent!';setTimeout(function(){badge.innerText='🔴 Rec: '+stored.length;},2000);}},800);}else{alert('Popup blocked! Enable popups for Twitter.');}};panel.appendChild(badge);panel.appendChild(btn);return panel;};var ensureButton=function(){var existing=document.getElementById('clean-tw-panel');if(!existing||!document.body.contains(existing)){log('Button missing, re-injecting...');var panel=createPanel();document.body.appendChild(panel);log('Button injected!');}};var heartbeat=setInterval(function(){log('Button check...');ensureButton();},2000);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15';}});}catch(e){log('UA spoofing failed: '+e);}var seenIds=new Set();var scan=function(){document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]').forEach(function(el){el.remove();});var tweets=document.querySelectorAll('article[data-testid="tweet"]');var cache=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var newCount=0;tweets.forEach(function(t){var txtEl=t.querySelector('[data-testid="tweetText"]');var userEl=t.querySelector('[data-testid="User-Name"]');var imgEl=t.querySelector('img[src*="media"]');if(userEl&&(txtEl||imgEl)){var txt=txtEl?txtEl.innerText:'';var user=userEl.innerText.split('\\n')[0];var id=user+'|'+txt.substring(0,30);if(!seenIds.has(id)){seenIds.add(id);if(!cache.some(function(c){return c.text===txt&&c.user===user;})){cache.push({user:user,text:txt,img:imgEl?imgEl.src:null,date:Date.now()});newCount++;}}}});if(newCount>0){if(cache.length>200)cache=cache.slice(cache.length-200);localStorage.setItem('tw_clean_cache',JSON.stringify(cache));var badge=document.getElementById('clean-tw-badge');if(badge){badge.innerText='🔴 Rec: '+cache.length;badge.style.borderColor='#00ff88';setTimeout(function(){badge.style.borderColor='#333';},500);}log('Captured '+newCount+' new tweets');}};setInterval(scan,1500);scan();ensureButton();log('v3.3 loaded successfully!');alert('🐦 CleanTwitter v3.3 gestartet!\\n\\nButton ist unten rechts.\\nÖffne die Konsole (F12) für Debug-Infos.');})();`;
+        // --- BOOKMARKLET CODE (v3.3.1 - OPTIMIZED) ---
+        const bookmarkletCode = `(function(){console.log('[CleanTwitter] Loaded!');var P,B;function make(){var p=document.createElement('div');p.id='ctw-panel';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important;pointer-events:auto!important';var b=document.createElement('div');b.id='ctw-badge';b.innerText='🔴 0';b.style.cssText='background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 12px monospace!important;border:2px solid #333!important;min-width:60px!important;text-align:center!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='background:#0f8!important;color:#000!important;border:none!important;padding:10px 16px!important;border-radius:20px!important;font:bold 13px system-ui!important;cursor:pointer!important;box-shadow:0 4px 12px rgba(0,255,136,0.5)!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳ Sync';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅ OK';setTimeout(function(){b.innerText='🔴 '+c.length},2000)}},800)}else alert('Enable popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function check(){var e=document.getElementById('ctw-panel');if(!e||!document.body.contains(e))document.body.appendChild(make())}setInterval(check,2000);try{Object.defineProperty(navigator,'userAgent',{get:()=>'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'})}catch(e){}var seen=new Set();function scan(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"],[aria-label*="Who to follow"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]');var cache=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var added=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]');var usr=t.querySelector('[data-testid="User-Name"]');var img=t.querySelector('img[src*="media"]');if(usr&&(txt||img)){var text=txt?txt.innerText:'';var user=usr.innerText.split('\\n')[0];var id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!cache.some(function(c){return c.text===text&&c.user===user})){cache.push({user:user,text:text,img:img?img.src:null,date:Date.now()});added++}}}});if(added>0){if(cache.length>200)cache=cache.slice(-200);localStorage.setItem('tw_clean_cache',JSON.stringify(cache));if(B){B.innerText='🔴 '+cache.length;B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}}}setInterval(scan,1500);check();scan();alert('🐦 CleanTwitter v3.3.1\\nButton unten rechts!')})();`;
 
-        document.getElementById('bookmarkletBtn').href = code;
+        // Set href attribute
+        document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(bookmarkletCode);
 
         function copyCode() {
-            navigator.clipboard.writeText(document.getElementById('bookmarkletBtn').href)
-                .then(() => alert('✅ Code kopiert! Einfach in Vivaldi als Lesezeichen einfügen.'))
-                .catch(() => alert('❌ Fehler beim Kopieren. Nutze den Drag & Drop Button.'));
+            const fullCode = 'javascript:' + bookmarkletCode;
+            navigator.clipboard.writeText(fullCode)
+                .then(() => {
+                    alert('✅ Code kopiert!\n\nSo fügst du es ein:\n1. Rechtsklick auf Lesezeichenleiste\n2. "Neues Lesezeichen"\n3. Name: CleanTwitter\n4. URL: Einfügen (Strg+V)');
+                })
+                .catch(() => alert('❌ Fehler beim Kopieren.'));
         }
 
         // --- LISTENER (Empfängt Daten vom Twitter-Fenster) ---
@@ -177,7 +188,6 @@
                 
                 let addedCount = 0;
                 newTweets.forEach(nt => {
-                    // Check duplicate by text+user
                     if(!currentCache.some(c => c.text === nt.text && c.user === nt.user)) {
                         currentCache.push(nt);
                         addedCount++;
@@ -187,7 +197,6 @@
                 if(addedCount > 0) {
                     localStorage.setItem('twitter_clean_cache', JSON.stringify(currentCache));
                     loadCache();
-                    // Feedback visual
                     const stat = document.querySelector('.stat-item');
                     stat.style.backgroundColor = '#00ff88';
                     stat.style.color = '#000';
