@@ -50,9 +50,28 @@
         .img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 10px; border-radius: 8px; overflow: hidden; }
         .img-grid img { width: 100%; height: 100%; object-fit: cover; margin: 0; aspect-ratio: 16/9; }
         .img-grid img:only-child { grid-column: span 2; aspect-ratio: auto; }
+        
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loader {
+            border: 5px solid #333; border-top: 5px solid var(--primary);
+            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay">
+        <div class="loader"></div>
+        <h2 style="margin-top: 20px;">📦 ZIP wird erstellt...</h2>
+        <p id="loadingStatus" style="color: #aaa;">Bitte warten...</p>
+    </div>
 
     <!-- WARNING BOX -->
     <div class="warning-box">
@@ -68,8 +87,8 @@
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🎉 Version 4.2 - Unlimited Cache!</h3>
-        <p><strong>NEU:</strong> Kein Cache-Limit mehr - alle Tweets werden gespeichert!</p>
+        <h3>🎉 Version 4.2.2 - ZIP Fix!</h3>
+        <p><strong>NEU:</strong> Stabilerer ZIP-Download für viele Bilder!</p>
         <p><strong>WICHTIG:</strong> Langsam scrollen, damit Bilder laden können!</p>
     </div>
 
@@ -85,23 +104,23 @@
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 4.2.1 - Multi-Image Fix</h3>
+        <h3>🆕 Version 4.2.2 - ZIP Stability Fix</h3>
         <ul>
-            <li>✨ <strong>Multi-Image Support:</strong> Speichert jetzt ALLE Bilder eines Posts! (vorher nur das erste)</li>
-            <li>♾️ <strong>Unbegrenzter Cache</strong>: Keine automatische Löschung mehr!</li>
+            <li>🐛 <strong>ZIP-Fix:</strong> Download stoppt nicht mehr bei vielen Bildern (600+)</li>
+            <li>⏳ <strong>Lade-Anzeige:</strong> Zeigt Fortschritt beim ZIP-Erstellen</li>
+            <li>✨ <strong>Multi-Image Support:</strong> Speichert weiterhin ALLE Bilder eines Posts!</li>
             <li>💾 <strong>Download-Buttons</strong>: Laden jetzt alle Bilder auf einmal</li>
-            <li>📥 <strong>HTML/ZIP Export</strong>: Unterstützt jetzt Bilder-Gallerien</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v4.2.1</h1>
+        <h1>🐦 CleanTwitter Dashboard v4.2.2</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.2.1</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.2.2</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
     </div>
@@ -175,7 +194,6 @@
 
         function downloadGallery(urls) {
             if(!urls || urls.length === 0) return;
-            // Delay downloads slightly to prevent browser blocking
             urls.forEach((url, i) => {
                 setTimeout(() => {
                     const ext = url.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
@@ -328,36 +346,78 @@
             
             let imgIdx = 1, vidIdx = 1, gifIdx = 1;
             
-            alert('🔄 Lade Medien herunter... Das kann etwas dauern!');
+            // SHOW LOADING OVERLAY
+            const overlay = document.getElementById('loadingOverlay');
+            const status = document.getElementById('loadingStatus');
+            overlay.style.display = 'flex';
+            
+            let totalItems = 0;
+            data.forEach(t => {
+                if(t.imgs) totalItems += t.imgs.length;
+                else if(t.img || t.video || t.gif) totalItems++;
+            });
+            
+            let processed = 0;
             
             for(const t of data) {
                 try {
                     if(t.imgs && t.imgs.length > 0) {
                         for(const src of t.imgs) {
-                            const response = await fetch(src);
-                            const blob = await response.blob();
-                            const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                            imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                            try {
+                                const response = await fetch(src);
+                                if(response.ok) {
+                                    const blob = await response.blob();
+                                    const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                                    imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                                }
+                            } catch(e) { console.error('Skip img', e); }
+                            processed++;
+                            status.innerText = `Verarbeite Bilder... (${processed}/${totalItems})`;
+                            // Small delay to prevent browser freeze
+                            if(processed % 10 === 0) await new Promise(r => setTimeout(r, 50));
                         }
                     } else if(t.img) {
-                        const response = await fetch(t.img);
-                        const blob = await response.blob();
-                        const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                        imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                        try {
+                            const response = await fetch(t.img);
+                            if(response.ok) {
+                                const blob = await response.blob();
+                                const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                                imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                            }
+                        } catch(e) { console.error('Skip img', e); }
+                        processed++;
+                        status.innerText = `Verarbeite Bild... (${processed}/${totalItems})`;
                     } else if(t.video) {
-                        const response = await fetch(t.video);
-                        const blob = await response.blob();
-                        vidFolder.file(`video_${vidIdx++}.mp4`, blob);
+                        try {
+                            const response = await fetch(t.video);
+                            if(response.ok) {
+                                const blob = await response.blob();
+                                vidFolder.file(`video_${vidIdx++}.mp4`, blob);
+                            }
+                        } catch(e) { console.error('Skip vid', e); }
+                        processed++;
+                        status.innerText = `Verarbeite Video... (${processed}/${totalItems})`;
                     } else if(t.gif) {
-                        const response = await fetch(t.gif);
-                        const blob = await response.blob();
-                        gifFolder.file(`gif_${gifIdx++}.mp4`, blob);
+                        try {
+                            const response = await fetch(t.gif);
+                            if(response.ok) {
+                                const blob = await response.blob();
+                                gifFolder.file(`gif_${gifIdx++}.mp4`, blob);
+                            }
+                        } catch(e) { console.error('Skip gif', e); }
+                        processed++;
+                        status.innerText = `Verarbeite GIF... (${processed}/${totalItems})`;
                     }
+                    
+                    // Throttle every few items to keep UI responsive
+                    if(processed % 20 === 0) await new Promise(r => setTimeout(r, 100));
+                    
                 } catch(e) {
-                    console.error('Download failed:', e);
+                    console.error('General download error:', e);
                 }
             }
             
+            status.innerText = 'Erstelle ZIP-Datei... (fast fertig!)';
             const content = await zip.generateAsync({type: 'blob'});
             const url = URL.createObjectURL(content);
             const a = document.createElement('a');
@@ -365,14 +425,15 @@
             a.download = `twitter_media_${Date.now()}.zip`;
             a.click();
             
-            alert('✅ ZIP-Download abgeschlossen!');
+            overlay.style.display = 'none';
+            alert('✅ ZIP-Download erfolgreich abgeschlossen!');
         }
 
         function updateBookmarklet() {
             const showDL = settings.showDlButtons ? 'true' : 'false';
             
             // UPDATED BOOKMARKLET CODE FOR MULTI-IMAGE SUPPORT
-            const code = `(function(){console.log('[CT]v4.2.1 Multi');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var imgs=t.querySelectorAll('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video_'+Date.now()+'.mp4';var btn=createBtn(media,name);t.style.position='relative';t.appendChild(btn)}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4';var btn=createBtn(media,name);t.style.position='relative';t.appendChild(btn)}else if(imgs.length>0){var btn=document.createElement('button');btn.innerText='💾 DL ('+imgs.length+')';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();imgs.forEach(function(img,idx){var src=img.src;var ext=src.match(/\\.(jpg|jpeg|png|webp)/i);var fname='image_'+Date.now()+'_'+idx+'.'+(ext?ext[1]:'jpg');dlMedia(src,fname)})};t.style.position='relative';t.appendChild(btn)}})}function createBtn(url,name){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();dlMedia(url,name)};return btn}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),imgs=t.querySelectorAll('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||imgs.length>0||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(imgs.length>0)item.imgs=Array.from(imgs).map(function(i){return i.src});c.push(item);a++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+'+a+' Total:'+c.length)}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.2.1 MULTI');alert('🐦 CleanTwitter v4.2.1!\\n♾️ Cache: UNBEGRENZT\\n🖼️ Multi-Image Support!')})();`;
+            const code = `(function(){console.log('[CT]v4.2.2 Multi');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var imgs=t.querySelectorAll('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video_'+Date.now()+'.mp4';var btn=createBtn(media,name);t.style.position='relative';t.appendChild(btn)}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4';var btn=createBtn(media,name);t.style.position='relative';t.appendChild(btn)}else if(imgs.length>0){var btn=document.createElement('button');btn.innerText='💾 DL ('+imgs.length+')';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();imgs.forEach(function(img,idx){var src=img.src;var ext=src.match(/\\.(jpg|jpeg|png|webp)/i);var fname='image_'+Date.now()+'_'+idx+'.'+(ext?ext[1]:'jpg');dlMedia(src,fname)})};t.style.position='relative';t.appendChild(btn)}})}function createBtn(url,name){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();dlMedia(url,name)};return btn}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),imgs=t.querySelectorAll('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||imgs.length>0||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(imgs.length>0)item.imgs=Array.from(imgs).map(function(i){return i.src});c.push(item);a++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+'+a+' Total:'+c.length)}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.2.2 ZIP');alert('🐦 CleanTwitter v4.2.2!\\n♾️ Cache: UNBEGRENZT\\n📦 ZIP: Stabil für viele Bilder!')})();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
