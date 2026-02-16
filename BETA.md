@@ -1,470 +1,483 @@
-# 🧪 BETA / TROUBLESHOOTING GUIDE
+# 🧪 BETA TESTING & TROUBLESHOOTING
 
-> **Für alle die Probleme haben oder testen wollen**
-
----
-
-## 🐛 AKTUELLE BEKANNTE PROBLEME
-
-### ✅ GEFIXT in v5.1.3:
-
-**Problem:** Dashboard zeigt keine Tweets obwohl Tool sammelt
-- **Grund:** localStorage-Key Mismatch
-- **Fix:** v5.1.3 unified alle Keys auf `twitter_clean_cache`
-- **Status:** ✅ GEFIXT
-
-**Problem:** Auto-Pause kommt ständig
-- **Grund:** v5.1.0 hatte Auto-Pause default ON
-- **Fix:** v5.1.2 komplett entfernt
-- **Status:** ✅ GEFIXT
-
-**Problem:** Badge zeigt 🛡️ statt ♾️
-- **Grund:** Alte Version läuft noch
-- **Fix:** Cache leeren, neue Version ziehen
-- **Status:** ✅ GEFIXT
+> **Für v4.2 BETA Tester & Problem-Löser**
 
 ---
 
-## ⚠️ HÄUFIGE FEHLER (NICHT UNSER TOOL!)
+## 📍 AKTUELLE VERSION: v4.2 BETA
 
-### 1. ERR_PROXY_CONNECTION_FAILED
+**Release:** 16.02.2026
+**Status:** 🟡 BETA (stabil, aber mit bekannten Bugs)
+**Nächste Version:** v5.0 STABLE (geplant +1 Woche)
 
-```
-main.da71110a.js:31 net::ERR_PROXY_CONNECTION_FAILED
-```
+---
 
-**Was ist das?**
-- Twitter's eigene API-Calls scheitern
-- Proxy-Server antwortet nicht
-- Twitter-internes Problem
+## ✅ WAS IN v4.2 FUNKTIONIERT:
 
-**Woher kommt es?**
-- `main.da71110a.js` = Twitter's eigener Code!
-- Nicht unser Tool (unser Tool: `VM462:1`)
-
-**Was tun?**
-```
-1. Ignorieren! Tool funktioniert trotzdem
-2. Oder: Proxy in Browser deaktivieren
-3. Oder: VPN aus/an schalten
-4. Oder: Warten bis Twitter's Server wieder ok
+```diff
++ ♾️ Unbegrenzter Cache
++ 💾 Download-Buttons bei Tweets
++ 🖼️/🎥/🎬 Medien-Download (Bilder, Videos, GIFs)
++ 📥 HTML-Export
++ 🗂️ ZIP-Export
++ 📊 Storage-Warnung bei >5MB
++ ⚙️ Settings (Download-Buttons on/off)
++ 📱 Mobile-Optimierung
 ```
 
-**Beweise dass es Twitter ist:**
+---
+
+## 🐛 BEKANNTE BUGS in v4.2:
+
+### 1. localStorage-Key Bug 🔥 KRITISCH
+
+**Problem:**
 ```javascript
-// TWITTER's Code:
-main.da71110a.js:31 → ERR_PROXY_CONNECTION_FAILED
-vendor.dd6f616a.js:112 → dispatch error
+// Tool speichert unter:
+'tw_clean_cache' ❌
 
-// UNSER Tool (funktioniert!):
-VM462:1 [CT]v5.1.3 HOTFIX
-VM462:1 [CT]+4 T:4  ← Sammelt Tweets!
-VM462:1 [CT]+2 T:6
+// Dashboard liest von:
+'twitter_clean_cache' ✅
+
+// → Dashboard zeigt keine Tweets!
 ```
 
----
-
-### 2. HTTP 503 Errors
-
-```
-Failed to load resource: the server responded with a status of 503
-/i/api/graphql/y_gEr8-rsIu-XEOVAkh00A/HomeTimeline
-```
-
-**Was ist das?**
-- Twitter's Server sind überlastet
-- 503 = Service Unavailable
-- Twitter-Server-Problem
-
-**Woher kommt es?**
-- `/i/api/graphql/` = Twitter's API-Endpoint!
-- Nicht unser Tool (wir machen keine API-Calls!)
-
-**Was tun?**
-```
-1. 5-10 Minuten warten
-2. Seite neu laden (F5)
-3. Hard Refresh (Strg+Shift+R)
-4. Inkognito-Modus probieren
-```
-
----
-
-### 3. ApiError HTTP-200 codes:[null]
-
-```
-ApiError: https://api.twitter.com/graphql/.../Viewer HTTP-200 codes:[null]
-```
-
-**Was ist das?**
-- Twitter's API antwortet (200 OK)
-- Aber Daten sind leer/null
-- Twitter-internes Problem
-
-**Ist das schlimm?**
-- Nein! Tweets werden trotzdem angezeigt
-- Nur Twitter's Sidebar-Features fehlen
-- Unser Tool funktioniert trotzdem!
-
-**Was tun?**
-```
-1. Ignorieren
-2. Solange Tweets sichtbar = Tool funktioniert
-```
-
----
-
-## 🛡️ WIE ERKENNE ICH OB ES UNSER TOOL IST?
-
-### Check Console (F12):
-
-**UNSER Tool:**
+**Workaround:**
 ```javascript
-VM462:1 [CT]v5.1.3 HOTFIX        ← UNSERE Logs!
-VM462:1 [CT]+4 T:4
-VM271:1 [CT]v5.1.2 UNLIMITED
+// In Console (F12) auf Twitter eingeben:
+const cache = localStorage.getItem('tw_clean_cache');
+localStorage.setItem('twitter_clean_cache', cache);
 
-Präfix: VM + Nummer
-Inhalt: [CT] = CleanTwitter
+// Dashboard neu laden - Tweets sollten jetzt erscheinen!
 ```
 
-**TWITTER's Code:**
+**Permanenter Fix:**
 ```javascript
-main.da71110a.js:31 ApiError     ← TWITTER's Logs!
-vendor.dd6f616a.js:112 dispatch
-home:353 Promise.then
+// Automatische Migration hinzufügen:
+if(localStorage.getItem('tw_clean_cache')) {
+  localStorage.setItem('twitter_clean_cache', 
+    localStorage.getItem('tw_clean_cache'));
+  localStorage.removeItem('tw_clean_cache');
+}
+```
 
-Präfix: Dateiname (.js)
-Inhalt: Keine [CT] Logs
+**Fix kommt:** v4.3 BETA (in 2 Tagen!)
+
+---
+
+### 2. Kein Rate Limit Protection ⚠️ MITTEL
+
+**Problem:**
+- Festes Intervall: 1.5s
+- Kein Stealth Mode
+- Kein Pause-Button
+- Wirkt nicht "menschlich"
+
+**Workaround:**
+- Langsam scrollen
+- Regelmäßige Pausen machen
+- Seite neu laden = Stop
+
+**Fix kommt:** v5.0 STABLE
+```javascript
+// v5.0 wird haben:
+- Stealth Mode (zufällige Delays 2-5s)
+- Flexible Intervalle (1.5s - 10s)
+- Pause/Resume Button (Badge anklicken)
 ```
 
 ---
 
-## 🐛 ECHTE PROBLEME ERKENNEN:
+### 3. Keine Smart Features ⚠️ NIEDRIG
 
-### Dashboard ist leer ABER Console zeigt Tweets:
+**Fehlt in v4.2:**
+- ❌ Thread-Erkennung
+- ❌ Link-Extraktion
+- ❌ Retweet-Filter
+- ❌ Tägliche Stats
 
+**Fix kommt:** v5.0 STABLE
+
+---
+
+### 4. Badge Design 🎨 KOSMETISCH
+
+**Problem:**
 ```javascript
-[CT]+4 T:4   ← 4 Tweets gefunden!
-[CT]+2 T:6   ← 6 Tweets gesamt!
+// v4.2:
+🔴 24  // Rot, statisch
 
-ABER: Dashboard zeigt 0 Tweets
+// Soll sein:
+♾️ 24  // Grün, animiert
 ```
 
-**Problem:** localStorage-Key Mismatch
+**Fix kommt:** v5.0 STABLE
+
+---
+
+## 🔧 HÄUFIGE PROBLEME & LÖSUNGEN
+
+### Problem: Dashboard zeigt 0 Tweets
+
+**Symptom:**
+```
+Console zeigt: [CT]+4 Total:8  ✅
+Dashboard zeigt: 0 Tweets      ❌
+```
+
+**Ursache:** localStorage-Key Mismatch (Bug #1)
+
+**Lösung:**
+```javascript
+// Option 1: Console-Fix (siehe oben)
+const cache = localStorage.getItem('tw_clean_cache');
+localStorage.setItem('twitter_clean_cache', cache);
+
+// Option 2: Export/Import
+1. Auf Twitter: View-Button klicken
+2. Dashboard: Warte 3 Sekunden
+3. Tweets sollten importiert werden
+
+// Option 3: Auf v4.3 warten (2 Tage!)
+```
+
+---
+
+### Problem: Bilder fehlen
+
+**Symptom:**
+```
+- Badge zählt Tweets
+- Aber Bilder sind leer
+```
+
+**Ursache:** Zu schnell gescrollt
+
+**Lösung:**
+```
+1. LANGSAM scrollen!
+2. Warte bis Bilder laden (nicht mehr verschwommen)
+3. Tool scannt alle 1.5s
+4. Gib Bildern Zeit zum Laden
+```
+
+---
+
+### Problem: Badge erscheint nicht
+
+**Symptom:**
+- Bookmarklet geklickt
+- Alert kommt
+- Aber kein Badge unten rechts
 
 **Lösung:**
 ```bash
-1. Cache leeren (Strg+Shift+Del)
-2. Browser neu starten
-3. Neue Version holen (v5.1.3)
-4. Altes Bookmarklet LÖSCHEN
-5. Neues v5.1.3 ziehen
-6. Auf Twitter testen
+1. F5 (Seite neu laden)
+2. Bookmarklet nochmal klicken
+3. Console checken (F12):
+   - Siehst du [CT]v4.2? ✅
+   - Errors? Sag Bescheid!
 ```
 
 ---
 
-### Tool pausiert ständig:
+### Problem: Tool pausiert ständig
 
-```javascript
-[CT]PAUSED
-[CT]PAUSED
-[CT]PAUSED
-```
+**WICHTIG:** v4.2 hat KEIN Auto-Pause!
 
-**Problem:** Alte Version (v5.1.0/v5.1.1) läuft noch
-
-**Lösung:**
-```bash
-1. Twitter-Tab KOMPLETT schließen
-2. F12 Console öffnen in neuem Tab
-3. Eingeben: localStorage.clear()
-4. Neuen Tab: twitter.com
-5. NUR neue Version (v5.1.3) klicken
-```
-
----
-
-### Mehrere Versionen laufen gleichzeitig:
-
-```javascript
-VM203:1 [CT]PAUSED           ← Alte Version
-VM271:1 [CT]v5.1.2 UNLIMITED ← Neue Version
-```
-
-**Problem:** Beide blockieren sich gegenseitig
-
-**Lösung:**
-```bash
-1. Seite neu laden (F5)
-2. Console leeren (console.clear())
-3. NUR EINE Version klicken!
-4. Alte Bookmarklets LÖSCHEN
-```
-
----
-
-## ✅ SO SOLLTE ES AUSSEHEN:
-
-### Richtige Console-Logs:
-
-```javascript
-[CT]v5.1.3 HOTFIX | Interval:2776ms | KEIN LIMIT!
-[CT]+4 T:4
-[CT]+2 T:6
-[CT]+3 T:9
-[CT]+5 T:14
-... etc ...
-```
-
-### Dashboard zeigt Tweets:
-
-```
-📦 Gespeicherte Tweets
-
-📦 14 Tweets
-🖼️ 8 Bilder
-🎥 2 Videos
-🎬 1 GIF
-💾 245 KB
-```
-
-### Badge funktioniert:
-
-```
-♾️ 14  ← Grün, zählt hoch
-👀      ← View-Button funktioniert
-```
+Wenn du `[CT]PAUSED` siehst:
+- Du hast eine ALTE Version!
+- Lösche alle alten Bookmarklets
+- Hole v4.2 neu von GitHub Pages
 
 ---
 
 ## 🛠️ DEBUG-BEFEHLE
 
-### In Console (F12) eingeben:
+### 1. Check welche Version läuft:
 
-**1. Check localStorage:**
 ```javascript
-JSON.parse(localStorage.getItem('twitter_clean_cache') || '[]').length
-// Zeigt: Anzahl gespeicherter Tweets
+// In Console (F12):
+// Sollte zeigen:
+[CT]v4.2 Unlimited  ✅
+
+// NICHT:
+[CT]v5.1.x  ❌ (alte Versionen!)
+[CT]v4.0    ❌
 ```
 
-**2. Check Settings:**
+### 2. Check localStorage:
+
 ```javascript
-JSON.parse(localStorage.getItem('ct_settings'))
-// Zeigt: Aktuelle Einstellungen
+// v4.2 Key (aktuell):
+localStorage.getItem('tw_clean_cache')
+
+// v5.0 Key (soll sein):
+localStorage.getItem('twitter_clean_cache')
+
+// Beide checken:
+console.log('v4.2:', JSON.parse(localStorage.getItem('tw_clean_cache')||'[]').length);
+console.log('v5.0:', JSON.parse(localStorage.getItem('twitter_clean_cache')||'[]').length);
 ```
 
-**3. Check Tweets:**
+### 3. Migration manuell:
+
 ```javascript
-document.querySelectorAll('article[data-testid="tweet"]').length
-// Zeigt: Anzahl Tweets auf Seite
+// v4.2 → v5.0 Key migrieren:
+const old = localStorage.getItem('tw_clean_cache');
+if(old) {
+  localStorage.setItem('twitter_clean_cache', old);
+  localStorage.removeItem('tw_clean_cache');
+  console.log('✅ Migriert!');
+}
 ```
 
-**4. Cache komplett löschen:**
+### 4. Cache-Größe:
+
 ```javascript
-localStorage.clear();
-location.reload();
-// Löscht ALLES, Seite lädt neu
+const cache = localStorage.getItem('twitter_clean_cache') || localStorage.getItem('tw_clean_cache');
+const size = new Blob([cache||'']).size;
+console.log('Cache:', Math.round(size/1024), 'KB');
 ```
 
-**5. Nur Tool-Daten löschen:**
+### 5. Kompletter Reset:
+
 ```javascript
+localStorage.removeItem('tw_clean_cache');
 localStorage.removeItem('twitter_clean_cache');
-localStorage.removeItem('twitter_links');
 localStorage.removeItem('ct_settings');
 location.reload();
 ```
 
 ---
 
-## 📊 VERSION-CHECK
+## 🔮 WAS KOMMT IN v5.0?
 
-### Welche Version läuft?
+### Hauptziele:
 
-**In Console schauen:**
+**1. localStorage-Key Fix 🔥**
 ```javascript
-[CT]v5.1.3 HOTFIX  ← Aktuell! ✅
-[CT]v5.1.2 UNLIMITED ← Ok, aber alt
-[CT]v5.1.1 SAFE    ← Veraltet! Update!
-[CT]v5.1.0         ← BUGS! Update!
+// Automatische Migration:
+if(localStorage.getItem('tw_clean_cache')) {
+  const data = localStorage.getItem('tw_clean_cache');
+  localStorage.setItem('twitter_clean_cache', data);
+  localStorage.removeItem('tw_clean_cache');
+}
+
+// → Dashboard funktioniert sofort!
 ```
 
-**Badge-Check:**
-```
-♾️  ← v5.1.2 oder v5.1.3 ✅
-🛡️  ← v5.1.0 oder v5.1.1 ❌
-```
+**2. Rate Limit Protection 🛡️**
+```javascript
+// Stealth Mode:
+const delay = Math.random() * 3000 + 2000; // 2-5s
 
-### Update auf v5.1.3:
+// Pause/Resume:
+badge.onclick = () => {
+  paused = !paused;
+  badge.style.color = paused ? '#ff4' : '#0f8';
+};
 
-```bash
-1. https://cali72mero.github.io/twitter-clean-tracker
-2. Strg+Shift+R (Hard Refresh!)
-3. Siehst du "v5.1.3 - HOTFIX!"? ✅
-4. Altes Bookmarklet LÖSCHEN
-5. Neues "CleanTwitter v5.1.3" ziehen
-6. Auf Twitter testen
+// Flexible Intervalle:
+Settings: [1.5s, 3s, 5s, 10s]
 ```
 
----
+**3. Smart Features 🧠**
+```javascript
+// Thread-Detection:
+if(text.includes('🧵') || text.match(/\d+\/\d+/)) {
+  item.isThread = true;
+}
 
-## 🚀 BEST PRACTICES
+// Link-Extraction:
+const urls = text.match(/https?:\/\/[^\s]+/g);
+if(urls) links.push(...urls);
 
-### Optimale Nutzung:
-
-```
-1. LANGSAM scrollen
-   → Bilder brauchen Zeit zum Laden
-
-2. Warte bis Feed geladen ist
-   → Keine Skeleton-Loader mehr
-
-3. Badge checken
-   → Zählt es hoch? ✅
-
-4. Console öffnen (F12)
-   → Siehst du [CT]+X T:Y? ✅
-
-5. Dashboard regelmäßig checken
-   → Tweets werden gespeichert? ✅
-
-6. Bei ~2000 Tweets exportieren
-   → Storage-Limit beachten!
+// Retweet-Filter:
+if(text.startsWith('RT @')) return; // Skip
 ```
 
-### Empfohlene Settings:
+**4. Dashboard-Upgrades 📊**
+```javascript
+// Progressbar:
+<div id="progress" style="width: ${percent}%"></div>
 
-```
-✅ Stealth Mode: AN
-✅ Scan-Intervall: 3s (Normal)
-✅ Retweets skippen: AN
-✅ Threads erkennen: AN
-✅ Links extrahieren: AN
+// Tägliche Stats:
+const today = tweets.filter(t => isToday(t.date));
+
+// Suche:
+const results = tweets.filter(t => 
+  t.text.includes(query) || t.user.includes(query)
+);
 ```
 
 ---
 
-## 🆘 SUPPORT
+## 📅 RELEASE-TIMELINE
 
-### Problem melden:
-
-**Was brauchen wir:**
 ```
-1. Console-Logs (F12 Screenshot)
-2. Dashboard Screenshot
-3. Badge Screenshot
-4. Browser & Version
-5. Welche Tool-Version? (siehe Console)
-6. Was hast du schon probiert?
+📍 16.02.2026 (JETZT)
+   ✅ v4.2 BETA Released
+   - Unbegrenzter Cache
+   - Download-Buttons
+   - 🐛 Bekannte Bugs
+
+📍 18.02.2026 (+2 Tage)
+   🔄 v4.3 BETA
+   - 🔥 localStorage-Key Fix
+   - Dashboard funktioniert!
+   
+📍 23.02.2026 (+1 Woche)
+   🎉 v5.0 STABLE Release!
+   - Rate Limit Protection
+   - Smart Features
+   - Badge-Redesign
+   - Alle Bugs gefixt!
+   
+📍 02.03.2026 (+2 Wochen)
+   🚀 v5.1 Performance
+   - Schnellere Scans
+   - Besseres Caching
+   - PWA-Support
+```
+
+---
+
+## 📄 BUG-REPORT TEMPLATE
+
+**Wenn du einen Bug findest:**
+
+```markdown
+## Bug Report
+
+**Version:** v4.2 BETA
+**Browser:** [Chrome/Firefox/Safari] [Version]
+**OS:** [Windows/Mac/Linux/Android/iOS]
+
+**Problem:**
+[Beschreibung was nicht funktioniert]
+
+**Console-Logs:** (F12)
+```
+[CT]...
+[CT]...
+```
+
+**Screenshots:**
+[Badge, Dashboard, Console]
+
+**Schon probiert:**
+- [ ] Cache geleert
+- [ ] Browser neu gestartet
+- [ ] localStorage-Fix (siehe oben)
+- [ ] Bookmarklet neu gezogen
+
+**Andere Infos:**
+[Was noch wichtig sein könnte]
 ```
 
 **Wo melden:**
-- GitHub Issues: [github.com/cali72mero/twitter-clean-tracker/issues](https://github.com/cali72mero/twitter-clean-tracker/issues)
+- GitHub Issues: https://github.com/cali72mero/twitter-clean-tracker/issues
 
-**Vor dem Melden:**
+---
+
+## 🤝 BETA-TESTER GESUCHT!
+
+**Für v5.0 brauchen wir dich:**
+
+**Was du machen kannst:**
+1. v4.2 BETA testen
+2. Bugs melden (Issues)
+3. Feature-Wünsche äußern
+4. Code contributen (PRs)
+5. Dokumentation verbessern
+
+**Was du bekommst:**
+- Früher Zugriff auf v5.0
+- Dein Name im Changelog
+- Unsere Dankbarkeit! ❤️
+
+**Kontakt:**
+- GitHub: @cali72mero
+- Issues: [Link](https://github.com/cali72mero/twitter-clean-tracker/issues)
+
+---
+
+## 📚 FAQ (BETA)
+
+**Q: Ist v4.2 BETA sicher zu nutzen?**
+A: **JA!** Bugs betreffen nur Komfort, nicht Sicherheit. Daten werden nur lokal gespeichert.
+
+**Q: Sollte ich auf v4.3 warten?**
+A: Wenn Dashboard-Bug dich stört: JA. Sonst: v4.2 ist ok!
+
+**Q: Kann ich v4.2 und v5.0 parallel nutzen?**
+A: **NEIN!** Nur eine Version zur gleichen Zeit. Alte Bookmarklets löschen!
+
+**Q: Gehen meine Daten bei Update verloren?**
+A: **NEIN!** localStorage bleibt erhalten. Aber: Vorher exportieren empfohlen!
+
+**Q: Wie update ich von v4.2 auf v5.0?**
+A:
+```bash
+1. Exportiere Daten (ZIP/HTML)
+2. Lösche altes Bookmarklet
+3. Hole v5.0 von GitHub Pages
+4. Ziehe neues Bookmarklet in Leiste
+5. Fertig!
 ```
-1. Cache geleert? (Strg+Shift+Del)
-2. Browser neu gestartet?
-3. Neue Version geholt? (v5.1.3)
-4. Alte Bookmarklets gelöscht?
-5. localStorage.clear() probiert?
+
+**Q: Kann ich mehrere Browser nutzen?**
+A: JA, aber localStorage ist pro Browser. Daten werden nicht synchronisiert.
+
+---
+
+## ✅ BEST PRACTICES (BETA)
+
+### Während v4.2 BETA:
+
+```
+1. 💾 Regelmäßig exportieren!
+   → Alle 500-1000 Tweets als ZIP
+   
+2. 🐌 Langsam scrollen
+   → Bilder müssen laden
+   
+3. 📊 Storage im Auge behalten
+   → Bei >5MB exportieren
+   
+4. 🐛 Bugs melden
+   → Hilf uns v5.0 besser zu machen!
+   
+5. ⏸️ Pausen machen
+   → Seite neu laden = Stop
+```
+
+### Vorbereitung für v5.0:
+
+```
+1. 📥 Export machen (Backup!)
+2. 🗑️ Cache leeren
+3. 🔄 Alte Bookmarklets löschen
+4. ⭐ Repo watchen für Release
+5. 📢 Feedback geben!
 ```
 
 ---
 
-## 📚 WEITERE INFOS
+## 🔗 WICHTIGE LINKS
 
-### Warum Twitter-Errors ignorieren?
-
-**Twitter's Code vs Unser Tool:**
-
-```diff
-TWITTER's Code (main.da71110a.js):
-- Läuft automatisch beim Seitenaufruf
-- Macht API-Calls an Twitter's Server
-- Kann Errors werfen wenn Server down
-- Hat NICHTS mit unserem Tool zu tun!
-
-UNSER Tool (VM462:1):
-+ Läuft nur wenn Bookmarklet geklickt
-+ Macht KEINE API-Calls
-+ Liest nur HTML im Browser
-+ Funktioniert auch wenn Twitter Errors hat!
-```
-
-### localStorage Limits:
-
-**Browser-abhängig:**
-```
-Chrome:   ~10 MB
-Firefox:  ~10 MB
-Safari:   ~5 MB
-Edge:     ~10 MB
-
-Typisch: ~5-7 MB sicher nutzbar
-→ Ca. 2000-3000 Tweets
-→ Bei >80%: Warnung
-→ Exportieren empfohlen!
-```
-
-### Stealth Mode erklärt:
-
-**Was macht es:**
-```javascript
-// OHNE Stealth:
-Scan alle 3000ms (fix)
-→ 3s, 3s, 3s, 3s...
-→ Erkennbares Muster
-
-// MIT Stealth:
-Scan zufällig 2000-5000ms
-→ 2.3s, 4.1s, 2.8s, 3.7s...
-→ Wirkt menschlich!
-```
-
-**Warum?**
-- Auch wenn kein Ban-Risiko:
-- Wirkt natürlicher
-- Best Practice
-- Verhindert Browser-Überlastung
-- Gibt Bildern Zeit zum Laden
+- **README:** [README.md](README.md)
+- **Live Demo:** [GitHub Pages](https://cali72mero.github.io/twitter-clean-tracker/)
+- **Issues:** [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
+- **Releases:** [Alle Versionen](https://github.com/cali72mero/twitter-clean-tracker/releases)
 
 ---
 
-## ❓ FAQ (Troubleshooting)
+**🧪 Happy Beta Testing! 🚀**
 
-**Q: Dashboard leer aber Console zählt Tweets?**
-A: localStorage-Key Mismatch. Update auf v5.1.3!
-
-**Q: Tool pausiert ständig?**
-A: Alte Version läuft noch. Tab schließen, localStorage.clear(), neu starten!
-
-**Q: Mehrere [CT] Logs mit unterschiedlichen Versionen?**
-A: Mehrere Versionen laufen gleichzeitig. Seite neu laden, nur EINE starten!
-
-**Q: ERR_PROXY_CONNECTION_FAILED?**
-A: Twitter's Problem, nicht unseres! Tool funktioniert trotzdem.
-
-**Q: HTTP 503 Errors?**
-A: Twitter's Server down. Warte 5-10 Minuten, neu laden.
-
-**Q: Badge erscheint nicht?**
-A: Seite neu laden (F5), Bookmarklet nochmal klicken.
-
-**Q: Keine Bilder werden gespeichert?**
-A: Zu schnell gescrollt! Langsam scrollen, Bilder müssen laden.
-
-**Q: GitHub Pages zeigt alte Version?**
-A: Browser-Cache! Strg+Shift+R, oder Strg+F5.
-
-**Q: Storage voll?**
-A: Exportiere als ZIP/HTML, Clear Cache, weiter scrollen!
+**Bugs gefunden? Melde sie! Zusammen machen wir v5.0 perfekt! ❤️**
 
 ---
 
-**🧪 Bei weiteren Fragen: GitHub Issues!**
-
----
-
-**Last Updated: v5.1.3 (2026-02-16)**
+**Last Updated:** v4.2 BETA (16.02.2026)
