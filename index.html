@@ -29,11 +29,11 @@
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v3.0</h1>
+        <h1>🐦 CleanTwitter Dashboard v3.1</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             1. Ziehe den Button in deine Leiste.<br>
             2. Nutze ihn auf Twitter.<br>
-            3. Klicke dort auf "👀 View on GitHub", um deine gesammelten Tweets hier zu sehen!
+            3. Unten rechts auf Twitter erscheint ein Button "👀 View on GitHub".
         </p>
         
         <a id="bookmarkletBtn" class="btn" href="#">💾 CleanTwitter + Record</a>
@@ -127,19 +127,22 @@
 
         // --- BOOKMARKLET CODE GENERATION ---
         const code = `javascript:(function(){
-            /* 1. SETUP UI */
-            if(document.getElementById('clean-tw-panel')) return;
+            /* 1. SETUP UI: FORCE CREATION */
+            var existing = document.getElementById('clean-tw-panel');
+            if(existing) existing.remove(); // Reset UI if running again
+
             var panel = document.createElement('div');
             panel.id = 'clean-tw-panel';
-            panel.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:8px; align-items:flex-end;';
+            // Important: Use fixed positioning with high z-index and ensure it's visible
+            panel.style.cssText = 'position:fixed !important; bottom:20px !important; right:20px !important; z-index:2147483647 !important; display:flex; flex-direction:column; gap:8px; align-items:flex-end; pointer-events:auto;';
             
             var badge = document.createElement('div');
             badge.innerText = '🔴 Rec: 0';
-            badge.style.cssText = 'background:rgba(0,0,0,0.8); color:#ff4444; padding:8px 12px; border-radius:8px; font-weight:bold; font-family:monospace; border:1px solid #333; font-size:12px;';
+            badge.style.cssText = 'background:rgba(0,0,0,0.8); color:#ff4444; padding:8px 12px; border-radius:8px; font-weight:bold; font-family:monospace; border:1px solid #333; font-size:12px; min-width:60px; text-align:center;';
             
             var sendBtn = document.createElement('button');
             sendBtn.innerText = '👀 View on GitHub';
-            sendBtn.style.cssText = 'background:#00ff88; color:#000; border:none; padding:10px 15px; border-radius:20px; font-weight:bold; cursor:pointer; font-family:system-ui; box-shadow:0 4px 12px rgba(0,255,136,0.3); font-size:13px; transition:transform 0.1s;';
+            sendBtn.style.cssText = 'background:#00ff88; color:#000; border:none; padding:10px 15px; border-radius:20px; font-weight:bold; cursor:pointer; font-family:system-ui, sans-serif; box-shadow:0 4px 12px rgba(0,255,136,0.3); font-size:13px; transition:transform 0.1s;';
             
             sendBtn.onmouseover = function(){ this.style.transform='scale(1.05)'; };
             sendBtn.onmouseout = function(){ this.style.transform='scale(1)'; };
@@ -147,17 +150,26 @@
             /* 2. SEND DATA TO GITHUB PAGE */
             sendBtn.onclick = function() {
                 var stored = JSON.parse(localStorage.getItem('tw_clean_cache') || '[]');
-                if(stored.length === 0) return alert('Noch keine Tweets gesammelt! Scrolle erst etwas.');
                 
+                // Open window and keep reference
                 var win = window.open('https://cali72mero.github.io/twitter-clean-tracker/', 'tw_viewer');
                 
-                // Wait for window to load, then send data
-                var attempts = 0;
-                var interval = setInterval(function(){
-                    win.postMessage({type: 'import_tweets', data: stored}, '*');
-                    attempts++;
-                    if(attempts > 5) clearInterval(interval);
-                }, 1000);
+                if(win) {
+                    badge.innerText = '⏳ Sending...';
+                    // Try sending data multiple times to catch the window loading state
+                    var attempts = 0;
+                    var interval = setInterval(function(){
+                        win.postMessage({type: 'import_tweets', data: stored}, '*');
+                        attempts++;
+                        if(attempts > 8) {
+                            clearInterval(interval);
+                            badge.innerText = '✅ Sent!';
+                            setTimeout(() => badge.innerText = '🔴 Rec: ' + stored.length, 2000);
+                        }
+                    }, 800);
+                } else {
+                    alert('Popup blocked! Please allow popups for Twitter to view the dashboard.');
+                }
             };
 
             panel.appendChild(badge);
@@ -172,7 +184,8 @@
             
             function scan() {
                 // Clean Ads
-                document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]').forEach(el => el.remove());
+                var junk = document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]');
+                junk.forEach(el => el.remove());
 
                 // Capture Tweets
                 var tweets = document.querySelectorAll('article[data-testid="tweet"]');
@@ -223,13 +236,7 @@
             scan();
             
             // Initial Notification
-            var toast = document.createElement('div');
-            toast.innerText = '🐦 CleanTwitter Active & Recording';
-            toast.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#00ff88; color:#000; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:99999; box-shadow:0 5px 15px rgba(0,0,0,0.3); animation: fadeout 3s forwards; pointer-events:none; font-family:system-ui;';
-            document.body.appendChild(toast);
-            var style = document.createElement('style');
-            style.innerHTML = '@keyframes fadeout { 0% {opacity:1; top:20px;} 80% {opacity:1; top:20px;} 100% {opacity:0; top:-50px;} }';
-            document.head.appendChild(style);
+            alert('🐦 CleanTwitter v3.1 gestartet!\\nUnten rechts ist jetzt dein Dashboard-Button.');
 
         })();`.replace(/\s+/g, ' ').trim();
 
