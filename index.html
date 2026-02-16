@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐦 Twitter Clean Tracker - Privacy Hub</title>
+    <style>
+        body { 
+            font-family: system-ui, sans-serif; 
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); 
+            color: #fff; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 20px; 
+            margin: 0;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .btn { 
+            background: linear-gradient(45deg, #00ff88, #00cc6a); 
+            color: black; 
+            border: none; 
+            padding: 15px 40px; 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 10px 30px rgba(0,255,136,0.3); 
+            transition: all 0.3s; 
+            margin: 10px;
+        }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0,255,136,0.5); }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 2rem 0; max-width: 800px; }
+        .feature { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; backdrop-filter: blur(10px); }
+        .hub-link { position: fixed; top: 20px; right: 20px; background: #ff4081; padding: 10px 20px; border-radius: 25px; text-decoration: none; color: white; font-weight: bold; }
+        footer { margin-top: 2rem; color: #aaa; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <a href="https://cali72mero.github.io/privacy-hub/" class="hub-link" target="_blank">← Privacy Hub</a>
+    
+    <h1>🐦 Twitter Clean Tracker</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem;">Clean Twitter <strong>ohne Login</strong> – Tracker, Cookies, Skeletons gelöscht. Fake Browser für 100% echten Look!</p>
+
+    <button class="btn" onclick="installBookmarklet()">💾 Als Bookmarklet Installieren</button>
+    <p style="margin-top: 10px; color: #aaa;">(Zieh den Button in deine Lesezeichenleiste oder klicke drauf)</p>
+
+    <div class="features">
+        <div class="feature">
+            <h3>✅ Kein Login</h3>
+            <p>Öffentlicher Feed lädt direkt – kein Account nötig.</p>
+        </div>
+        <div class="feature">
+            <h3>🛡️ Tracker Blocker</h3>
+            <p>Cookies/LocalStorage/Skeletons/Ads entfernt.</p>
+        </div>
+        <div class="feature">
+            <h3>🎭 Fake Browser</h3>
+            <p>User-Agent täuscht echten Chrome vor.</p>
+        </div>
+        <div class="feature">
+            <h3>⚡ Sofort Clean</h3>
+            <p>Dynamisch: Neue Tracker werden live gekillt.</p>
+        </div>
+    </div>
+
+    <footer>
+        Teil von Privacy Hub · Lokal & Anonym · © 2026 cali72mero
+    </footer>
+
+    <script>
+        // Clean Twitter Script
+        const code = `javascript:(function(){
+            /* Fake User Agent */
+            try { Object.defineProperty(navigator, 'userAgent', {get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'}); } catch(e){}
+            
+            /* Delete Cookies & Storage */
+            document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+            localStorage.clear(); sessionStorage.clear();
+            
+            /* Remove Garbage Elements */
+            function clean() {
+                const selectors = [
+                    '[data-testid="skeleton"]', 
+                    '[data-testid="PromotedTweet"]', 
+                    '[aria-label*="Who to follow"]', 
+                    '[data-testid="sidebarColumn"]',
+                    'div[role="dialog"]' // Login Wall often appears as dialog
+                ];
+                selectors.forEach(s => document.querySelectorAll(s).forEach(el => el.remove()));
+                
+                /* Force Scroll Unlock */
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
+            }
+            
+            /* Loop for dynamic content */
+            setInterval(clean, 1000);
+            clean();
+            alert('🐦 Twitter Clean Mode active!');
+        })();`;
+
+        function installBookmarklet() {
+            // Create a temporary link element to simulate drag/drop or copy
+            const promptText = "Ziehe diesen Button in deine Lesezeichen-Leiste:\n\n🐦 CleanTwitter";
+            alert(promptText);
+            
+            // Update button to be draggable link
+            const btn = document.querySelector('.btn');
+            btn.textContent = "🐦 CleanTwitter (Hier ziehen)";
+            btn.onclick = (e) => { e.preventDefault(); alert("Bitte in die Lesezeichenleiste ziehen!"); };
+            btn.setAttribute('href', code);
+            btn.setAttribute('title', 'Twitter Clean Tracker');
+        }
+    </script>
+</body>
+</html>
