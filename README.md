@@ -39,7 +39,6 @@
 ### 🐛 BEKANNTE PROBLEME (v4.2):
 
 ```diff
-- ⚠️ localStorage-Key: 'tw_clean_cache' (sollte 'twitter_clean_cache' sein)
 - ⚠️ Kein Rate Limit Protection
 - ⚠️ Kein Stealth Mode (immer 1.5s Intervall)
 - ⚠️ Keine Thread-Erkennung
@@ -56,50 +55,40 @@
 
 ### 🎯 GEPLANTE FIXES:
 
-**1. localStorage-Key Fix:**
+**1. Rate Limit Protection:**
 ```javascript
-// Aktuell (v4.2):
-'tw_clean_cache' ❌
-
-// v5.0:
-'twitter_clean_cache' ✅
-// → Dashboard zeigt Tweets automatisch!
-```
-
-**2. Rate Limit Protection:**
-```javascript
-// v5.0:
+// v5.0 (wenn möglich):
 - 🛡️ Stealth Mode mit zufälligen Delays
 - ⏱️ Flexible Intervalle (1.5s - 10s)
 - ⏸️ Pause/Resume-Button
 - 🔄 Auto-Pause Schutz optional
 ```
 
-**3. Smart Features:**
+**2. Smart Features:**
 ```javascript
-// v5.0:
+// v5.0 (wenn möglich):
 - 🧵 Thread-Erkennung (zusammenhängende Tweets)
 - 🔗 Link-Extraktion (URLs separat speichern)
 - ✂️ Retweet-Filter (automatisch überspringen)
 - 📊 Tägliche Stats (heute gesammelte Tweets)
 ```
 
-**4. Badge-Verbesserungen:**
+**3. Badge-Verbesserungen:**
 ```javascript
 // Aktuell (v4.2):
 🔴 24  // Rot, statisch
 
-// v5.0:
+// v5.0 (wenn möglich):
 ♾️ 24  // Grün, animiert bei neuen Tweets
 ⏸️ 24  // Gelb bei Pause
 ```
 
-**5. Dashboard-Integration:**
+**4. Dashboard-Integration:**
 ```javascript
 // Aktuell (v4.2):
 View-Button → manueller Import (Feature!)
 
-// v5.0:
+// v5.0 (wenn möglich):
 View-Button → automatische Sync (optional)
 ```
 
@@ -120,10 +109,10 @@ View-Button → automatische Sync (optional)
 v4.2 BETA:     ✅ JETZT (16.02.2026)
 
 v4.3 BETA:     🔄 Wenn möglich unter der Woche
-               (localStorage-Key Fix)
+               (kleine Verbesserungen/Docs/Stabilität)
                
 v5.0 STABLE:   🚀 Wenn möglich am Wochenende/nächste Woche
-               (alle Features - beste Bemühungen!)
+               (beste Bemühungen!)
                
 v5.1:          💫 Später (Performance-Boost)
 ```
@@ -312,22 +301,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 ## 🐛 Bekannte Bugs & Workarounds
 
-### 1. Dashboard zeigt keine Tweets
-
-**Problem:** localStorage-Key Mismatch (v4.2)
-
-**Workaround:**
-```javascript
-// In Console (F12) auf Twitter eingeben:
-const old = localStorage.getItem('tw_clean_cache');
-localStorage.setItem('twitter_clean_cache', old);
-
-// Dann Dashboard neu laden
-```
-
-**Fix kommt:** v4.3 / v5.0 (wenn möglich!)
-
-### 2. Zu schnell - Bilder fehlen
+### 1. Zu schnell - Bilder fehlen
 
 **Problem:** 1.5s Intervall zu schnell beim schnellen Scrollen
 
@@ -338,7 +312,7 @@ localStorage.setItem('twitter_clean_cache', old);
 
 **Fix kommt:** v5.0 (Stealth Mode - wenn möglich!)
 
-### 3. Kein Pause-Button
+### 2. Kein Pause-Button
 
 **Problem:** Badge nicht klickbar (v4.2)
 
@@ -397,7 +371,7 @@ A: Seite neu laden (F5) und Bookmarklet erneut klicken.
 A: Zu schnell gescrollt! Langsam scrollen, Bilder müssen laden.
 
 **Q: Dashboard zeigt nichts?**
-A: localStorage-Key Bug (v4.2). Siehe "Bekannte Bugs & Workarounds".
+A: Klicke auf **"👀 View"** (Popup erlauben), warte 2-3 Sekunden, dann ist alles da.
 
 ---
 
@@ -410,7 +384,6 @@ A: localStorage-Key Bug (v4.2). Siehe "Bekannte Bugs & Workarounds".
 - 📥 **HTML-Export** verbessert
 - 🗂️ **ZIP-Export** mit Ordner-Struktur
 - ⚙️ **Settings** für Download-Buttons
-- ⚠️ **Bekannt:** localStorage-Key Bug
 
 ### v4.1 (2026-02-15)
 - 📦 Cache-Limit erhöht (500 Tweets)
@@ -472,7 +445,6 @@ Beiträge sind willkommen!
 ### Roadmap Mithelfen:
 
 **Für v5.0 gesucht:**
-- 🐛 localStorage-Key Bug fixen
 - 🛡️ Rate Limit Protection implementieren
 - 🧵 Thread-Detection Code
 - 🔗 Link-Extractor
@@ -605,7 +577,6 @@ Dieses Tool ist für **persönliche Nutzung** gedacht. Bitte respektiere Twitter
 | Unbegrenzter Cache | ✅ | ✅ |
 | Download-Buttons | ✅ | ✅ |
 | HTML/ZIP Export | ✅ | ✅ |
-| localStorage-Key | ❌ tw_clean | ✅ twitter_clean |
 | Rate Limit Protection | ❌ | ✅ Stealth Mode |
 | Flexible Intervalle | ❌ 1.5s fix | ✅ 1.5-10s |
 | Pause/Resume | ❌ | ✅ Badge-Click |
@@ -624,7 +595,7 @@ Dieses Tool ist für **persönliche Nutzung** gedacht. Bitte respektiere Twitter
    v4.2 BETA - Stabil, funktioniert!
    
 📍 WENN MÖGLICH (unter der Woche)
-   v4.3 BETA - localStorage-Key Fix
+   v4.3 BETA - Kleine Verbesserungen/Docs
    
 📍 WENN MÖGLICH (Wochenende/nächste Woche)
    v5.0 STABLE - Alle Features!
