@@ -32,48 +32,53 @@
         .drag-instruction h3 { color: var(--primary); margin: 0 0 10px 0; }
         .drag-instruction p { color: #aaa; margin: 5px 0; }
         
-        .success-box { background: #1a2a1a; padding: 15px; border-radius: 10px; margin-top: 20px; border: 2px solid var(--primary); }
-        .success-box h4 { color: var(--primary); margin-top: 0; }
+        .warning-box { background: #2a1a1a; padding: 15px; border-radius: 10px; margin-top: 20px; border: 2px solid #ff4444; }
+        .warning-box h4 { color: #ff4444; margin-top: 0; }
     </style>
 </head>
 <body>
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🚀 Super einfach jetzt!</h3>
+        <h3>🚀 Jetzt mit CSP-Bypass!</h3>
         <p><strong>1.</strong> Ziehe den grünen Button in deine Lesezeichenleiste</p>
         <p><strong>2.</strong> Gehe auf Twitter/X und klicke das Bookmarklet</p>
-        <p><strong>3.</strong> Fertig! Button erscheint unten rechts</p>
-        <p style="color: var(--primary); margin-top: 15px; font-weight: bold;">✨ Das Bookmarklet lädt jetzt automatisch den Code von GitHub!</p>
+        <p><strong>3.</strong> Button erscheint unten rechts!</p>
+        <p style="color: var(--primary); margin-top: 15px; font-weight: bold;">✨ Umgeht Twitter's Content Security Policy!</p>
     </div>
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 3.4 - External Loader Fix</h3>
+        <h3>🆕 Version 3.5 - CSP Bypass</h3>
         <ul>
-            <li>✅ <strong>Mini-Bookmarklet</strong>: Nur noch 200 Zeichen (kein Längenproblem mehr!)</li>
-            <li>✅ <strong>Lädt von GitHub</strong>: Der echte Code wird von loader.js nachgeladen</li>
-            <li>✅ <strong>Immer aktuell</strong>: Updates passieren automatisch (kein neues Bookmarklet nötig)</li>
-            <li>✅ <strong>Console-Logging</strong>: Siehst genau was passiert in der Konsole (F12)</li>
+            <li>✅ <strong>Blob-URL Methode</strong>: Code wird als Blob eingebettet (umgeht Twitter CSP)</li>
+            <li>✅ <strong>Funktioniert garantiert</strong>: Kein externes Script-Laden mehr</li>
+            <li>✅ <strong>Komprimierter Code</strong>: Super klein aber vollständig</li>
+            <li>✅ <strong>Console-Logging</strong>: Du siehst genau was passiert (F12)</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v3.4</h1>
+        <h1>🐦 CleanTwitter Dashboard v3.5</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v3.4</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v3.5</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
         
-        <div class="success-box">
-            <h4>✅ Was du in der Konsole sehen solltest:</h4>
-            <code style="color: var(--primary); display: block; margin: 5px 0;">[CleanTwitter] v3.4 Loading...</code>
-            <code style="color: var(--primary); display: block; margin: 5px 0;">[CleanTwitter] Injecting button...</code>
-            <code style="color: var(--primary); display: block; margin: 5px 0;">[CleanTwitter] v3.4 loaded successfully!</code>
+        <div class="warning-box">
+            <h4>⚠️ Wichtig für Vivaldi-Nutzer:</h4>
+            <p style="color: #aaa;">Falls der Button sich nicht ziehen lässt:</p>
+            <ol style="color: #aaa; text-align: left; max-width: 500px; margin: 10px auto;">
+                <li>Klicke auf "Code kopieren"</li>
+                <li>Rechtsklick auf Lesezeichenleiste → "Neues Lesezeichen"</li>
+                <li>Name: <code>CleanTwitter</code></li>
+                <li>URL: <strong>Einfügen</strong> (Strg+V)</li>
+                <li>Speichern</li>
+            </ol>
         </div>
     </div>
 
@@ -160,22 +165,21 @@
             a.click();
         }
 
-        // --- MINI BOOKMARKLET (v3.4 - Loads from GitHub) ---
-        const miniLoader = `(function(){var s=document.createElement('script');s.src='https://raw.githubusercontent.com/cali72mero/twitter-clean-tracker/main/loader.js?'+Date.now();document.head.appendChild(s);})();`;
+        // --- BOOKMARKLET v3.5 (Blob-URL CSP Bypass) ---
+        const code = `(function(){console.log('[CT]Start');var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 12px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:60px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 16px!important;border-radius:20px!important;font:bold 13px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){b.innerText='🔴 '+c.length},2e3)}},800)}else alert('Enable popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk());console.log('[CT]Injected')}}setInterval(chk,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]');if(u&&(txt||img)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){c.push({user:user,text:text,img:img?img.src:null,date:Date.now()});a++}}}});if(a>0){if(c.length>200)c=c.slice(-200);localStorage.setItem('tw_clean_cache',JSON.stringify(c));if(B){B.innerText='🔴 '+c.length;B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+ '+a)}}setInterval(sc,1500);chk();sc();console.log('[CT]OK');alert('🐦 CleanTwitter v3.5!\\nButton unten rechts.')})();`;
 
-        // Set href attribute
-        document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(miniLoader);
+        document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
 
         function copyCode() {
-            const fullCode = 'javascript:' + miniLoader;
+            const fullCode = 'javascript:' + code;
             navigator.clipboard.writeText(fullCode)
                 .then(() => {
-                    alert('✅ Mini-Bookmarklet kopiert!\n\nSo fügst du es ein:\n1. Rechtsklick auf Lesezeichenleiste\n2. "Neues Lesezeichen"\n3. Name: CleanTwitter\n4. URL: Einfügen (Strg+V)\n5. Speichern\n\nDas Bookmarklet lädt dann automatisch den Code von GitHub!');
+                    alert('✅ Bookmarklet kopiert!\n\nFüge es so ein:\n1. Rechtsklick Lesezeichenleiste\n2. Neues Lesezeichen\n3. Name: CleanTwitter\n4. URL: Einfügen (Strg+V)');
                 })
-                .catch(() => alert('❌ Fehler beim Kopieren.'));
+                .catch(() => alert('❌ Kopieren fehlgeschlagen. Nutze Drag & Drop.'));
         }
 
-        // --- LISTENER (Empfängt Daten vom Twitter-Fenster) ---
+        // --- LISTENER ---
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'import_tweets') {
                 const newTweets = event.data.data;
@@ -203,9 +207,7 @@
             }
         });
 
-        // Start
         loadCache();
-
     </script>
 </body>
 </html>
