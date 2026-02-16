@@ -17,10 +17,10 @@
         .tweet-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .tweet-user { font-weight: bold; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .tweet-text { margin-bottom: 10px; line-height: 1.5; font-size: 0.95rem; white-space: pre-wrap; }
-        .tweet-img { width: 100%; border-radius: 8px; display: block; margin-top: 10px; background: #222; min-height: 50px; }
+        .tweet-img { width: 100%; border-radius: 8px; display: block; margin-top: 10px; background: #222; min-height: 50px; object-fit: cover; }
         .tweet-video { width: 100%; border-radius: 8px; margin-top: 10px; }
-        .media-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-        .tweet-dl-btn { background: #4444ff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 10px; font-weight: bold; }
+        .media-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; z-index: 10; }
+        .tweet-dl-btn { background: #4444ff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 10px; font-weight: bold; width: 100%; }
         .tweet-dl-btn:hover { background: #6666ff; }
         .empty-state { text-align: center; color: #666; margin-top: 50px; padding: 40px; border: 2px dashed #333; border-radius: 20px; }
 
@@ -46,6 +46,10 @@
         .setting-item { margin: 15px 0; display: flex; align-items: center; gap: 10px; }
         .setting-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
         .setting-item label { color: #aaa; cursor: pointer; }
+        
+        .img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 10px; border-radius: 8px; overflow: hidden; }
+        .img-grid img { width: 100%; height: 100%; object-fit: cover; margin: 0; aspect-ratio: 16/9; }
+        .img-grid img:only-child { grid-column: span 2; aspect-ratio: auto; }
     </style>
 </head>
 <body>
@@ -81,24 +85,23 @@
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 4.2 - Unlimited Cache</h3>
+        <h3>🆕 Version 4.2.1 - Multi-Image Fix</h3>
         <ul>
-            <li>♾️ <strong>UNBEGRENZTER Cache</strong>: Keine automatische Löschung mehr!</li>
-            <li>⚠️ <strong>Scroll-Warnung</strong>: Langsam scrollen für vollständiges Laden</li>
-            <li>💾 <strong>Download-Buttons</strong>: Bei jedem Tweet (standardmäßig AN)</li>
-            <li>📈 <strong>Storage-Info</strong>: Warnung bei großen Datenmengen</li>
-            <li>🗂️ <strong>Empfehlung</strong>: Regelmäßig ZIP-Export machen</li>
+            <li>✨ <strong>Multi-Image Support:</strong> Speichert jetzt ALLE Bilder eines Posts! (vorher nur das erste)</li>
+            <li>♾️ <strong>Unbegrenzter Cache</strong>: Keine automatische Löschung mehr!</li>
+            <li>💾 <strong>Download-Buttons</strong>: Laden jetzt alle Bilder auf einmal</li>
+            <li>📥 <strong>HTML/ZIP Export</strong>: Unterstützt jetzt Bilder-Gallerien</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v4.2</h1>
+        <h1>🐦 CleanTwitter Dashboard v4.2.1</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.2</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.2.1</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
     </div>
@@ -170,6 +173,17 @@
                 .catch(e => alert('❌ Download fehlgeschlagen: ' + e));
         }
 
+        function downloadGallery(urls) {
+            if(!urls || urls.length === 0) return;
+            // Delay downloads slightly to prevent browser blocking
+            urls.forEach((url, i) => {
+                setTimeout(() => {
+                    const ext = url.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                    downloadMedia(url, `image_${Date.now()}_${i}.${ext}`);
+                }, i * 300);
+            });
+        }
+
         // --- VIEW LOGIC ---
         function loadCache() {
             const raw = localStorage.getItem('twitter_clean_cache');
@@ -200,7 +214,9 @@
             // Count media types
             let imgCount = 0, vidCount = 0, gifCount = 0;
             data.forEach(t => {
-                if(t.img) imgCount++;
+                if(t.imgs) imgCount += t.imgs.length;
+                else if(t.img) imgCount++;
+                
                 if(t.video) vidCount++;
                 if(t.gif) gifCount++;
             });
@@ -230,7 +246,17 @@
                         mediaHTML = `<video src="${t.gif}" class="tweet-video" autoplay loop muted></video>`;
                         badge = '<div class="media-badge">🎬 GIF</div>';
                         dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.gif}', 'gif_${idx}.mp4')">💾 GIF downloaden</button>`;
+                    } else if(t.imgs && t.imgs.length > 0) {
+                        // MULTI IMAGE GRID
+                        mediaHTML = '<div class="img-grid">';
+                        t.imgs.forEach(src => {
+                            mediaHTML += `<img src="${src}" loading="lazy">`;
+                        });
+                        mediaHTML += '</div>';
+                        badge = `<div class="media-badge">🖼️ ${t.imgs.length} IMGS</div>`;
+                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadGallery(['${t.imgs.join("','")}'])">💾 Alle ${t.imgs.length} Bilder</button>`;
                     } else if(t.img) {
+                        // SINGLE IMAGE FALLBACK
                         mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`;
                         badge = '<div class="media-badge">🖼️ IMG</div>';
                         const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
@@ -267,12 +293,15 @@
             if(!raw) return alert('Cache ist leer!');
             const data = JSON.parse(raw);
             
-            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv (${new Date().toLocaleDateString()})</title><style>body{font-family:system-ui,sans-serif;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .meta{color:#666;font-size:0.8em;margin-bottom:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
+            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv (${new Date().toLocaleDateString()})</title><style>body{font-family:system-ui,sans-serif;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;} .meta{color:#666;font-size:0.8em;margin-bottom:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
             
             data.forEach(t => {
                 let media = '';
                 if(t.video) media = `<video src="${t.video}" controls></video>`;
                 else if(t.gif) media = `<video src="${t.gif}" autoplay loop muted></video>`;
+                else if(t.imgs) {
+                    media = `<div class="grid">` + t.imgs.map(s => `<img src="${s}">`).join('') + `</div>`;
+                }
                 else if(t.img) media = `<img src="${t.img}">`;
                 
                 html += `<div class="card"><div class="meta">👤 ${t.user} • ${new Date(t.date).toLocaleString()}</div><div>${t.text.replace(/\n/g, '<br>')}</div>${media}</div>`;
@@ -303,7 +332,14 @@
             
             for(const t of data) {
                 try {
-                    if(t.img) {
+                    if(t.imgs && t.imgs.length > 0) {
+                        for(const src of t.imgs) {
+                            const response = await fetch(src);
+                            const blob = await response.blob();
+                            const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                            imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                        }
+                    } else if(t.img) {
                         const response = await fetch(t.img);
                         const blob = await response.blob();
                         const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
@@ -335,7 +371,8 @@
         function updateBookmarklet() {
             const showDL = settings.showDlButtons ? 'true' : 'false';
             
-            const code = `(function(){console.log('[CT]v4.2 Unlimited');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video_'+Date.now()+'.mp4'}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4'}else if(img){media=img.src;var ext=media.match(/\\.(jpg|jpeg|png|webp)/i);name='image_'+Date.now()+'.'+(ext?ext[1]:'jpg')}if(media){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;c.push(item);a++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+'+a+' Total:'+c.length)}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.2 UNLIMITED');alert('🐦 CleanTwitter v4.2!\\n♾️ Cache: UNBEGRENZT\\n🐌 Langsam scrollen!')})();`;
+            // UPDATED BOOKMARKLET CODE FOR MULTI-IMAGE SUPPORT
+            const code = `(function(){console.log('[CT]v4.2.1 Multi');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var imgs=t.querySelectorAll('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video_'+Date.now()+'.mp4';var btn=createBtn(media,name);t.style.position='relative';t.appendChild(btn)}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4';var btn=createBtn(media,name);t.style.position='relative';t.appendChild(btn)}else if(imgs.length>0){var btn=document.createElement('button');btn.innerText='💾 DL ('+imgs.length+')';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();imgs.forEach(function(img,idx){var src=img.src;var ext=src.match(/\\.(jpg|jpeg|png|webp)/i);var fname='image_'+Date.now()+'_'+idx+'.'+(ext?ext[1]:'jpg');dlMedia(src,fname)})};t.style.position='relative';t.appendChild(btn)}})}function createBtn(url,name){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();dlMedia(url,name)};return btn}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),imgs=t.querySelectorAll('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||imgs.length>0||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(imgs.length>0)item.imgs=Array.from(imgs).map(function(i){return i.src});c.push(item);a++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+'+a+' Total:'+c.length)}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.2.1 MULTI');alert('🐦 CleanTwitter v4.2.1!\\n♾️ Cache: UNBEGRENZT\\n🖼️ Multi-Image Support!')})();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
