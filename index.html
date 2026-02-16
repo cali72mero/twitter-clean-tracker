@@ -2,317 +2,175 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐦 Twitter Clean & Cache Dashboard</title>
     <style>
         :root { --primary: #00ff88; --bg: #0a0a0a; --surface: #161616; --text: #fff; }
-        * { box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 10px; max-width: 1200px; margin: 0 auto; -webkit-font-smoothing: antialiased; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; max-width: 1200px; margin: 0 auto; }
         h1, h2 { text-align: center; color: var(--primary); }
-        .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; touch-action: manipulation; }
-        .btn:active { transform: scale(0.95); }
-        .btn:hover { opacity: 0.9; }
+        .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: move; font-weight: bold; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; }
+        .btn:hover { opacity: 0.9; transform: scale(1.05); transition: 0.2s; }
         .btn-danger { background: #ff4444; color: white; }
         
-        .tweet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
-        @media (max-width: 768px) { .tweet-grid { grid-template-columns: 1fr; gap: 10px; } }
-        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 12px; border-radius: 12px; overflow: hidden; transition: transform 0.2s; position: relative; }
-        .tweet-card:hover { transform: translateY(-3px); border-color: var(--primary); }
-        .tweet-user { font-weight: bold; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
-        .tweet-text { margin-bottom: 10px; line-height: 1.5; font-size: 0.9rem; white-space: pre-wrap; }
+        .tweet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 15px; border-radius: 12px; overflow: hidden; transition: transform 0.2s; position: relative; }
+        .tweet-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .tweet-user { font-weight: bold; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .tweet-text { margin-bottom: 10px; line-height: 1.5; font-size: 0.95rem; white-space: pre-wrap; }
         .tweet-img { width: 100%; border-radius: 8px; display: block; margin-top: 10px; background: #222; min-height: 50px; }
         .tweet-video { width: 100%; border-radius: 8px; margin-top: 10px; }
-        .media-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #00ff88; padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
-        .thread-badge { position: absolute; top: 8px; left: 8px; background: rgba(255,165,0,0.9); color: #000; padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
-        .tweet-dl-btn { background: #4444ff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; margin-top: 8px; font-weight: bold; width: 100%; }
-        .tweet-dl-btn:active { transform: scale(0.95); }
-        .empty-state { text-align: center; color: #666; margin-top: 50px; padding: 30px; border: 2px dashed #333; border-radius: 20px; }
+        .media-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .tweet-dl-btn { background: #4444ff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 10px; font-weight: bold; }
+        .tweet-dl-btn:hover { background: #6666ff; }
+        .empty-state { text-align: center; color: #666; margin-top: 50px; padding: 40px; border: 2px dashed #333; border-radius: 20px; }
 
-        .generator-box { background: #111; padding: 20px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 1px solid #333; }
-        .stats { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 1rem; flex-wrap: wrap; }
-        .stat-item { background: #222; padding: 8px 15px; border-radius: 10px; font-size: 0.9rem; }
-        @media (max-width: 768px) { .stats { font-size: 0.85rem; } .stat-item { padding: 6px 10px; } }
+        .generator-box { background: #111; padding: 30px; border-radius: 20px; margin-bottom: 40px; text-align: center; border: 1px solid #333; }
+        .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 1.2rem; flex-wrap: wrap; }
+        .stat-item { background: #222; padding: 10px 20px; border-radius: 10px; }
         
-        .changelog { background: #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid var(--primary); }
-        .changelog h3 { color: var(--primary); margin-top: 0; font-size: 1.2rem; }
-        .changelog ul { color: #aaa; line-height: 1.6; font-size: 0.9rem; }
+        .changelog { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary); }
+        .changelog h3 { color: var(--primary); margin-top: 0; }
+        .changelog ul { color: #aaa; line-height: 1.8; }
         
-        .drag-instruction { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 2px dashed var(--primary); text-align: center; }
-        .drag-instruction h3 { color: var(--primary); margin: 0 0 8px 0; font-size: 1.2rem; }
-        .drag-instruction p { color: #aaa; margin: 5px 0; font-size: 0.9rem; }
+        .drag-instruction { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px dashed var(--primary); text-align: center; }
+        .drag-instruction h3 { color: var(--primary); margin: 0 0 10px 0; }
+        .drag-instruction p { color: #aaa; margin: 5px 0; }
         
-        .warning-box { background: #3a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 3px solid #ff4444; }
-        .warning-box h3 { color: #ff4444; margin-top: 0; font-size: 1.3rem; }
-        .warning-box ul { color: #ffaaaa; line-height: 1.8; font-size: 0.95rem; font-weight: bold; }
+        .warning-box { background: #3a1a1a; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 3px solid #ff4444; animation: pulse 2s infinite; }
+        .warning-box h3 { color: #ff4444; margin-top: 0; font-size: 1.5rem; }
+        .warning-box ul { color: #ffaaaa; line-height: 2; font-size: 1.1rem; font-weight: bold; }
+        @keyframes pulse { 0%, 100% { border-color: #ff4444; } 50% { border-color: #ff8888; } }
         
-        .safety-box { background: #1a3a1a; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 3px solid #00ff88; animation: glow 3s infinite; }
-        .safety-box h3 { color: #00ff88; margin-top: 0; font-size: 1.3rem; }
-        .safety-box ul { color: #aaffaa; line-height: 1.8; font-size: 0.95rem; font-weight: bold; }
-        @keyframes glow { 0%, 100% { border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.3); } 50% { border-color: #00ffaa; box-shadow: 0 0 20px rgba(0,255,136,0.5); } }
-        
-        .summary-box { background: #1a2a1a; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #00ff88; }
-        .summary-box h3 { color: #00ff88; margin-top: 0; }
-        .summary-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 15px; }
-        .summary-stat { background: #222; padding: 12px; border-radius: 8px; text-align: center; }
-        .summary-stat .num { font-size: 2rem; color: #00ff88; font-weight: bold; }
-        .summary-stat .label { font-size: 0.8rem; color: #aaa; }
-        
-        .settings-box { background: #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #4444ff; }
+        .settings-box { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #4444ff; }
         .settings-box h3 { color: #4444ff; margin-top: 0; }
-        .setting-item { margin: 12px 0; display: flex; align-items: center; gap: 10px; }
+        .setting-item { margin: 15px 0; display: flex; align-items: center; gap: 10px; }
         .setting-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
-        .setting-item input[type="number"] { width: 80px; padding: 5px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; }
-        .setting-item label { color: #aaa; cursor: pointer; font-size: 0.9rem; flex: 1; }
-        .setting-item select { padding: 5px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; cursor: pointer; }
-        
-        .links-box { background: #1a1a2a; padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid #8844ff; }
-        .links-box h3 { color: #8844ff; margin-top: 0; }
-        .link-item { background: #222; padding: 8px; margin: 5px 0; border-radius: 6px; word-break: break-all; font-size: 0.85rem; }
-        .link-item a { color: #8844ff; text-decoration: none; }
-        .link-item a:hover { text-decoration: underline; }
-        
-        #storageProgress { width: 100%; height: 30px; background: #222; border-radius: 15px; overflow: hidden; margin: 15px 0; }
-        #storageBar { height: 100%; background: linear-gradient(90deg, #00ff88 0%, #ffaa00 50%, #ff4444 100%); transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 0.85rem; }
+        .setting-item label { color: #aaa; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <!-- SAFETY BOX -->
-    <div class="safety-box">
-        <h3>🛡️ RATE LIMIT SCHUTZ AKTIV!</h3>
-        <ul>
-            <li>✅ <strong>Kein Ban-Risiko!</strong> Unser Tool macht KEINE API-Calls</li>
-            <li>🐌 <strong>Stealth Mode</strong>: Zufällige Delays & langsame Scans</li>
-            <li>♾️ <strong>UNBEGRENZT</strong>: Scrolle so lange du willst!</li>
-            <li>🎯 <strong>Safe Mode</strong>: Empfohlene Settings für maximale Sicherheit</li>
-            <li>🔒 <strong>Unsichtbar</strong>: Twitter merkt nichts von unserem Tool!</li>
-        </ul>
-    </div>
-
-    <!-- SUMMARY BOX -->
-    <div class="summary-box" id="summaryBox">
-        <h3>📈 Tägliche Zusammenfassung</h3>
-        <div class="summary-stats">
-            <div class="summary-stat"><div class="num" id="todayCount">0</div><div class="label">Heute</div></div>
-            <div class="summary-stat"><div class="num" id="todayImg">0</div><div class="label">Bilder</div></div>
-            <div class="summary-stat"><div class="num" id="todayVid">0</div><div class="label">Videos</div></div>
-            <div class="summary-stat"><div class="num" id="threadsCount">0</div><div class="label">Threads</div></div>
-            <div class="summary-stat"><div class="num" id="linksCount">0</div><div class="label">Links</div></div>
-        </div>
-    </div>
 
     <!-- WARNING BOX -->
     <div class="warning-box">
         <h3>⚠️ WICHTIGE HINWEISE!</h3>
         <ul>
-            <li>🐌 <strong>LANGSAM SCROLLEN!</strong> Bilder müssen laden!</li>
-            <li>✅ <strong>Retweets werden automatisch übersprungen</strong></li>
-            <li>🧵 <strong>Threads werden erkannt & gruppiert</strong></li>
-            <li>🔗 <strong>Links werden separat extrahiert</strong></li>
-            <li>♾️ <strong>KEIN Limit!</strong> Scrolle so weit du willst!</li>
-            <li>🛡️ <strong>Badge anklicken = Pause/Resume</strong></li>
+            <li>🐌 <strong>LANGSAM SCROLLEN!</strong> Bilder müssen 100% laden, sonst kein Download möglich!</li>
+            <li>🔄 Warte bis Bilder/Videos sichtbar sind (nicht schnell durchscrollen!)</li>
+            <li>💾 <strong>Cache ist UNBEGRENZT!</strong> Keine Bilder gehen mehr verloren!</li>
+            <li>🗂️ Exportiere regelmäßig als ZIP (alle 500-1000 Tweets)</li>
+            <li>📊 Browser-Storage hat Limits (~50MB) - bei zu vielen Tweets kann es langsam werden</li>
         </ul>
     </div>
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🎉 Version 5.1.3 - HOTFIX!</h3>
-        <p><strong>GEFIXT:</strong> Dashboard zeigt jetzt Tweets an • localStorage-Key unified!</p>
+        <h3>🎉 Version 4.2 - Unlimited Cache!</h3>
+        <p><strong>NEU:</strong> Kein Cache-Limit mehr - alle Tweets werden gespeichert!</p>
+        <p><strong>WICHTIG:</strong> Langsam scrollen, damit Bilder laden können!</p>
     </div>
 
     <!-- SETTINGS -->
     <div class="settings-box">
-        <h3>⚙️ Einstellungen (RATE LIMIT SCHUTZ)</h3>
-        
+        <h3>⚙️ Einstellungen</h3>
         <div class="setting-item">
             <input type="checkbox" id="showDlButtons" onchange="saveSettings()" checked>
-            <label for="showDlButtons">Download-Buttons anzeigen</label>
+            <label for="showDlButtons">Download-Buttons bei jedem Tweet anzeigen (Twitter + Dashboard)</label>
         </div>
-        
-        <div class="setting-item">
-            <input type="checkbox" id="skipRetweets" onchange="saveSettings()" checked>
-            <label for="skipRetweets">Retweets automatisch überspringen</label>
-        </div>
-        
-        <div class="setting-item">
-            <input type="checkbox" id="detectThreads" onchange="saveSettings()" checked>
-            <label for="detectThreads">Threads erkennen & gruppieren</label>
-        </div>
-        
-        <div class="setting-item">
-            <input type="checkbox" id="extractLinks" onchange="saveSettings()" checked>
-            <label for="extractLinks">Links separat speichern</label>
-        </div>
-        
-        <hr style="border: 1px solid #333; margin: 15px 0;">
-        <h4 style="color: #00ff88; margin: 10px 0;">🛡️ RATE LIMIT SCHUTZ</h4>
-        
-        <div class="setting-item">
-            <input type="checkbox" id="stealthMode" onchange="saveSettings()" checked>
-            <label for="stealthMode"><strong>Stealth Mode</strong> (Zufällige Delays, empfohlen!)</label>
-        </div>
-        
-        <div class="setting-item">
-            <label>Scan-Intervall:</label>
-            <select id="scanInterval" onchange="saveSettings()">
-                <option value="1500">Schnell (1.5s) - Risiko!</option>
-                <option value="3000" selected>Normal (3s) - Sicher</option>
-                <option value="5000">Langsam (5s) - Sehr sicher</option>
-                <option value="10000">Ultra-Safe (10s)</option>
-            </select>
-        </div>
-        
-        <p style="color: #00ff88; font-size: 0.85rem; margin-top: 15px; border: 2px solid #00ff88; padding: 10px; border-radius: 8px;">
-            🛡️ <strong>Empfehlung:</strong> Stealth Mode AN, Intervall 3-5s = KEIN BAN!
-            <br>♾️ <strong>Scrolle so lange du willst - KEIN LIMIT!</strong>
-        </p>
+        <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">✅ Buttons sind STANDARDMÄSSIG AN! Nach Änderung Bookmarklet neu ziehen.</p>
     </div>
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 5.1.3 - HOTFIX</h3>
+        <h3>🆕 Version 4.2 - Unlimited Cache</h3>
         <ul>
-            <li>🐛 <strong>GEFIXT</strong>: localStorage-Key unified (twitter_clean_cache)</li>
-            <li>✅ <strong>Dashboard zeigt Tweets</strong> jetzt richtig an!</li>
-            <li>🛡️ <strong>Alle Features von v5.1.2</strong> bleiben erhalten</li>
+            <li>♾️ <strong>UNBEGRENZTER Cache</strong>: Keine automatische Löschung mehr!</li>
+            <li>⚠️ <strong>Scroll-Warnung</strong>: Langsam scrollen für vollständiges Laden</li>
+            <li>💾 <strong>Download-Buttons</strong>: Bei jedem Tweet (standardmäßig AN)</li>
+            <li>📈 <strong>Storage-Info</strong>: Warnung bei großen Datenmengen</li>
+            <li>🗂️ <strong>Empfehlung</strong>: Regelmäßig ZIP-Export machen</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter v5.1.3</h1>
-        <p style="color: #aaa; margin-bottom: 15px;">
-            <strong style="color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
+        <h1>🐦 CleanTwitter Dashboard v4.2</h1>
+        <p style="color: #aaa; margin-bottom: 20px;">
+            <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v5.1.3</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.2</a>
         <br><br>
-        <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa;" onclick="copyCode()">📋 Code kopieren</button>
-    </div>
-
-    <!-- STORAGE PROGRESS -->
-    <div style="text-align: center; margin: 20px 0;">
-        <h3 style="color: #aaa; font-size: 1rem;">Storage-Status</h3>
-        <div id="storageProgress">
-            <div id="storageBar" style="width: 0%;">0%</div>
-        </div>
-        <p style="color: #666; font-size: 0.85rem;" id="storageText">0 KB von ~5000 KB genutzt</p>
+        <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
     </div>
 
     <!-- VIEWER TEIL -->
     <div id="viewer">
-        <h2 style="margin-top: 30px;">📦 Gespeicherte Tweets</h2>
+        <h2 style="margin-top: 50px;">📦 Gespeicherte Tweets</h2>
         <div class="stats">
             <div class="stat-item">📦 <span id="countDisplay">0</span> Tweets</div>
             <div class="stat-item">🖼️ <span id="imgCount">0</span> Bilder</div>
             <div class="stat-item">🎥 <span id="vidCount">0</span> Videos</div>
             <div class="stat-item">🎬 <span id="gifCount">0</span> GIFs</div>
-            <div class="stat-item" id="sizeInfo">💾 <span id="sizeDisplay">0</span> KB</div>
+            <div class="stat-item" id="sizeInfo" style="background: #333;">💾 <span id="sizeDisplay">0</span> KB</div>
         </div>
 
         <div style="text-align: center;">
-            <button class="btn" onclick="downloadArchive()">📥 HTML</button>
-            <button class="btn" onclick="downloadZIP()" style="background: #4444ff;">🗂️ ZIP</button>
-            <button class="btn" onclick="downloadLinks()" style="background: #8844ff;">🔗 Links</button>
-            <button class="btn btn-danger" onclick="clearCache()">🗑️ Clear</button>
+            <button class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
+            <button class="btn" onclick="downloadZIP()" style="background: #4444ff;">🗂️ ZIP-Export (empfohlen!)</button>
+            <button class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
         </div>
+        
+        <p id="storageWarning" style="display:none; color:#ff4444; text-align:center; margin-top:20px; font-weight:bold; font-size:1.1rem;">
+            ⚠️ WARNUNG: Cache ist sehr groß! Exportiere deine Daten als ZIP und leere den Cache!
+        </p>
 
         <div id="grid" class="tweet-grid"></div>
         
         <div id="empty" class="empty-state">
-            <h3>Noch leer! 🕸️</h3>
-            <p>Geh auf Twitter & aktiviere das Bookmarklet!</p>
+            <h3>Noch leer hier! 🕸️</h3>
+            <p>Geh auf Twitter, aktiviere das Bookmarklet und browse!</p>
         </div>
-    </div>
-    
-    <!-- LINKS BOX -->
-    <div class="links-box" id="linksBox" style="display:none;">
-        <h3>🔗 Extrahierte Links (<span id="linksTotal">0</span>)</h3>
-        <div id="linksList"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        let settings = { 
-            showDlButtons: true, 
-            skipRetweets: true, 
-            detectThreads: true, 
-            extractLinks: true,
-            stealthMode: true,
-            scanInterval: 3000
+        // Settings - DEFAULT: BUTTONS AN
+        let settings = {
+            showDlButtons: true
         };
         
         function loadSettings() {
             const saved = localStorage.getItem('ct_settings');
-            if(saved) settings = JSON.parse(saved);
+            if(saved) {
+                settings = JSON.parse(saved);
+            } else {
+                settings.showDlButtons = true;
+                localStorage.setItem('ct_settings', JSON.stringify(settings));
+            }
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
-            document.getElementById('skipRetweets').checked = settings.skipRetweets;
-            document.getElementById('detectThreads').checked = settings.detectThreads;
-            document.getElementById('extractLinks').checked = settings.extractLinks;
-            document.getElementById('stealthMode').checked = settings.stealthMode;
-            document.getElementById('scanInterval').value = settings.scanInterval;
             updateBookmarklet();
         }
         
         function saveSettings() {
             settings.showDlButtons = document.getElementById('showDlButtons').checked;
-            settings.skipRetweets = document.getElementById('skipRetweets').checked;
-            settings.detectThreads = document.getElementById('detectThreads').checked;
-            settings.extractLinks = document.getElementById('extractLinks').checked;
-            settings.stealthMode = document.getElementById('stealthMode').checked;
-            settings.scanInterval = parseInt(document.getElementById('scanInterval').value);
             localStorage.setItem('ct_settings', JSON.stringify(settings));
             updateBookmarklet();
-            alert('✅ Einstellungen gespeichert! Bookmarklet neu ziehen.');
+            alert('✅ Einstellungen gespeichert! Ziehe das Bookmarklet neu in die Leiste.');
         }
         
         function downloadMedia(url, filename) {
-            fetch(url).then(res => res.blob()).then(blob => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                a.click();
-            }).catch(e => alert('❌ Download fehl: ' + e));
-        }
-        
-        function updateStorageBar() {
-            const raw = localStorage.getItem('twitter_clean_cache') || '';
-            const sizeKB = Math.round(new Blob([raw]).size / 1024);
-            const maxKB = 5000;
-            const percent = Math.min(100, (sizeKB / maxKB) * 100);
-            
-            document.getElementById('storageBar').style.width = percent + '%';
-            document.getElementById('storageBar').innerText = Math.round(percent) + '%';
-            document.getElementById('storageText').innerText = `${sizeKB} KB von ~${maxKB} KB genutzt`;
-            
-            if(percent > 80) {
-                document.getElementById('storageBar').style.background = '#ff4444';
-                if(percent > 90) alert('⚠️ WARNUNG: Cache fast voll! Bitte exportieren!');
-            } else if(percent > 50) {
-                document.getElementById('storageBar').style.background = '#ffaa00';
-            } else {
-                document.getElementById('storageBar').style.background = '#00ff88';
-            }
-        }
-        
-        function getDailySummary() {
-            const raw = localStorage.getItem('twitter_clean_cache');
-            const data = raw ? JSON.parse(raw) : [];
-            const today = new Date().toDateString();
-            const todayTweets = data.filter(t => new Date(t.date).toDateString() === today);
-            
-            document.getElementById('todayCount').innerText = todayTweets.length;
-            document.getElementById('todayImg').innerText = todayTweets.filter(t => t.img).length;
-            document.getElementById('todayVid').innerText = todayTweets.filter(t => t.video || t.gif).length;
-            document.getElementById('threadsCount').innerText = data.filter(t => t.isThread).length;
-            
-            const links = localStorage.getItem('twitter_links');
-            const linkData = links ? JSON.parse(links) : [];
-            document.getElementById('linksCount').innerText = linkData.length;
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = filename;
+                    a.click();
+                })
+                .catch(e => alert('❌ Download fehlgeschlagen: ' + e));
         }
 
+        // --- VIEW LOGIC ---
         function loadCache() {
             const raw = localStorage.getItem('twitter_clean_cache');
             const data = raw ? JSON.parse(raw) : [];
@@ -321,9 +179,25 @@
             
             document.getElementById('countDisplay').innerText = data.length;
             
-            const sizeKB = Math.round(new Blob([raw || '']).size / 1024);
+            // Calculate size
+            const sizeBytes = new Blob([raw || '']).size;
+            const sizeKB = Math.round(sizeBytes / 1024);
             document.getElementById('sizeDisplay').innerText = sizeKB;
             
+            // Warning if too large (>5MB)
+            const sizeInfo = document.getElementById('sizeInfo');
+            const storageWarning = document.getElementById('storageWarning');
+            if(sizeKB > 5000) {
+                sizeInfo.style.background = '#ff4444';
+                sizeInfo.style.color = '#fff';
+                storageWarning.style.display = 'block';
+            } else {
+                sizeInfo.style.background = '#333';
+                sizeInfo.style.color = '#fff';
+                storageWarning.style.display = 'none';
+            }
+            
+            // Count media types
             let imgCount = 0, vidCount = 0, gifCount = 0;
             data.forEach(t => {
                 if(t.img) imgCount++;
@@ -333,10 +207,6 @@
             document.getElementById('imgCount').innerText = imgCount;
             document.getElementById('vidCount').innerText = vidCount;
             document.getElementById('gifCount').innerText = gifCount;
-            
-            updateStorageBar();
-            getDailySummary();
-            loadLinks();
 
             if(data.length > 0) {
                 empty.style.display = 'none';
@@ -348,33 +218,33 @@
                     const safeText = t.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     const safeUser = t.user.replace(/</g, "&lt;");
                     
-                    let mediaHTML = '', badge = '', dlBtn = '', threadBadge = '';
-                    
-                    if(t.isThread) threadBadge = '<div class="thread-badge">🧵 THREAD</div>';
+                    let mediaHTML = '';
+                    let badge = '';
+                    let dlBtn = '';
                     
                     if(t.video) {
                         mediaHTML = `<video src="${t.video}" class="tweet-video" controls></video>`;
                         badge = '<div class="media-badge">🎥 VIDEO</div>';
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.video}', 'video_${idx}.mp4')">💾 Video</button>`;
+                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.video}', 'video_${idx}.mp4')">💾 Video downloaden</button>`;
                     } else if(t.gif) {
                         mediaHTML = `<video src="${t.gif}" class="tweet-video" autoplay loop muted></video>`;
                         badge = '<div class="media-badge">🎬 GIF</div>';
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.gif}', 'gif_${idx}.mp4')">💾 GIF</button>`;
+                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.gif}', 'gif_${idx}.mp4')">💾 GIF downloaden</button>`;
                     } else if(t.img) {
                         mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`;
                         badge = '<div class="media-badge">🖼️ IMG</div>';
                         const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.img}', 'image_${idx}.${ext}')">💾 Bild</button>`;
+                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.img}', 'image_${idx}.${ext}')">💾 Bild downloaden</button>`;
                     }
                     
                     card.innerHTML = `
-                        ${threadBadge}${badge}
+                        ${badge}
                         <div class="tweet-user">👤 ${safeUser}</div>
                         <div class="tweet-text">${safeText}</div>
                         ${mediaHTML}
                         ${settings.showDlButtons ? dlBtn : ''}
-                        <div style="font-size:0.7rem; color:#555; margin-top:8px; border-top:1px solid #333; padding-top:5px;">
-                            🕒 ${new Date(t.date).toLocaleString('de-DE', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}
+                        <div style="font-size:0.75rem; color:#555; margin-top:10px; border-top:1px solid #333; padding-top:5px;">
+                            🕒 ${new Date(t.date).toLocaleString()}
                         </div>
                     `;
                     grid.appendChild(card);
@@ -384,64 +254,20 @@
                 grid.innerHTML = '';
             }
         }
-        
-        function loadLinks() {
-            const links = localStorage.getItem('twitter_links');
-            const linkData = links ? JSON.parse(links) : [];
-            const box = document.getElementById('linksBox');
-            const list = document.getElementById('linksList');
-            
-            document.getElementById('linksTotal').innerText = linkData.length;
-            
-            if(linkData.length > 0) {
-                box.style.display = 'block';
-                list.innerHTML = '';
-                linkData.slice(0, 50).forEach(l => {
-                    const item = document.createElement('div');
-                    item.className = 'link-item';
-                    item.innerHTML = `<a href="${l.url}" target="_blank">${l.url}</a> <span style="color:#666;font-size:0.75rem;">(${new Date(l.date).toLocaleDateString('de-DE')})</span>`;
-                    list.appendChild(item);
-                });
-                if(linkData.length > 50) {
-                    const more = document.createElement('div');
-                    more.style.cssText = 'text-align:center;color:#666;margin-top:10px;';
-                    more.innerText = `... und ${linkData.length - 50} weitere Links`;
-                    list.appendChild(more);
-                }
-            } else {
-                box.style.display = 'none';
-            }
-        }
-        
-        function downloadLinks() {
-            const links = localStorage.getItem('twitter_links');
-            if(!links) return alert('Keine Links gespeichert!');
-            const linkData = JSON.parse(links);
-            let txt = 'EXTRAHIERTE LINKS\n\n';
-            linkData.forEach(l => {
-                txt += `${l.url}\n(Datum: ${new Date(l.date).toLocaleString('de-DE')})\n\n`;
-            });
-            const blob = new Blob([txt], {type:'text/plain'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `twitter_links_${Date.now()}.txt`;
-            a.click();
-        }
 
         function clearCache() {
-            if(confirm('Alles löschen?\n\nTIPP: Exportiere vorher!')) {
+            if(confirm('Wirklich alle gespeicherten Tweets löschen?\n\nTIPP: Exportiere vorher als ZIP!')) {
                 localStorage.removeItem('twitter_clean_cache');
-                localStorage.removeItem('twitter_links');
                 loadCache();
             }
         }
 
         function downloadArchive() {
             const raw = localStorage.getItem('twitter_clean_cache');
-            if(!raw) return alert('Cache leer!');
+            if(!raw) return alert('Cache ist leer!');
             const data = JSON.parse(raw);
             
-            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Twitter Archiv</title><style>body{font-family:system-ui;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:8px;margin-top:10px;} .meta{color:#666;font-size:0.8em;}</style></head><body><h1>📦 Archiv (${data.length})</h1>`;
+            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv (${new Date().toLocaleDateString()})</title><style>body{font-family:system-ui,sans-serif;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .meta{color:#666;font-size:0.8em;margin-bottom:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
             
             data.forEach(t => {
                 let media = '';
@@ -449,20 +275,21 @@
                 else if(t.gif) media = `<video src="${t.gif}" autoplay loop muted></video>`;
                 else if(t.img) media = `<img src="${t.img}">`;
                 
-                html += `<div class="card"><div class="meta">👤 ${t.user} • ${new Date(t.date).toLocaleString('de-DE')}</div><div>${t.text.replace(/\n/g, '<br>')}</div>${media}</div>`;
+                html += `<div class="card"><div class="meta">👤 ${t.user} • ${new Date(t.date).toLocaleString()}</div><div>${t.text.replace(/\n/g, '<br>')}</div>${media}</div>`;
             });
             html += '</body></html>';
             
             const blob = new Blob([html], {type:'text/html'});
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `archive_${Date.now()}.html`;
+            a.href = url;
+            a.download = `twitter_archive_${Date.now()}.html`;
             a.click();
         }
         
         async function downloadZIP() {
             const raw = localStorage.getItem('twitter_clean_cache');
-            if(!raw) return alert('Cache leer!');
+            if(!raw) return alert('Cache ist leer!');
             const data = JSON.parse(raw);
             
             const zip = new JSZip();
@@ -472,61 +299,70 @@
             
             let imgIdx = 1, vidIdx = 1, gifIdx = 1;
             
-            alert('🔄 Download startet...');
+            alert('🔄 Lade Medien herunter... Das kann etwas dauern!');
             
             for(const t of data) {
                 try {
                     if(t.img) {
-                        const res = await fetch(t.img);
-                        const blob = await res.blob();
+                        const response = await fetch(t.img);
+                        const blob = await response.blob();
                         const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                        imgFolder.file(`img_${imgIdx++}.${ext}`, blob);
+                        imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
                     } else if(t.video) {
-                        const res = await fetch(t.video);
-                        const blob = await res.blob();
-                        vidFolder.file(`vid_${vidIdx++}.mp4`, blob);
+                        const response = await fetch(t.video);
+                        const blob = await response.blob();
+                        vidFolder.file(`video_${vidIdx++}.mp4`, blob);
                     } else if(t.gif) {
-                        const res = await fetch(t.gif);
-                        const blob = await res.blob();
+                        const response = await fetch(t.gif);
+                        const blob = await response.blob();
                         gifFolder.file(`gif_${gifIdx++}.mp4`, blob);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.error('Download failed:', e);
+                }
             }
             
             const content = await zip.generateAsync({type: 'blob'});
+            const url = URL.createObjectURL(content);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = `media_${Date.now()}.zip`;
+            a.href = url;
+            a.download = `twitter_media_${Date.now()}.zip`;
             a.click();
-            alert('✅ Fertig!');
+            
+            alert('✅ ZIP-Download abgeschlossen!');
         }
 
         function updateBookmarklet() {
-            const cfg = JSON.stringify(settings);
-            const code = `(function(){console.log('[CT]v5.1.3 HOTFIX');var CFG=${cfg};var P,B,seen=new Set(),threads=new Map(),count=0,paused=false;function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='♾️ 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#0f8!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #0f8!important;text-align:center!important;display:block!important;min-width:70px!important;cursor:pointer!important';b.onclick=function(){paused=!paused;alert(paused?'⏸️ PAUSIERT':'▶️ FORTSETZEN');upd()};var s=document.createElement('button');s.innerText='👀';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('twitter_clean_cache')||'[]');if(B){B.innerText=(paused?'⏸️':'♾️')+' '+c.length;B.style.color=paused?'#ff4':'#0f8'}}function dlMedia(url,name){fetch(url).then(r=>r.blob()).then(blob=>{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(()=>alert('Fail'))}function addDL(){if(!CFG.showDlButtons)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(t=>{if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='vid_'+Date.now()+'.mp4'}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4'}else if(img){media=img.src;var ext=media.match(/\\.(jpg|jpeg|png|webp)/i);name='img_'+Date.now()+'.'+(ext?ext[1]:'jpg')}if(media){var btn=document.createElement('button');btn.innerText='💾';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;padding:6px 10px!important;border-radius:8px!important;font:bold 10px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=e=>{e.stopPropagation();e.preventDefault();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){if(!document.getElementById('ct-p'))document.body.appendChild(mk())}setInterval(chk,2e3);var dlInt=setInterval(addDL,2e3);function sc(){if(paused){console.log('[CT]PAUSED');return}document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(e=>e.remove());var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('twitter_clean_cache')||'[]'),links=JSON.parse(localStorage.getItem('twitter_links')||'[]'),a=0;ts.forEach(t=>{var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0];if(CFG.skipRetweets&&text.startsWith('RT @'))return;var id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(x=>x.text===text&&x.user===user)){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;if(CFG.detectThreads){var tKey=user+'_'+text.substring(0,10);if(threads.has(tKey)){item.isThread=true;threads.set(tKey,(threads.get(tKey)||0)+1)}else threads.set(tKey,1)}if(CFG.extractLinks){var urls=text.match(/https?:\\/\\/[^\\s]+/g);if(urls)urls.forEach(url=>{if(!links.some(l=>l.url===url))links.push({url:url,date:Date.now()})})}c.push(item);a++;count++}}}});if(a>0){localStorage.setItem('twitter_clean_cache',JSON.stringify(c));if(CFG.extractLinks)localStorage.setItem('twitter_links',JSON.stringify(links));upd();if(B){B.style.borderColor='#0f8';setTimeout(()=>B.style.borderColor='#0f8',500)}console.log('[CT]+'+a+' T:'+count)}}var delay=CFG.stealthMode?Math.floor(Math.random()*3000+2000):CFG.scanInterval;var scanInt=setInterval(function(){sc();if(CFG.stealthMode){clearInterval(scanInt);delay=Math.floor(Math.random()*3000+2000);scanInt=setInterval(sc,delay)}},delay);chk();sc();addDL();console.log('[CT]v5.1.3 HOTFIX | Interval:'+delay+'ms | KEIN LIMIT!')})();`;
+            const showDL = settings.showDlButtons ? 'true' : 'false';
+            
+            const code = `(function(){console.log('[CT]v4.2 Unlimited');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video_'+Date.now()+'.mp4'}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4'}else if(img){media=img.src;var ext=media.match(/\\.(jpg|jpeg|png|webp)/i);name='image_'+Date.now()+'.'+(ext?ext[1]:'jpg')}if(media){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;c.push(item);a++}}}});if(a>0){localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}console.log('[CT]+'+a+' Total:'+c.length)}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.2 UNLIMITED');alert('🐦 CleanTwitter v4.2!\\n♾️ Cache: UNBEGRENZT\\n🐌 Langsam scrollen!')})();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
 
         function copyCode() {
-            navigator.clipboard.writeText(document.getElementById('bookmarkletBtn').href)
-                .then(() => alert('✅ Kopiert!'))
-                .catch(() => alert('❌ Fehler'));
+            const fullCode = document.getElementById('bookmarkletBtn').href;
+            navigator.clipboard.writeText(fullCode)
+                .then(() => alert('✅ Bookmarklet kopiert!'))
+                .catch(() => alert('❌ Kopieren fehlgeschlagen.'));
         }
 
-        window.addEventListener('message', (e) => {
-            if (e.data?.type === 'import_tweets') {
-                const newT = e.data.data;
-                const curr = JSON.parse(localStorage.getItem('twitter_clean_cache') || '[]');
-                let add = 0;
-                newT.forEach(nt => {
-                    if(!curr.some(c => c.text === nt.text && c.user === nt.user)) {
-                        curr.push(nt);
-                        add++;
+        // --- LISTENER ---
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'import_tweets') {
+                const newTweets = event.data.data;
+                const currentCache = JSON.parse(localStorage.getItem('twitter_clean_cache') || '[]');
+                
+                let addedCount = 0;
+                newTweets.forEach(nt => {
+                    if(!currentCache.some(c => c.text === nt.text && c.user === nt.user)) {
+                        currentCache.push(nt);
+                        addedCount++;
                     }
                 });
-                if(add > 0) {
-                    localStorage.setItem('twitter_clean_cache', JSON.stringify(curr));
+
+                if(addedCount > 0) {
+                    localStorage.setItem('twitter_clean_cache', JSON.stringify(currentCache));
                     loadCache();
                 }
             }
