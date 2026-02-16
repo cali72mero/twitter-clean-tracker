@@ -274,8 +274,42 @@
             const uaSafe = ua.replace(/'/g, "\\'"); // Escape quotes
             const selString = JSON.stringify(selectors).replace(/"/g, "'"); // Use single quotes in array
 
-            // Minified Logic
-            const code = `javascript:(function(){try{Object.defineProperty(navigator,'userAgent',{get:()=>'${uaSafe}'});}catch(e){}document.cookie.split(";").forEach(c=>document.cookie=c.replace(/^ +/,"").replace(/=.*/,"=;expires="+new Date().toUTCString()+";path=/"));localStorage.clear();sessionStorage.clear();function clean(){const s=${selString};s.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));document.body.style.overflow='auto';document.documentElement.style.overflow='auto';}setInterval(clean,1000);clean();alert('🐦 Config Loaded!');})();`.replace(/\s+/g, ' ').trim();
+            // Minified Logic with stronger UA spoofing (Prototype override)
+            const code = `javascript:(function(){
+                try {
+                    const ua = '${uaSafe}';
+                    // Main Navigator Override
+                    Object.defineProperty(navigator, 'userAgent', { get: () => ua });
+                    Object.defineProperty(navigator, 'appVersion', { get: () => ua.replace('Mozilla/', '') });
+                    Object.defineProperty(navigator, 'platform', { get: () => ua.includes('Mac') ? 'MacIntel' : (ua.includes('Win') ? 'Win32' : 'Linux x86_64') });
+                    Object.defineProperty(navigator, 'vendor', { get: () => ua.includes('Apple') ? 'Apple Computer, Inc.' : 'Google Inc.' });
+                    
+                    // High Entropy Values (Client Hints) Override (Advanced)
+                    if (navigator.userAgentData) {
+                        Object.defineProperty(navigator, 'userAgentData', {
+                            get: () => ({
+                                brands: [{brand: "Chromium", version: "122"}, {brand: "Not(A:Brand", version: "24"}],
+                                mobile: ua.includes('Mobile'),
+                                platform: ua.includes('Win') ? 'Windows' : (ua.includes('Mac') ? 'macOS' : 'Linux')
+                            })
+                        });
+                    }
+                } catch(e) {}
+
+                document.cookie.split(";").forEach(c => document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"));
+                localStorage.clear(); sessionStorage.clear();
+
+                function clean() {
+                    const s = ${selString};
+                    s.forEach(sel => document.querySelectorAll(sel).forEach(el => el.remove()));
+                    document.body.style.overflow = 'auto';
+                    document.documentElement.style.overflow = 'auto';
+                }
+                
+                setInterval(clean, 1000);
+                clean();
+                alert('🐦 Config Loaded! UA: ' + navigator.userAgent);
+            })();`.replace(/\s+/g, ' ').trim();
 
             bookmarkletBtn.setAttribute('href', code);
         }
