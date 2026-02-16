@@ -117,6 +117,15 @@
         .instruction-content { display: none; background: #222; padding: 15px; border-radius: 8px; line-height: 1.6; }
         .instruction-content.active { display: block; }
         code { background: #000; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--primary); }
+        
+        .note-warn {
+            background: rgba(255, 165, 0, 0.1);
+            border-left: 3px solid orange;
+            padding: 10px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            text-align: left;
+        }
 
         footer { margin-top: 50px; color: #444; text-align: center; font-size: 0.8rem; }
     </style>
@@ -133,17 +142,20 @@
             <h2>🎭 User-Agent Spoofing</h2>
             <label>Wähle ein Gerät zur Tarnung:</label>
             <select id="uaSelect" onchange="updateUA()">
+                <option value="Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1">📱 iPhone 15 (iOS 17)</option>
+                <option value="Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.64 Mobile Safari/537.36">📱 Samsung Galaxy S24 (Android 14)</option>
                 <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">🖥️ Windows 10 (Chrome)</option>
                 <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0">🖥️ Windows 10 (Firefox)</option>
                 <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0">🖥️ Windows 11 (Edge)</option>
-                <option value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">🐧 Linux (Ubuntu/Debian)</option>
                 <option value="Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">💻 Chromebook</option>
-                <option value="Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1">📱 iPhone 15 (iOS 17)</option>
-                <option value="Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.64 Mobile Safari/537.36">📱 Samsung Galaxy S24 (Android 14)</option>
                 <option value="custom">✍️ Eigener User-Agent...</option>
             </select>
             
             <input type="text" id="uaInput" placeholder="Dein Custom User-Agent" style="display: none;">
+            
+            <div class="note-warn">
+                ⚠️ <strong>Hinweis:</strong> Wenn "WhatIsMyBrowser" deinen echten UA anzeigt, ist das normal! Bookmarklets können den UA oft <strong>nicht für HTTP-Anfragen</strong> ändern, sondern nur für Javascript-Checks auf der Seite. Twitter nutzt meistens JS-Checks, daher sollte es trotzdem helfen.
+            </div>
             
             <div class="help-links">
                 🔍 Finde deinen aktuellen UA: 
@@ -273,29 +285,36 @@
 
             const uaSafe = ua.replace(/'/g, "\\'"); // Escape quotes
             const selString = JSON.stringify(selectors).replace(/"/g, "'"); // Use single quotes in array
+            
+            // Determine platform from UA for better spoofing
+            let platform = 'Linux x86_64'; // Default fallback
+            if (uaSafe.includes('Win')) platform = 'Win32';
+            if (uaSafe.includes('Mac')) platform = 'MacIntel';
+            if (uaSafe.includes('iPhone') || uaSafe.includes('iPad')) platform = 'iPhone';
+            if (uaSafe.includes('Android')) platform = 'Linux armv81';
 
-            // Minified Logic with stronger UA spoofing (Prototype override)
+            // Minified Logic with __defineGetter__ (older but sometimes stronger fallback) and Proxy
             const code = `javascript:(function(){
+                var ua = '${uaSafe}';
+                var p = '${platform}';
+                
                 try {
-                    const ua = '${uaSafe}';
-                    // Main Navigator Override
-                    Object.defineProperty(navigator, 'userAgent', { get: () => ua });
-                    Object.defineProperty(navigator, 'appVersion', { get: () => ua.replace('Mozilla/', '') });
-                    Object.defineProperty(navigator, 'platform', { get: () => ua.includes('Mac') ? 'MacIntel' : (ua.includes('Win') ? 'Win32' : 'Linux x86_64') });
-                    Object.defineProperty(navigator, 'vendor', { get: () => ua.includes('Apple') ? 'Apple Computer, Inc.' : 'Google Inc.' });
+                    // Method 1: Object.defineProperty (Standard)
+                    Object.defineProperty(navigator, 'userAgent', { get: function(){ return ua; }, configurable: true });
+                    Object.defineProperty(navigator, 'platform', { get: function(){ return p; }, configurable: true });
                     
-                    // High Entropy Values (Client Hints) Override (Advanced)
-                    if (navigator.userAgentData) {
-                        Object.defineProperty(navigator, 'userAgentData', {
-                            get: () => ({
-                                brands: [{brand: "Chromium", version: "122"}, {brand: "Not(A:Brand", version: "24"}],
-                                mobile: ua.includes('Mobile'),
-                                platform: ua.includes('Win') ? 'Windows' : (ua.includes('Mac') ? 'macOS' : 'Linux')
-                            })
-                        });
+                    // Method 2: Prototype override (Aggressive)
+                    try { Navigator.prototype.__defineGetter__('userAgent', function(){ return ua; }); } catch(e){}
+                    try { Navigator.prototype.__defineGetter__('platform', function(){ return p; }); } catch(e){}
+                    
+                    // Method 3: Delete and Recreate (Brute Force)
+                    if(navigator.userAgent !== ua) {
+                        try { delete navigator.userAgent; navigator.userAgent = ua; } catch(e){}
                     }
-                } catch(e) {}
 
+                } catch(e) { console.log('UA Spoof blocked partly', e); }
+
+                // Clean logic
                 document.cookie.split(";").forEach(c => document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"));
                 localStorage.clear(); sessionStorage.clear();
 
@@ -308,7 +327,10 @@
                 
                 setInterval(clean, 1000);
                 clean();
-                alert('🐦 Config Loaded! UA: ' + navigator.userAgent);
+                
+                // Verify
+                console.log('Spoofed UA:', navigator.userAgent);
+                alert('🐦 Twitter Clean + UA Spoof Active!\\n(Check Console for Debug)');
             })();`.replace(/\s+/g, ' ').trim();
 
             bookmarkletBtn.setAttribute('href', code);
