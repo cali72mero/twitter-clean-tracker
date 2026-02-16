@@ -43,7 +43,8 @@
         
         /* Form Elements */
         label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; }
-        input[type="text"], textarea {
+        
+        select, input[type="text"] {
             width: 100%;
             background: #222;
             border: 1px solid #444;
@@ -53,8 +54,9 @@
             font-family: monospace;
             box-sizing: border-box;
             transition: border-color 0.2s;
+            margin-bottom: 10px;
         }
-        input[type="text"]:focus { border-color: var(--primary); outline: none; }
+        select:focus, input[type="text"]:focus { border-color: var(--primary); outline: none; }
         
         .help-links { font-size: 0.85rem; margin-top: 5px; color: var(--text-dim); }
         .help-links a { color: var(--primary); text-decoration: none; }
@@ -129,12 +131,23 @@
         <!-- Config: User Agent -->
         <div class="card">
             <h2>🎭 User-Agent Spoofing</h2>
-            <label>Als welches Gerät willst du dich tarnen?</label>
-            <input type="text" id="uaInput" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">
+            <label>Wähle ein Gerät zur Tarnung:</label>
+            <select id="uaSelect" onchange="updateUA()">
+                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">🖥️ Windows 10 (Chrome)</option>
+                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0">🖥️ Windows 10 (Firefox)</option>
+                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0">🖥️ Windows 11 (Edge)</option>
+                <option value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">🐧 Linux (Ubuntu/Debian)</option>
+                <option value="Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">💻 Chromebook</option>
+                <option value="Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1">📱 iPhone 15 (iOS 17)</option>
+                <option value="Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.64 Mobile Safari/537.36">📱 Samsung Galaxy S24 (Android 14)</option>
+                <option value="custom">✍️ Eigener User-Agent...</option>
+            </select>
+            
+            <input type="text" id="uaInput" placeholder="Dein Custom User-Agent" style="display: none;">
+            
             <div class="help-links">
                 🔍 Finde deinen aktuellen UA: 
-                <a href="https://www.whatismybrowser.com/detect/what-is-my-user-agent/" target="_blank">WhatIsMyBrowser</a> • 
-                <a href="https://useragentstring.com/" target="_blank">UserAgentString.com</a>
+                <a href="https://www.whatismybrowser.com/detect/what-is-my-user-agent/" target="_blank">WhatIsMyBrowser</a>
             </div>
         </div>
 
@@ -210,10 +223,22 @@
         ];
 
         // UI Logic
+        const uaSelect = document.getElementById('uaSelect');
         const uaInput = document.getElementById('uaInput');
         const selectorList = document.getElementById('selectorList');
         const bookmarkletBtn = document.getElementById('bookmarkletBtn');
         const newSelectorInput = document.getElementById('newSelector');
+
+        function updateUA() {
+            if (uaSelect.value === 'custom') {
+                uaInput.style.display = 'block';
+                uaInput.focus();
+            } else {
+                uaInput.style.display = 'none';
+                uaInput.value = uaSelect.value;
+            }
+            generateCode();
+        }
 
         function renderList() {
             selectorList.innerHTML = '';
@@ -242,24 +267,15 @@
 
         // Generator Core
         function generateCode() {
-            const ua = uaInput.value.replace(/'/g, "\\'"); // Escape quotes
+            let ua = uaInput.value;
+            if (!ua) ua = uaSelect.value; // Fallback if input empty
+            if (ua === 'custom') ua = ''; // Should not happen if logic correct
+
+            const uaSafe = ua.replace(/'/g, "\\'"); // Escape quotes
             const selString = JSON.stringify(selectors).replace(/"/g, "'"); // Use single quotes in array
 
             // Minified Logic
-            const code = `javascript:(function(){
-                try{Object.defineProperty(navigator,'userAgent',{get:()=>'${ua}'});}catch(e){}
-                document.cookie.split(";").forEach(c=>document.cookie=c.replace(/^ +/,"").replace(/=.*/,"=;expires="+new Date().toUTCString()+";path=/"));
-                localStorage.clear();sessionStorage.clear();
-                function clean(){
-                    const s=${selString};
-                    s.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));
-                    document.body.style.overflow='auto';
-                    document.documentElement.style.overflow='auto';
-                }
-                setInterval(clean,1000);
-                clean();
-                alert('🐦 Config Loaded!');
-            })();`.replace(/\s+/g, ' ').trim(); // Basic minification
+            const code = `javascript:(function(){try{Object.defineProperty(navigator,'userAgent',{get:()=>'${uaSafe}'});}catch(e){}document.cookie.split(";").forEach(c=>document.cookie=c.replace(/^ +/,"").replace(/=.*/,"=;expires="+new Date().toUTCString()+";path=/"));localStorage.clear();sessionStorage.clear();function clean(){const s=${selString};s.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));document.body.style.overflow='auto';document.documentElement.style.overflow='auto';}setInterval(clean,1000);clean();alert('🐦 Config Loaded!');})();`.replace(/\s+/g, ' ').trim();
 
             bookmarkletBtn.setAttribute('href', code);
         }
@@ -283,6 +299,8 @@
 
         // Init
         uaInput.addEventListener('input', generateCode);
+        // Set initial UA value to match first option
+        uaInput.value = uaSelect.options[0].value;
         renderList();
     </script>
 </body>
