@@ -47,41 +47,40 @@
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🎉 Version 4.1 - Per-Tweet Downloads!</h3>
-        <p><strong>NEU:</strong> Download-Button bei JEDEM Tweet!</p>
-        <p><strong>NEU:</strong> Settings zum Ein/Ausschalten der Buttons!</p>
+        <h3>🎉 Version 4.1.1 - Download-Buttons AN!</h3>
+        <p><strong>WICHTIG:</strong> Download-Buttons sind jetzt standardmäßig AKTIVIERT!</p>
+        <p>Ziehe das Bookmarklet neu, um die Buttons zu sehen!</p>
     </div>
 
     <!-- SETTINGS -->
     <div class="settings-box">
         <h3>⚙️ Einstellungen</h3>
         <div class="setting-item">
-            <input type="checkbox" id="showDlButtons" onchange="saveSettings()">
+            <input type="checkbox" id="showDlButtons" onchange="saveSettings()" checked>
             <label for="showDlButtons">Download-Buttons bei jedem Tweet anzeigen (Twitter + Dashboard)</label>
         </div>
-        <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">Diese Einstellung wird im Bookmarklet gespeichert. Nach Änderung musst du das Bookmarklet neu ziehen!</p>
+        <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">✅ Buttons sind STANDARDMÄSSIG AN! Nach Änderung Bookmarklet neu ziehen.</p>
     </div>
 
     <!-- CHANGELOG -->
     <div class="changelog">
-        <h3>🆕 Version 4.1 - Per-Tweet Download</h3>
+        <h3>🆕 Version 4.1.1 - Buttons AN by default</h3>
         <ul>
-            <li>💾 <strong>Download-Button pro Tweet</strong>: Direkt neben jedem Tweet auf Twitter</li>
-            <li>💾 <strong>Dashboard-Downloads</strong>: Auch im Dashboard bei jedem Tweet</li>
-            <li>⚙️ <strong>Settings-Toggle</strong>: Buttons ein/ausschalten in den Einstellungen</li>
-            <li>💾 <strong>Instant-Download</strong>: Klick → sofort speichern (kein Dialog)</li>
-            <li>🔄 <strong>Live-Update</strong>: Einstellungen werden in den Code eingebettet</li>
+            <li>💾 <strong>Download-Buttons standardmäßig AN</strong>: Keine manuelle Aktivierung mehr nötig</li>
+            <li>💾 <strong>Pro Tweet auf Twitter</strong>: Blauer "💾 DL" Button oben links</li>
+            <li>💾 <strong>Dashboard-Downloads</strong>: Bei jedem gespeicherten Tweet</li>
+            <li>⚙️ <strong>Settings</strong>: Zum Ausschalten wenn gewünscht</li>
         </ul>
     </div>
 
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v4.1</h1>
+        <h1>🐦 CleanTwitter Dashboard v4.1.1</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
         
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.1</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">💾 CleanTwitter v4.1.1</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
     </div>
@@ -112,17 +111,21 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // Settings
+        // Settings - DEFAULT: BUTTONS AN
         let settings = {
-            showDlButtons: false
+            showDlButtons: true
         };
         
         function loadSettings() {
             const saved = localStorage.getItem('ct_settings');
             if(saved) {
                 settings = JSON.parse(saved);
-                document.getElementById('showDlButtons').checked = settings.showDlButtons;
+            } else {
+                // First time: Enable by default
+                settings.showDlButtons = true;
+                localStorage.setItem('ct_settings', JSON.stringify(settings));
             }
+            document.getElementById('showDlButtons').checked = settings.showDlButtons;
             updateBookmarklet();
         }
         
@@ -292,7 +295,7 @@
         function updateBookmarklet() {
             const showDL = settings.showDlButtons ? 'true' : 'false';
             
-            const code = `(function(){console.log('[CT]v4.1');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video.mp4'}else if(gif){media=gif.src;name='gif.mp4'}else if(img){media=img.src;name='image.jpg'}if(media){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:4px 8px!important;border-radius:6px!important;font:bold 10px system-ui!important;cursor:pointer!important;position:absolute!important;top:10px!important;left:10px!important;z-index:999!important;display:block!important';btn.onclick=function(e){e.stopPropagation();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,1500);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;c.push(item);a++}}}});if(a>0){if(c.length>300)c=c.slice(-300);localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.1 OK');alert('🐦 CleanTwitter v4.1!\\nDL-Buttons: '+(SHOW_DL?'AN':'AUS'))})();`;
+            const code = `(function(){console.log('[CT]v4.1.1');var SHOW_DL=${showDL};var P,B,seen=new Set();function mk(){var p=document.createElement('div');p.id='ct-p';p.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';var b=document.createElement('div');b.id='ct-b';b.innerText='🔴 0';b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:#f44!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important';var s=document.createElement('button');s.innerText='👀 View';s.style.cssText='all:initial!important;background:#0f8!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';s.onclick=function(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');var w=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_v');if(w){b.innerText='⏳';var i=0,t=setInterval(function(){w.postMessage({type:'import_tweets',data:c},'*');if(++i>8){clearInterval(t);b.innerText='✅';setTimeout(function(){upd()},2e3)}},800)}else alert('Popups!')};p.appendChild(b);p.appendChild(s);P=p;B=b;return p}function upd(){var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');if(B)B.innerText='🔴 '+c.length}function dlMedia(url,name){fetch(url).then(function(r){return r.blob()}).then(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}).catch(function(){alert('DL fail')})}function addDL(){if(!SHOW_DL)return;document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){if(t.dataset.ctDl)return;t.dataset.ctDl='1';var img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');var media=null,name='';if(vid&&!gif){media=vid.src;name='video_'+Date.now()+'.mp4'}else if(gif){media=gif.src;name='gif_'+Date.now()+'.mp4'}else if(img){media=img.src;var ext=media.match(/\\.(jpg|jpeg|png|webp)/i);name='image_'+Date.now()+'.'+(ext?ext[1]:'jpg')}if(media){var btn=document.createElement('button');btn.innerText='💾 DL';btn.style.cssText='all:initial!important;background:#44f!important;color:#fff!important;border:none!important;padding:6px 10px!important;border-radius:8px!important;font:bold 11px system-ui!important;cursor:pointer!important;position:absolute!important;top:8px!important;left:8px!important;z-index:9999!important;display:block!important;box-shadow:0 2px 8px rgba(0,0,0,0.5)!important';btn.onclick=function(e){e.stopPropagation();e.preventDefault();dlMedia(media,name)};t.style.position='relative';t.appendChild(btn)}})}function chk(){var e=document.getElementById('ct-p');if(!e||!document.body.contains(e)){document.body.appendChild(mk())}}setInterval(chk,2e3);setInterval(addDL,2e3);try{Object.defineProperty(navigator,'userAgent',{get:function(){return'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15'}})}catch(e){}function sc(){document.querySelectorAll('[data-testid="skeleton"],[data-testid="PromotedTweet"]').forEach(function(e){e.remove()});var ts=document.querySelectorAll('article[data-testid="tweet"]'),c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),a=0;ts.forEach(function(t){var txt=t.querySelector('[data-testid="tweetText"]'),u=t.querySelector('[data-testid="User-Name"]'),img=t.querySelector('img[src*="media"]'),vid=t.querySelector('video[src]'),gif=t.querySelector('video[src*="tweet_video"]');if(u&&(txt||img||vid||gif)){var text=txt?txt.innerText:'',user=u.innerText.split('\\n')[0],id=user+'|'+text.substring(0,30);if(!seen.has(id)){seen.add(id);if(!c.some(function(x){return x.text===text&&x.user===user})){var item={user:user,text:text,date:Date.now()};if(vid&&!gif)item.video=vid.src;else if(gif)item.gif=gif.src;else if(img)item.img=img.src;c.push(item);a++}}}});if(a>0){if(c.length>300)c=c.slice(-300);localStorage.setItem('tw_clean_cache',JSON.stringify(c));upd();if(B){B.style.borderColor='#0f8';setTimeout(function(){B.style.borderColor='#333'},500)}}}setInterval(sc,1500);chk();sc();addDL();console.log('[CT]v4.1.1 DL='+(SHOW_DL?'ON':'OFF'));alert('🐦 CleanTwitter v4.1.1!\\nDownload-Buttons: '+(SHOW_DL?'✅ AN':'❌ AUS'))})();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
