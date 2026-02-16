@@ -2,9 +2,10 @@
 
 > **Twitter Media Tracker - Jetzt mit unbegrenztem Cache!**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![License: Custom](https://img.shields.io/badge/License-Custom-blue.svg)](#-nutzungsbedingungen)
 [![Version](https://img.shields.io/badge/Version-4.2_BETA-orange.svg)](https://github.com/cali72mero/twitter-clean-tracker)
 [![Status](https://img.shields.io/badge/Status-Beta-yellow.svg)](https://cali72mero.github.io/twitter-clean-tracker/)
+[![Safe](https://img.shields.io/badge/Ban--Risk-NONE-green.svg)](#️-sicherheit)
 
 ---
 
@@ -14,7 +15,7 @@
 - ✅ Stabil genug für täglichen Gebrauch
 - ⚠️ Einige Features fehlen noch
 - 🐛 Bugs möglich (siehe "Bekannte Probleme")
-- 🔄 Updates kommen bald (v5.0!)
+- 🔄 Updates wenn möglich (beste Bemühungen!)
 
 ---
 
@@ -32,6 +33,7 @@
 + 🗂️ ZIP-Export (alle Medien)
 + 📊 Storage-Warnung bei >5MB
 + ⚙️ Download-Buttons on/off
++ 👀 Dashboard View-Button (manueller Import - kein Bug!)
 ```
 
 ### 🐛 BEKANNTE PROBLEME (v4.2):
@@ -44,14 +46,15 @@
 - ⚠️ Keine Link-Extraktion
 - ⚠️ Keine Retweet-Filter
 - ⚠️ Badge rot statt grün (🔴 statt ♾️)
-- ⚠️ Dashboard zeigt nicht automatisch Tweets (manueller Import)
 ```
+
+**WICHTIG:** Dashboard-Import per View-Button ist KEIN Bug - das ist ein Feature! Es gibt dir Kontrolle darüber wann Daten synchronisiert werden.
 
 ---
 
-## 🔮 VERSION 5.0 - KOMMT BALD!
+## 🔮 VERSION 5.0 - KOMMT WENN MÖGLICH!
 
-### 🎯 GEPLANTE FIXES (v5.0):
+### 🎯 GEPLANTE FIXES:
 
 **1. localStorage-Key Fix:**
 ```javascript
@@ -94,10 +97,10 @@
 **5. Dashboard-Integration:**
 ```javascript
 // Aktuell (v4.2):
-View-Button → manueller Import ⚠️
+View-Button → manueller Import (Feature!)
 
 // v5.0:
-View-Button → automatische Sync! ✅
+View-Button → automatische Sync (optional)
 ```
 
 ### 🚀 NEUE FEATURES (v5.0):
@@ -111,14 +114,21 @@ View-Button → automatische Sync! ✅
 - 🔔 **Notifications** bei Storage-Limit
 - 📊 **Detaillierte Stats** (Tweets pro Tag, Medien-Typen)
 
-### 📅 RELEASE-PLAN:
+### 📅 RELEASE-PLAN (KEINE GARANTIE!):
 
 ```
 v4.2 BETA:     ✅ JETZT (16.02.2026)
-v4.3 BETA:     🔄 +2 Tage (localStorage-Fix)
-v5.0 STABLE:   🚀 +1 Woche (alle Features!)
-v5.1:          💫 +2 Wochen (Performance-Boost)
+
+v4.3 BETA:     🔄 Wenn möglich unter der Woche
+               (localStorage-Key Fix)
+               
+v5.0 STABLE:   🚀 Wenn möglich am Wochenende/nächste Woche
+               (alle Features - beste Bemühungen!)
+               
+v5.1:          💫 Später (Performance-Boost)
 ```
+
+**⚠️ WICHTIG:** Dies sind Ziele, keine Versprechen! Ich gebe mein Bestes, das Programm zu updaten, aber kann keine festen Termine garantieren. Updates kommen wenn möglich - wahrscheinlich besser am Wochenende (Samstag/Sonntag) als unter der Woche.
 
 ---
 
@@ -139,6 +149,35 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - ❌ **Kein Ban-Risiko** (nur DOM-Scraping)
 - ❌ **Keine Installation** nötig
 - ❌ **Keine Datenübertragung**
+
+---
+
+## 🛡️ SICHERHEIT & BAN-RISIKO
+
+### ✅ WARUM KEIN BAN-RISIKO?
+
+**CleanTwitter ist 100% sicher vor Bans weil:**
+
+```diff
++ 🏠 Alles läuft LOKAL in deinem Browser
++ 🚫 KEINE API-Calls an Twitter/X
++ 👁️ Wir lesen nur HTML wie ein normaler Browser
++ 👻 Kein Bot-Verhalten - nur DOM-Scraping
++ 🔒 Keine Server-Kommunikation
++ ✍️ Keine Schreib-Operationen (nur Lesen!)
+```
+
+**Twitter/X KANN NICHT:**
+- Dein Tool erkennen (sieht aus wie normales Browsen)
+- Dich bannen (keine Regel-Verstöße)
+- Deine Daten sehen (alles lokal)
+
+**In zukünftigen Versionen (v5.0+):**
+- 🛡️ Noch besserer Schutz durch Stealth Mode
+- ⏱️ Zufällige Delays (wirkt noch menschlicher)
+- 🎭 Rate Limit Protection (extra Sicherheit)
+
+**Du bist sicher! 💚**
 
 ---
 
@@ -183,7 +222,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 ### 📤 Export-Optionen
 - **HTML Export**: Archiv-Datei zum Browsen
 - **ZIP Download**: Alle Medien gebündelt
-- **Dashboard View**: Live-Ansicht
+- **Dashboard View**: Live-Ansicht (manueller Import)
 
 ### 📱 Mobile-Ready
 - **Responsive Design**
@@ -286,7 +325,7 @@ localStorage.setItem('twitter_clean_cache', old);
 // Dann Dashboard neu laden
 ```
 
-**Fix kommt:** v4.3 / v5.0
+**Fix kommt:** v4.3 / v5.0 (wenn möglich!)
 
 ### 2. Zu schnell - Bilder fehlen
 
@@ -297,7 +336,7 @@ localStorage.setItem('twitter_clean_cache', old);
 - Warten bis Bilder laden
 - Skeleton-Loader ignorieren
 
-**Fix kommt:** v5.0 (Stealth Mode)
+**Fix kommt:** v5.0 (Stealth Mode - wenn möglich!)
 
 ### 3. Kein Pause-Button
 
@@ -307,7 +346,7 @@ localStorage.setItem('twitter_clean_cache', old);
 - Seite neu laden stoppt Tool
 - localStorage bleibt erhalten
 
-**Fix kommt:** v5.0 (Pause/Resume)
+**Fix kommt:** v5.0 (Pause/Resume - wenn möglich!)
 
 ---
 
@@ -316,10 +355,10 @@ localStorage.setItem('twitter_clean_cache', old);
 ### 🛡️ Sicherheit
 
 **Q: Kann Twitter mich bannen?**
-A: **NEIN!** Wir machen keine API-Calls. Wir lesen nur HTML wie ein normaler Browser.
+A: **NEIN!** Wir machen keine API-Calls. Wir lesen nur HTML wie ein normaler Browser. Code läuft 100% lokal client-seitig.
 
 **Q: Sieht Twitter unser Tool?**
-A: **NEIN!** Alles läuft lokal im Browser. Keine Server-Kommunikation.
+A: **NEIN!** Alles läuft lokal im Browser. Keine Server-Kommunikation. In v5.0+ kommt noch besserer Schutz durch Stealth Mode.
 
 **Q: Ist es legal?**
 A: **JA!** Wir scrapen nur öffentliche Tweets die du eh siehst.
@@ -415,7 +454,7 @@ twitter-clean-tracker/
 ├── loader.js        # (optional) Alternativer Loader
 ├── README.md        # Diese Datei
 ├── BETA.md          # Troubleshooting Guide
-└── LICENSE          # MIT License
+└── LICENSE          # Nutzungsbedingungen
 ```
 
 ---
@@ -440,11 +479,74 @@ Beiträge sind willkommen!
 - 📊 Progressbar statt Warnung
 - 🔍 Dashboard-Suche
 
+**⚠️ WICHTIG:** Wenn du Code änderst (Bugfixes, neue Features), teile deine Änderungen bitte mit mir (@cali72mero) via Pull Request. So können alle davon profitieren!
+
 ---
 
-## 📄 Lizenz
+## 📄 Nutzungsbedingungen
 
-MIT License - siehe [LICENSE](LICENSE) Datei.
+### ✅ ERLAUBT:
+
+```diff
++ 🌐 Nutzung über GitHub Pages (cali72mero.github.io)
++ 💻 Lokale Nutzung auf eigenem PC
++ 🖥️ Eigener Server NUR für dich selbst
++ 👥 Mit Freunden teilen (via GitHub Pages Link!)
++ 🔧 Code bearbeiten für Bugfixes/Features
++ 🐛 Bugs melden & fixen
++ ⭐ Code verbessern & erweitern
+```
+
+### ❌ NICHT ERLAUBT:
+
+```diff
+- 🚫 Code als eigenes ausgeben
+- 🚫 Verkaufen oder kommerziell nutzen
+- 🚫 Auf eigenem Server für ANDERE hosten
+- 🚫 Code klauen ohne Namensnennung
+- 🚫 Änderungen NICHT zurückgeben
+- 🚫 Als eigenes Projekt deklarieren
+- 🚫 Mein Name (cali72mero) entfernen
+```
+
+### 📝 DETAILS:
+
+**Was du machen DARFST:**
+1. **GitHub Pages nutzen** - Immer ok!
+2. **Lokal ausführen** - Auf deinem PC, kein Problem!
+3. **Eigener Server** - Ok wenn NUR du Zugriff hast
+4. **Mit Freunden teilen** - Gib ihnen den GitHub Pages Link!
+5. **Code ändern** - Für Bugfixes & Features
+6. **Verbesserungen** - Sehr gerne! Aber:
+
+**Wenn du Code änderst:**
+- ✅ Teile deine Änderungen mit mir (Pull Request)
+- ✅ Behalte Namensnennung (cali72mero)
+- ✅ Erwähne dass es ein Fork/Mod ist
+
+**Was du NICHT machen darfst:**
+- ❌ Auf Server hosten wo ANDERE es nutzen
+- ❌ Code als dein eigenes verkaufen
+- ❌ Code klauen & umbenennen
+- ❌ Änderungen für dich behalten
+- ❌ Mich (cali72mero) nicht erwähnen
+- ❌ Als dein Projekt ausgeben
+
+### 🤝 ZUSAMMENFASSUNG:
+
+```
+✅ Nutzen: JA!
+✅ Lokal: JA!
+✅ Ändern: JA! (aber teilen)
+✅ Verbessern: JA! (mit Attribution)
+
+❌ Verkaufen: NEIN!
+❌ Für andere hosten: NEIN!
+❌ Als eigenes ausgeben: NEIN!
+❌ Ohne Credit: NEIN!
+```
+
+**Einfach gesagt:** Nutze es frei, verbessere es gerne, aber gib Credit und teile Verbesserungen! ❤️
 
 ---
 
@@ -464,8 +566,8 @@ Wenn dir das Projekt gefällt:
 - ⭐ **Star** auf GitHub
 - 🐛 **Melde Bugs** via Issues
 - 💡 **Schlage Features vor** via Issues
-- 🔄 **Teile** mit anderen
-- 🤝 **Contribut** zum Code
+- 🔄 **Teile** den GitHub Pages Link
+- 🤝 **Contribut** zum Code (mit Pull Requests!)
 
 ---
 
@@ -486,9 +588,15 @@ Dieses Tool ist für **persönliche Nutzung** gedacht. Bitte respektiere Twitter
 - Keine kommerzielle Nutzung ohne Erlaubnis
 - Kein Spam oder Missbrauch
 
+**Sicherheit:**
+- 🛡️ Kein Ban-Risiko (100% lokal)
+- 🔒 Keine API-Calls
+- 🏠 Alles client-seitig
+- 💚 In v5.0+ noch besserer Schutz!
+
 ---
 
-## 📢 Was kommt in v5.0?
+## 📢 Was kommt in v5.0? (Wenn möglich!)
 
 ### Vergleich: v4.2 BETA → v5.0 STABLE
 
@@ -507,27 +615,29 @@ Dieses Tool ist für **persönliche Nutzung** gedacht. Bitte respektiere Twitter
 | Tägliche Stats | ❌ | ✅ |
 | Storage-Progressbar | ❌ | ✅ |
 | Badge-Design | 🔴 Rot | ♾️ Grün |
-| Dashboard-Sync | ⚠️ Manuell | ✅ Auto |
+| Dashboard-Sync | 👀 Manuell | ✅ Auto (optional) |
 
-### Timeline:
+### Geplante Timeline (Keine Garantie!):
 
 ```
 📍 JETZT (16.02.2026)
-   v4.2 BETA - Stabil, aber Bugs
+   v4.2 BETA - Stabil, funktioniert!
    
-📍 +2 TAGE
+📍 WENN MÖGLICH (unter der Woche)
    v4.3 BETA - localStorage-Key Fix
    
-📍 +1 WOCHE
+📍 WENN MÖGLICH (Wochenende/nächste Woche)
    v5.0 STABLE - Alle Features!
-   🎉 Release-Party!
+   (Beste Bemühungen - wahrscheinlich Samstag/Sonntag)
    
-📍 +2 WOCHEN
+📍 SPÄTER
    v5.1 - Performance-Optimierungen
 ```
+
+**⚠️ Ich gebe mein Bestes, kann aber keine festen Termine versprechen!**
 
 ---
 
 **Made with ❤️ by cali72mero | v4.2 BETA | 2026**
 
-**→ Nächste Version: v5.0 mit allen Fixes! 🚀**
+**→ Nächste Updates wenn möglich! 🚀**
