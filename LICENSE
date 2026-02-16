@@ -1,21 +1,256 @@
-MIT License
+# Custom License - CleanTwitter
 
-Copyright (c) 2026 cali72mero
+**Copyright (c) 2026 cali72mero**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+---
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## ✅ ERLAUBTE NUTZUNG:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+### Personal Use (Persönliche Nutzung):
+- 🌐 Nutzung über GitHub Pages ([cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/))
+- 💻 Lokale Ausführung auf eigenem Computer
+- 🖥️ Hosting auf eigenem Server **NUR für eigene Nutzung**
+- 👥 Mit Freunden/Familie teilen (via GitHub Pages Link)
+- 👀 Code ansehen, lernen, verstehen
+
+### Development (Entwicklung):
+- 🔧 Code bearbeiten für Bugfixes
+- ✨ Neue Features hinzufügen
+- 🐛 Bugs finden und melden
+- 📝 Dokumentation verbessern
+- 📊 Code analysieren und prüfen
+
+### Sharing (Teilen):
+- 🔗 GitHub Pages Link teilen
+- 📣 Auf Social Media erwähnen (mit Credit)
+- 🎓 In Tutorials/Guides nutzen (mit Namensnennung)
+- 📚 In Blogs/Artikeln beschreiben (mit Link)
+
+---
+
+## ❌ NICHT ERLAUBTE NUTZUNG:
+
+### Commercial Use (Kommerzielle Nutzung):
+- 🚫 Als eigenes Produkt verkaufen
+- 🚫 Kommerzielles Hosting für andere
+- 🚫 In kostenpflichtigen Services integrieren
+- 🚫 Werbung auf gehosteter Version schalten
+- 🚫 Als Teil eines kommerziellen Produkts
+
+### Redistribution (Weiterverbreitung):
+- 🚫 Auf eigenem Server für ANDERE hosten
+- 🚫 Code als eigenes Projekt ausgeben
+- 🚫 Unter anderem Namen veröffentlichen
+- 🚫 Ohne Namensnennung (cali72mero) teilen
+- 🚫 In anderem Repository ohne Fork
+
+### Modification (Modifikation):
+- 🚫 Code ändern OHNE Weitergabe der Änderungen
+- 🚫 Autor-Credit entfernen
+- 🚫 Als eigene Arbeit deklarieren
+- 🚫 Closed-Source Fork erstellen
+
+---
+
+## 📝 BEDINGUNGEN FÜR CODE-ÄNDERUNGEN:
+
+**Wenn du den Code bearbeitest:**
+
+1. **Attribution (Namensnennung):**
+   - Original-Autor **cali72mero** muss erwähnt bleiben
+   - Link zu Original-Repo: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
+   - Im Code-Header, README, und UI sichtbar
+
+2. **Share-Alike (Weitergabe):**
+   - Änderungen müssen zurückgegeben werden
+   - Via Pull Request an Original-Repo
+   - Oder als Fork mit Verweis auf Original
+   - Damit alle davon profitieren können
+
+3. **Documentation (Änderungen dokumentieren):**
+   - Was wurde geändert?
+   - Warum wurde es geändert?
+   - Wie funktioniert es jetzt?
+   - In Commit-Messages oder CHANGELOG
+
+4. **No Commercial Use (Keine kommerzielle Nutzung):**
+   - Geänderter Code darf nicht verkauft werden
+   - Kein kommerzielles Hosting
+   - Persönliche Nutzung bleibt erlaubt
+
+---
+
+## 🛡️ BEISPIELE:
+
+### ✅ ERLAUBT:
+
+**Beispiel 1: Persönliche Nutzung**
+```
+1. GitHub Pages besuchen
+2. Bookmarklet in Browser ziehen
+3. Auf Twitter nutzen
+→ Perfekt! ✅
+```
+
+**Beispiel 2: Lokal ausführen**
+```
+1. Repo klonen
+2. index.html lokal öffnen
+3. Bookmarklet generieren
+4. Auf eigenem PC nutzen
+→ Alles ok! ✅
+```
+
+**Beispiel 3: Mit Freunden teilen**
+```
+1. GitHub Pages Link teilen
+2. Freunde nutzen über GitHub Pages
+→ Super! ✅
+
+ODER:
+
+1. Repo forken
+2. Auf eigenem GitHub Pages hosten
+3. Mit Attribution (cali72mero)
+4. Link zum Original
+→ Auch ok! ✅
+```
+
+**Beispiel 4: Bugfix beitragen**
+```
+1. Bug finden
+2. Fix entwickeln
+3. Pull Request erstellen
+4. Änderungen erklären
+→ Perfekt! Danke! ✅
+```
+
+**Beispiel 5: Feature hinzufügen**
+```
+1. Feature lokal entwickeln
+2. Testen
+3. Pull Request mit Erklärung
+4. Original-Autor erwähnen
+→ Großartig! ✅
+```
+
+### ❌ NICHT ERLAUBT:
+
+**Beispiel 1: Verkaufen**
+```
+1. Code kopieren
+2. Als "MyTwitterTool" umbenennen
+3. Für $9.99 verkaufen
+→ NEIN! Illegal! ❌
+```
+
+**Beispiel 2: Kommerzielles Hosting**
+```
+1. Code auf eigenen Server
+2. Werbung schalten
+3. Andere nutzen lassen
+→ NEIN! Nicht erlaubt! ❌
+```
+
+**Beispiel 3: Credit entfernen**
+```
+1. Code kopieren
+2. "by cali72mero" löschen
+3. Als eigenes ausgeben
+→ NEIN! Verstoß! ❌
+```
+
+**Beispiel 4: Änderungen behalten**
+```
+1. Bug fixen
+2. Für sich behalten
+3. Nicht zurückgeben
+→ NEIN! Gegen Lizenz! ❌
+```
+
+**Beispiel 5: Closed-Source Fork**
+```
+1. Code forken
+2. Änderungen private halten
+3. Anderen nicht zeigen
+→ NEIN! Verstoß! ❌
+```
+
+---
+
+## 🎯 ZUSAMMENFASSUNG:
+
+```
+✅ NUTZEN: Ja, frei!
+✅ LOKAL: Ja!
+✅ MIT FREUNDEN: Ja (via GitHub Pages Link)!
+✅ ÄNDERN: Ja, für Bugfixes/Features!
+✅ TEILEN: Ja, mit Attribution!
+
+❌ VERKAUFEN: Nein!
+❌ FÜR ANDERE HOSTEN: Nein!
+❌ CREDIT ENTFERNEN: Nein!
+❌ ÄNDERUNGEN BEHALTEN: Nein!
+❌ ALS EIGENES AUSGEBEN: Nein!
+```
+
+---
+
+## ⚠️ RECHTLICHE HINWEISE:
+
+### Disclaimer:
+
+DIESE SOFTWARE WIRD "WIE BESEHEN" BEREITGESTELLT, OHNE GARANTIEN ODER BEDINGUNGEN JEGLICHER ART, WEDER AUSDRÜCKLICH NOCH STILLSCHWEIGEND.
+
+DER AUTOR ÜBERNIMMT KEINE HAFTUNG FÜR:
+- Schäden durch Nutzung
+- Datenverlust
+- Twitter/X Account-Probleme
+- Technische Fehler
+- Bugs oder Fehlfunktionen
+
+### Nutzung auf eigene Gefahr:
+
+- Du bist selbst verantwortlich für die Nutzung
+- Respektiere Twitter/X Terms of Service
+- Keine Garantie für Funktionalität
+- Keine Garantie für Updates
+- Nutze verantwortungsvoll
+
+### Lizenz-Verstoß:
+
+Bei Verstoß gegen diese Lizenz:
+- Nutzungsrecht erlischt sofort
+- Rechtliche Schritte möglich
+- Entfernung von gehosteten Versionen
+- DMCA Takedown bei Code-Diebstahl
+
+---
+
+## 🤝 KONTAKT:
+
+**Bei Fragen zur Lizenz:**
+- GitHub: [@cali72mero](https://github.com/cali72mero)
+- Issues: [github.com/cali72mero/twitter-clean-tracker/issues](https://github.com/cali72mero/twitter-clean-tracker/issues)
+
+**Kommerzielle Nutzung anfragen:**
+- Für spezielle Fälle kontaktiere mich
+- Eventuell andere Vereinbarung möglich
+- Individuelle Lizenz verhandelbar
+
+---
+
+## 📝 VERSION:
+
+**License Version:** 1.0
+**Datum:** 16. Februar 2026
+**Gilt für:** CleanTwitter v4.2 und alle zukünftigen Versionen
+
+---
+
+**TL;DR:**
+
+Nutze es frei für dich! Teile es mit Freunden! Verbessere den Code!
+Aber: Verkaufe es nicht, entferne meinen Namen nicht, und wenn du Code änderst, teil es mit allen!
+
+**Made with ❤️ by cali72mero | 2026**
