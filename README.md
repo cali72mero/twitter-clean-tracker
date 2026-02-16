@@ -1,9 +1,9 @@
-# 🐦 CleanTwitter v4.2.1 BETA
+# 🐦 CleanTwitter v4.2.2 BETA
 
-> **Twitter Media Tracker - Jetzt mit Multi-Image Support!**
+> **Twitter Media Tracker - Jetzt mit stabilerem ZIP-Download!**
 
 [![License: Custom](https://img.shields.io/badge/License-Custom-blue.svg)](#-nutzungsbedingungen)
-[![Version](https://img.shields.io/badge/Version-4.2.1_BETA-orange.svg)](https://github.com/cali72mero/twitter-clean-tracker)
+[![Version](https://img.shields.io/badge/Version-4.2.2_BETA-orange.svg)](https://github.com/cali72mero/twitter-clean-tracker)
 [![Status](https://img.shields.io/badge/Status-Beta-yellow.svg)](https://cali72mero.github.io/twitter-clean-tracker/)
 [![Safe](https://img.shields.io/badge/Ban--Risk-NONE-green.svg)](#️-sicherheit)
 
@@ -11,7 +11,7 @@
 
 ## 🚨 BETA VERSION - Was bedeutet das?
 
-**v4.2.1 ist aktuell in BETA:**
+**v4.2.2 ist aktuell in BETA:**
 - ✅ Stabil genug für täglichen Gebrauch
 - ⚠️ Einige Features fehlen noch
 - 🐛 Bugs möglich (siehe "Bekannte Probleme")
@@ -19,23 +19,24 @@
 
 ---
 
-## ⚡ Version 4.2.1 BETA - Aktuell
+## ⚡ Version 4.2.2 BETA - Aktuell
 
 ### ✅ WAS FUNKTIONIERT:
 
 ```diff
 + ♾️ Unbegrenzter Cache - Keine Auto-Löschung!
++ 📦 ZIP-Download FIX (stabil auch bei 600+ Bildern!)
++ ⏳ Lade-Anzeige beim ZIP-Erstellen
 + 🖼️ Multi-Image Support (alle Bilder eines Posts werden gespeichert!)
 + 💾 Download-Buttons (laden alle Bilder auf einmal)
 + 🎥 Videos & GIFs speichern (MP4)
 + 📥 HTML-Export (Archiv mit Bilder-Grid)
-+ 🗂️ ZIP-Export (alle Medien ordentlich sortiert)
 + 📊 Storage-Warnung bei >5MB
 + ⚙️ Download-Buttons on/off
 + 👀 Dashboard View-Button (manueller Import - Feature!)
 ```
 
-### 🐛 BEKANNTE PROBLEME (v4.2.1):
+### 🐛 BEKANNTE PROBLEME (v4.2.2):
 
 ```diff
 - ⚠️ Kein Rate Limit Protection
@@ -85,8 +86,8 @@
 ### 📅 RELEASE-PLAN (KEINE GARANTIE!):
 
 ```
-v4.2.1 BETA:   ✅ JETZT (16.02.2026)
-               (Multi-Image Fix)
+v4.2.2 BETA:   ✅ JETZT (16.02.2026)
+               (ZIP Stability Fix)
 
 v5.0 STABLE:   🚀 Wenn möglich am Wochenende
                (beste Bemühungen!)
@@ -134,7 +135,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 ### Option 1: Drag & Drop (Desktop)
 
 1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-2. **Ziehe** den Button "💾 CleanTwitter v4.2.1" in deine Lesezeichenleiste
+2. **Ziehe** den Button "💾 CleanTwitter v4.2.2" in deine Lesezeichenleiste
 3. **Fertig!** Auf Twitter/X klicken um zu starten
 
 ### Option 2: Manuell (Mobile/Desktop)
@@ -147,18 +148,22 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 ---
 
-## 📋 Features v4.2.1 BETA
+## 📋 Features v4.2.2 BETA
 
 ### ♾️ Unbegrenzter Cache
 - **Kein Limit** mehr wie in v4.0/v4.1
 - Alle Tweets werden gespeichert
 - Warnung bei >5MB
 
-### 🖼️ Multi-Image Support (NEU!)
+### 🖼️ Multi-Image Support
 - Erkennt Posts mit 2, 3 oder 4 Bildern
 - Speichert **ALLE** Bilder, nicht nur das erste
 - Zeigt sie im Dashboard als Grid an
-- Download-Button lädt alle Bilder nacheinander
+
+### 📦 Stabiler ZIP-Export (NEU!)
+- Optimiert für große Datenmengen (600+ Bilder)
+- Lade-Anzeige ("Verarbeite Bild 10/600...")
+- Verhindert Browser-Crashs durch "Throttle"-Logik
 
 ### 💾 Download-Buttons
 - **Bei jedem Tweet** (optional)
@@ -190,7 +195,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 1. Gehe auf [twitter.com](https://twitter.com) / [x.com](https://x.com)
 2. Klicke das Bookmarklet in deiner Leiste
-3. Alert erscheint: **"🐦 CleanTwitter v4.2.1!"**
+3. Alert erscheint: **"🐦 CleanTwitter v4.2.2!"**
 4. Badge erscheint unten rechts: **🔴 0**
 
 ### Schritt 2: Scrollen
@@ -224,26 +229,19 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 ## 🔄 Changelog
 
-### v4.2.1 BETA (16.02.2026) - HOTFIX
-- ✨ **Multi-Image Support:** Speichert jetzt ALLE Bilder eines Posts! (Fix für #Bug)
+### v4.2.2 BETA (16.02.2026) - STABILITY FIX
+- 📦 **ZIP-Export:** Stabilisiert für viele Bilder (Fix für #Crash bei 600+ Bildern)
+- ⏳ **UI:** Neue Lade-Anzeige beim ZIP-Erstellen
+- 🐛 **Fehlerbehandlung:** Einzelne kaputte Bilder stoppen nicht mehr den ganzen Download
+
+### v4.2.1 BETA (16.02.2026)
+- ✨ **Multi-Image Support:** Speichert jetzt ALLE Bilder eines Posts!
 - 🖼️ **Dashboard:** Zeigt Bilder im 2x2 Grid an
-- 💾 **Download-Logik:** Lädt alle Bilder eines Tweets
-- 🐛 **Fix:** "Nur erstes Bild gespeichert"-Bug behoben
 
 ### v4.2 BETA (16.02.2026)
 - ♾️ **Unbegrenzter Cache** - Keine Auto-Löschung
 - 💾 **Download-Buttons** bei jedem Tweet
 - 📥 **HTML-Export** verbessert
-- 🗂️ **ZIP-Export** mit Ordner-Struktur
-
-### v4.1 (2026-02-15)
-- 📦 Cache-Limit erhöht (500 Tweets)
-- 🐛 Badge-Display gefixt
-
-### v4.0 (2026-02-15)
-- 🗂️ ZIP-Export neu!
-- 📥 HTML-Export neu!
-- 🎬 GIF-Support
 
 ---
 
@@ -281,4 +279,4 @@ Beiträge sind willkommen!
 
 ---
 
-**Made with ❤️ by cali72mero | v4.2.1 BETA | 2026**
+**Made with ❤️ by cali72mero | v4.2.2 BETA | 2026**
