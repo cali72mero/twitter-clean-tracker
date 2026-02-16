@@ -59,7 +59,8 @@
         select:focus, input[type="text"]:focus { border-color: var(--primary); outline: none; }
 
         /* Checkbox */
-        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: pointer; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 15px; cursor: pointer; padding: 10px; border-radius: 8px; transition: background 0.2s; }
+        .checkbox-wrapper:hover { background: #222; }
         .checkbox-wrapper input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
         
         .help-links { font-size: 0.85rem; margin-top: 5px; color: var(--text-dim); }
@@ -149,44 +150,38 @@
                 <option value="Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1">📱 iPhone 15 (iOS 17)</option>
                 <option value="Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.64 Mobile Safari/537.36">📱 Samsung Galaxy S24 (Android 14)</option>
                 <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">🖥️ Windows 10 (Chrome)</option>
-                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0">🖥️ Windows 10 (Firefox)</option>
-                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0">🖥️ Windows 11 (Edge)</option>
-                <option value="Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">💻 Chromebook</option>
                 <option value="custom">✍️ Eigener User-Agent...</option>
             </select>
-            
             <input type="text" id="uaInput" placeholder="Dein Custom User-Agent" style="display: none;">
-            
-            <div class="note-warn">
-                ⚠️ <strong>Hinweis:</strong> Wenn "WhatIsMyBrowser" deinen echten UA anzeigt, ist das normal! Bookmarklets können den UA oft <strong>nicht für HTTP-Anfragen</strong> ändern, sondern nur für Javascript-Checks auf der Seite. Twitter nutzt meistens JS-Checks, daher sollte es trotzdem helfen.
-            </div>
-            
-            <div class="help-links">
-                🔍 Finde deinen aktuellen UA: 
-                <a href="https://www.whatismybrowser.com/detect/what-is-my-user-agent/" target="_blank">WhatIsMyBrowser</a>
-            </div>
         </div>
 
-        <!-- Config: Selectors -->
+        <!-- Config: Selectors & Features -->
         <div class="card">
-            <h2>🧹 Lösch-Regeln & Extras</h2>
-            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Diese Elemente werden von der Webseite entfernt.</p>
+            <h2>⚙️ Funktionen & Regeln</h2>
             
             <div class="list-builder">
                 <input type="text" id="newSelector" placeholder="z.B. [aria-label='Werbung']" onkeypress="if(event.key==='Enter') addSelector()">
-                <button class="btn-add" onclick="addSelector()">➕ Hinzufügen</button>
+                <button class="btn-add" onclick="addSelector()">➕ Regel</button>
             </div>
             
-            <div class="list-items" id="selectorList">
-                <!-- Javascript will populate this -->
-            </div>
+            <div class="list-items" id="selectorList"></div>
 
-            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 5px;">
                 <label class="checkbox-wrapper">
                     <input type="checkbox" id="showInfo" checked onchange="generateCode()">
-                    <span>ℹ️ Info-Banner alle 5 Tweets anzeigen</span>
+                    <div>
+                        <span>ℹ️ Info-Banner anzeigen</span>
+                        <div style="font-size: 0.8rem; color: #aaa;">Zeigt alle 5 Tweets Status & UA an.</div>
+                    </div>
                 </label>
-                <p style="font-size: 0.8rem; color: #aaa; margin-left: 30px; margin-top: 5px;">Zeigt einen grünen Balken "CleanTwitter Active" im Feed an.</p>
+
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="recordHistory" onchange="generateCode()">
+                    <div>
+                        <span>🔴 Tweet-Recorder & Downloader</span>
+                        <div style="font-size: 0.8rem; color: #aaa;">Speichert alle gesehenen Tweets (Text+Bild). Fügt "Download"-Button hinzu.</div>
+                    </div>
+                </label>
             </div>
         </div>
 
@@ -194,11 +189,9 @@
         <div class="card result-area">
             <h2 style="justify-content: center; color: #fff;">Dein Bookmarklet ist fertig!</h2>
             <p>Ziehe diesen Button in deine Lesezeichenleiste:</p>
-            
             <a id="bookmarkletBtn" class="bookmarklet-btn" href="#">🐦 CleanTwitter Custom</a>
-            
             <br>
-            <button class="copy-btn" onclick="copyCode()">📋 Code kopieren (für Vivaldi / Manuell)</button>
+            <button class="copy-btn" onclick="copyCode()">📋 Code kopieren (für Vivaldi)</button>
             <p id="copyStatus" style="font-size: 0.8rem; color: var(--primary); opacity: 0; transition: opacity 0.5s; margin-top: 5px;">Kopiert!</p>
         </div>
 
@@ -207,28 +200,13 @@
             <h2>📖 Anleitung</h2>
             <div class="browser-select">
                 <button class="tab-btn active" onclick="showTab('vivaldi')">Vivaldi</button>
-                <button class="tab-btn" onclick="showTab('chrome')">Chrome / Edge</button>
-                <button class="tab-btn" onclick="showTab('firefox')">Firefox</button>
+                <button class="tab-btn" onclick="showTab('chrome')">Chrome</button>
             </div>
-
             <div id="vivaldi" class="instruction-content active">
-                1. Klicke oben auf <strong>"Code kopieren"</strong>.<br>
-                2. Rechtsklick in deine Lesezeichen-Leiste (oder Panel).<br>
-                3. Wähle <strong>"Neues Lesezeichen"</strong>.<br>
-                4. Name: <code>CleanTwitter</code><br>
-                5. Füge bei <strong>Adresse/URL</strong> den Code ein (Strg+V).
+                1. "Code kopieren".<br>2. Rechtsklick Leiste -> "Neues Lesezeichen".<br>3. Einfügen bei Adresse/URL.
             </div>
-
             <div id="chrome" class="instruction-content">
-                1. Drücke <code>Strg + Shift + B</code> um die Leiste anzuzeigen.<br>
-                2. <strong>Ziehe den grünen Button</strong> direkt in die Leiste.<br>
-                3. Fertig! Klicke ihn an, wenn du auf Twitter bist.
-            </div>
-
-            <div id="firefox" class="instruction-content">
-                1. Rechtsklick oben in die Symbolleiste -> "Lesezeichen-Symbolleiste" -> "Immer anzeigen".<br>
-                2. Ziehe den grünen Button in die Leiste.<br>
-                3. Falls Firefox meckert: Nutze die "Code kopieren" Methode und lege es manuell an.
+                Ziehe den grünen Button einfach in die Leiste.
             </div>
         </div>
 
@@ -237,31 +215,19 @@
     <footer>Generated via GitHub MCP · 2026</footer>
 
     <script>
-        // Default Config
-        let selectors = [
-            '[data-testid="skeleton"]', 
-            '[data-testid="PromotedTweet"]', 
-            '[aria-label*="Who to follow"]', 
-            '[data-testid="sidebarColumn"]',
-            'div[role="dialog"]'
-        ];
+        let selectors = ['[data-testid="skeleton"]', '[data-testid="PromotedTweet"]', '[aria-label*="Who to follow"]', '[data-testid="sidebarColumn"]', 'div[role="dialog"]'];
 
-        // UI Logic
         const uaSelect = document.getElementById('uaSelect');
         const uaInput = document.getElementById('uaInput');
         const selectorList = document.getElementById('selectorList');
         const bookmarkletBtn = document.getElementById('bookmarkletBtn');
         const newSelectorInput = document.getElementById('newSelector');
         const showInfoCheckbox = document.getElementById('showInfo');
+        const recordHistoryCheckbox = document.getElementById('recordHistory');
 
         function updateUA() {
-            if (uaSelect.value === 'custom') {
-                uaInput.style.display = 'block';
-                uaInput.focus();
-            } else {
-                uaInput.style.display = 'none';
-                uaInput.value = uaSelect.value;
-            }
+            if (uaSelect.value === 'custom') { uaInput.style.display = 'block'; uaInput.focus(); } 
+            else { uaInput.style.display = 'none'; uaInput.value = uaSelect.value; }
             generateCode();
         }
 
@@ -275,76 +241,105 @@
             });
             generateCode();
         }
+        function addSelector() { if(newSelectorInput.value.trim()){ selectors.push(newSelectorInput.value.trim()); newSelectorInput.value=''; renderList(); } }
+        function removeSelector(index) { selectors.splice(index, 1); renderList(); }
 
-        function addSelector() {
-            const val = newSelectorInput.value.trim();
-            if (val && !selectors.includes(val)) {
-                selectors.push(val);
-                newSelectorInput.value = '';
-                renderList();
-            }
-        }
-
-        function removeSelector(index) {
-            selectors.splice(index, 1);
-            renderList();
-        }
-
-        // Generator Core
         function generateCode() {
-            let ua = uaInput.value;
-            if (!ua) ua = uaSelect.value;
-            if (ua === 'custom') ua = '';
-
+            let ua = uaInput.value || uaSelect.value;
+            if(ua === 'custom') ua = '';
             const uaSafe = ua.replace(/'/g, "\\'"); 
             const selString = JSON.stringify(selectors).replace(/"/g, "'"); 
             const showInfo = showInfoCheckbox.checked;
+            const recordHistory = recordHistoryCheckbox.checked;
 
-            let platform = 'Linux x86_64'; 
+            let platform = 'Linux x86_64';
             if (uaSafe.includes('Win')) platform = 'Win32';
-            if (uaSafe.includes('Mac')) platform = 'MacIntel';
-            if (uaSafe.includes('iPhone') || uaSafe.includes('iPad')) platform = 'iPhone';
-            if (uaSafe.includes('Android')) platform = 'Linux armv81';
+            if (uaSafe.includes('iPhone')) platform = 'iPhone';
 
             const code = `javascript:(function(){
+                /* 1. CONFIG & PERMISSION */
                 var ua = '${uaSafe}';
                 var p = '${platform}';
                 var showInfo = ${showInfo};
-                var counter = 0;
+                var doRecord = ${recordHistory};
                 
+                if(doRecord && !confirm('🔴 Aufnahme starten?\\n\\nAlle Tweets die du siehst, werden lokal gespeichert.\\nDu kannst sie später als HTML-Datei herunterladen.')) {
+                    doRecord = false;
+                }
+
+                /* 2. SPOOFING */
                 try {
                     Object.defineProperty(navigator, 'userAgent', { get: function(){ return ua; }, configurable: true });
                     Object.defineProperty(navigator, 'platform', { get: function(){ return p; }, configurable: true });
-                    try { Navigator.prototype.__defineGetter__('userAgent', function(){ return ua; }); } catch(e){}
-                    if(navigator.userAgent !== ua) { try { delete navigator.userAgent; navigator.userAgent = ua; } catch(e){} }
                 } catch(e) {}
 
-                document.cookie.split(";").forEach(c => document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"));
-                localStorage.clear(); sessionStorage.clear();
+                /* 3. CLEANING & RECORDING */
+                var seenTweets = new Set();
+                var capturedData = [];
+                var counter = 0;
+
+                /* UI for Download */
+                var dlBtn = null;
+                if(doRecord) {
+                    dlBtn = document.createElement('button');
+                    dlBtn.innerText = '📥 0 Tweets';
+                    dlBtn.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; padding:15px; background:#00ff88; color:#000; border:none; border-radius:50px; font-weight:bold; cursor:pointer; box-shadow:0 5px 20px rgba(0,0,0,0.5); font-family:sans-serif;';
+                    dlBtn.onclick = downloadHistory;
+                    document.body.appendChild(dlBtn);
+                }
+
+                function downloadHistory() {
+                    var htmlContent = '<html><head><meta charset="utf-8"><title>Twitter Session</title><style>body{font-family:sans-serif;background:#111;color:#fff;padding:20px;max-width:600px;margin:0 auto;} .tweet{border:1px solid #333;padding:15px;margin-bottom:15px;border-radius:10px;background:#161616;} img{max-width:100%;border-radius:10px;margin-top:10px;} .meta{color:#888;font-size:0.8em;margin-bottom:5px;}</style></head><body><h1>📦 Gespeicherte Tweets ('+capturedData.length+')</h1>';
+                    capturedData.forEach(t => {
+                        htmlContent += '<div class="tweet"><div class="meta">'+t.author+'</div><div>'+t.text+'</div>'+(t.img ? '<img src="'+t.img+'">' : '')+'</div>';
+                    });
+                    htmlContent += '</body></html>';
+                    
+                    var blob = new Blob([htmlContent], {type: 'text/html'});
+                    var a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'twitter_history_' + Date.now() + '.html';
+                    a.click();
+                }
 
                 function clean() {
-                    // Remove Garbage
                     const s = ${selString};
                     s.forEach(sel => document.querySelectorAll(sel).forEach(el => el.remove()));
-                    document.body.style.overflow = 'auto';
-                    document.documentElement.style.overflow = 'auto';
-
-                    // Info Banner Logic (Every 5 Tweets)
+                    
+                    /* Info Banner */
                     if(showInfo) {
-                        const rows = document.querySelectorAll('[data-testid="cellInnerDiv"]');
-                        rows.forEach(row => {
-                            if(row.hasAttribute('data-clean-checked')) return;
-                            row.setAttribute('data-clean-checked', 'true');
-                            
-                            // Only count actual tweets/posts, not just any div
+                        document.querySelectorAll('[data-testid="cellInnerDiv"]').forEach(row => {
+                            if(row.hasAttribute('data-clean')) return;
+                            row.setAttribute('data-clean', 'true');
                             if(row.querySelector('[data-testid="tweet"]')) {
                                 counter++;
                                 if(counter % 5 === 0) {
-                                    const banner = document.createElement('div');
-                                    banner.style.cssText = 'margin: 10px 0; padding: 8px; background: rgba(0,255,136,0.15); border: 1px solid #00ff88; border-radius: 8px; color: #00ff88; text-align: center; font-family: system-ui; font-size: 13px; font-weight: bold;';
-                                    banner.innerHTML = '🛡️ CleanTwitter: ' + counter + ' Posts gescannt • UA: ' + (ua.length > 20 ? ua.substring(0,20)+'...' : ua);
-                                    row.after(banner);
+                                    const b = document.createElement('div');
+                                    b.style.cssText = 'padding:5px; text-align:center; color:#00ff88; font-size:12px; opacity:0.7;';
+                                    b.innerText = '🛡️ Cleaned: ' + counter;
+                                    row.after(b);
                                 }
+                            }
+                        });
+                    }
+
+                    /* Recording Logic */
+                    if(doRecord) {
+                        document.querySelectorAll('[data-testid="tweet"]').forEach(tweet => {
+                            var txtEl = tweet.querySelector('[data-testid="tweetText"]');
+                            var txt = txtEl ? txtEl.innerText : '';
+                            var imgEl = tweet.querySelector('img[src*="media"]');
+                            var img = imgEl ? imgEl.src : null;
+                            var userEl = tweet.querySelector('div[dir="ltr"] span');
+                            var user = userEl ? userEl.innerText : 'Unknown';
+                            
+                            // Simple dedupe hash
+                            var id = user + txt.substring(0,20);
+                            
+                            if((txt || img) && !seenTweets.has(id)) {
+                                seenTweets.add(id);
+                                capturedData.push({author: user, text: txt, img: img});
+                                if(dlBtn) dlBtn.innerText = '📥 ' + capturedData.length + ' Tweets';
                             }
                         });
                     }
@@ -352,24 +347,20 @@
                 
                 setInterval(clean, 1000);
                 clean();
-                alert('🐦 CleanTwitter Active!\\n' + (showInfo ? 'Info-Banner: AN' : 'Info-Banner: AUS'));
+                alert('🐦 Active! ' + (doRecord ? '(Recording ON)' : ''));
             })();`.replace(/\s+/g, ' ').trim();
 
             bookmarkletBtn.setAttribute('href', code);
         }
 
         function copyCode() {
-            const code = bookmarkletBtn.getAttribute('href');
-            navigator.clipboard.writeText(code).then(() => {
-                const status = document.getElementById('copyStatus');
-                status.style.opacity = '1';
-                setTimeout(() => status.style.opacity = '0', 2000);
+            navigator.clipboard.writeText(bookmarkletBtn.getAttribute('href')).then(() => {
+                const s = document.getElementById('copyStatus'); s.style.opacity = '1'; setTimeout(() => s.style.opacity='0', 2000);
             });
         }
-
         function showTab(id) {
-            document.querySelectorAll('.instruction-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.instruction-content').forEach(el=>el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             event.target.classList.add('active');
         }
