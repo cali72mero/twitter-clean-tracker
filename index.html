@@ -3,158 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐦 Twitter Clean Tracker - Generator</title>
+    <title>🐦 Twitter Clean Tracker - Dashboard</title>
     <style>
         :root { --primary: #00ff88; --bg: #0a0a0a; --surface: #161616; --text: #fff; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { max-width: 800px; width: 100%; }
-        h1 { text-align: center; margin-bottom: 0.5rem; }
-        .card { background: var(--surface); border: 1px solid #333; border-radius: 16px; padding: 25px; margin-bottom: 25px; }
-        select, input[type="text"] { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
-        .bookmarklet-btn { display: inline-block; background: var(--primary); color: #000; padding: 15px 30px; font-weight: 800; text-decoration: none; border-radius: 50px; cursor: move; margin-bottom: 15px; }
-        .copy-btn { background: transparent; border: 1px solid #888; color: #888; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 15px; cursor: pointer; padding: 10px; border-radius: 8px; }
-        .checkbox-wrapper:hover { background: #222; }
-        .checkbox-wrapper input { width: 20px; height: 20px; accent-color: var(--primary); }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; max-width: 1200px; margin: 0 auto; }
+        h1, h2 { text-align: center; color: var(--primary); }
+        .btn { background: var(--primary); color: #000; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 5px; }
+        .btn-danger { background: #ff4444; color: white; }
+        
+        /* Grid Layout */
+        .tweet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 15px; border-radius: 12px; overflow: hidden; }
+        .tweet-user { font-weight: bold; color: #888; margin-bottom: 5px; }
+        .tweet-text { margin-bottom: 10px; line-height: 1.4; }
+        .tweet-img { width: 100%; border-radius: 8px; display: block; margin-top: 10px; }
+        .empty-state { text-align: center; color: #666; margin-top: 50px; font-size: 1.2em; }
+
+        /* Generator Section */
+        .generator-box { border-bottom: 1px solid #333; padding-bottom: 30px; margin-bottom: 30px; text-align: center; }
+        textarea { width: 100%; height: 100px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; padding: 10px; margin-top: 10px; font-family: monospace; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🐦 CleanTwitter Fix</h1>
-        <p style="text-align: center; color: #888;">Version 2.0 (Fixed Banner Logic)</p>
 
-        <div class="card">
-            <label>User-Agent:</label>
-            <select id="uaSelect" onchange="generateCode()">
-                <option value="Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1">📱 iPhone 15</option>
-                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36">🖥️ Windows 10</option>
-            </select>
-            
-            <label class="checkbox-wrapper">
-                <input type="checkbox" id="showInfo" checked onchange="generateCode()">
-                <div><span>ℹ️ Info-Banner (alle 5 Posts)</span></div>
-            </label>
-            
-            <label class="checkbox-wrapper">
-                <input type="checkbox" id="recordHistory" checked onchange="generateCode()">
-                <div><span>🔴 Tweet Recorder & Download</span></div>
-            </label>
+    <!-- GENERATOR TEIL -->
+    <div class="generator-box">
+        <h1>🐦 Twitter Clean Tracker v3.0</h1>
+        <p>1. Ziehe diesen Button in deine Lesezeichen-Leiste:</p>
+        <a id="bookmarkletBtn" class="btn" href="#">💾 CleanTwitter + Record</a>
+        <br><br>
+        <button class="btn" onclick="copyCode()">📋 Code kopieren</button>
+        <p style="color: #888; font-size: 0.9rem;">(Dieser Code speichert alle Tweets automatisch hier auf dieser Seite!)</p>
+    </div>
+
+    <!-- VIEWER TEIL -->
+    <div>
+        <h2>📂 Dein Tweet-Archiv (Cache)</h2>
+        <div style="text-align: center;">
+            <button class="btn" onclick="downloadArchive()">📥 Alles als HTML downloaden</button>
+            <button class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren (Alles löschen)</button>
+            <span id="countDisplay" style="margin-left: 15px; color: #888;">0 Tweets gespeichert</span>
         </div>
 
-        <div class="card" style="text-align: center;">
-            <a id="bookmarkletBtn" class="bookmarklet-btn" href="#">🐦 CleanTwitter V2</a>
-            <br>
-            <button class="copy-btn" onclick="copyCode()">📋 Code kopieren</button>
-            <p id="copyStatus" style="opacity: 0; color: var(--primary); transition: 0.5s;">Kopiert!</p>
+        <div id="grid" class="tweet-grid">
+            <!-- Tweets erscheinen hier -->
         </div>
-        
-        <div class="card">
-            <h3>📖 Anleitung</h3>
-            <p>1. Code kopieren.<br>2. Lesezeichen "CleanTwitter" bearbeiten.<br>3. Alten Code löschen, neuen einfügen.</p>
-        </div>
+        <div id="empty" class="empty-state">Noch keine Tweets aufgezeichnet.<br>Nutze das Bookmarklet auf Twitter!</div>
     </div>
 
     <script>
-        const uaSelect = document.getElementById('uaSelect');
-        const showInfoCheckbox = document.getElementById('showInfo');
-        const recordHistoryCheckbox = document.getElementById('recordHistory');
-        const bookmarkletBtn = document.getElementById('bookmarkletBtn');
-
-        function generateCode() {
-            const ua = uaSelect.value;
-            const showInfo = showInfoCheckbox.checked;
-            const doRecord = recordHistoryCheckbox.checked;
+        // --- 1. VIEWER LOGIC (Liest localStorage) ---
+        function loadCache() {
+            const raw = localStorage.getItem('twitter_clean_cache');
+            if(!raw) return;
             
-            // Fixed Logic: Inject INTO article instead of AFTER row
-            const code = `javascript:(function(){
-                var ua = '${ua}';
-                var showInfo = ${showInfo};
-                var doRecord = ${doRecord};
-                var counter = 0;
-                var recorded = [];
-                
-                /* Spoof */
-                try { Object.defineProperty(navigator, 'userAgent', {get:()=>ua}); } catch(e){}
+            const data = JSON.parse(raw);
+            const grid = document.getElementById('grid');
+            const empty = document.getElementById('empty');
+            const countDisplay = document.getElementById('countDisplay');
 
-                /* UI Helpers */
-                function createOverlay(text) {
-                    var d = document.createElement('div');
-                    d.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#00ff88; color:#000; padding:10px 20px; border-radius:30px; z-index:9999; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.3); font-family:sans-serif; pointer-events:none;';
-                    d.innerText = text;
-                    document.body.appendChild(d);
-                    setTimeout(()=>d.remove(), 3000);
-                }
-
-                var dlBtn;
-                if(doRecord) {
-                    dlBtn = document.createElement('button');
-                    dlBtn.innerText = '📥 0';
-                    dlBtn.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; background:#1da1f2; color:#fff; border:none; padding:12px 20px; border-radius:50px; font-weight:bold; cursor:pointer; font-family:sans-serif; box-shadow:0 5px 15px rgba(0,0,0,0.3);';
-                    dlBtn.onclick = function(){
-                        var html = '<html><head><meta charset="utf-8"><title>Twitter Log</title></head><body style="background:#111;color:#fff;font-family:sans-serif;padding:20px;"><h1>Saved Tweets ('+recorded.length+')</h1>';
-                        recorded.forEach(t => html += '<div style="border:1px solid #333;margin:10px 0;padding:10px;border-radius:10px;background:#222;"><strong>'+t.user+'</strong><br>'+t.text+'<br>'+(t.img?'<img src="'+t.img+'" style="max-width:300px;margin-top:10px;border-radius:10px;">':'')+'</div>');
-                        html += '</body></html>';
-                        var b = new Blob([html],{type:'text/html'});
-                        var a = document.createElement('a');
-                        a.href = URL.createObjectURL(b);
-                        a.download = 'tweets.html';
-                        a.click();
-                    };
-                    document.body.appendChild(dlBtn);
-                }
-
-                function clean() {
-                    /* Remove Ads & Skeletons */
-                    document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]').forEach(el => el.remove());
-
-                    /* Scan Tweets */
-                    document.querySelectorAll('article[data-testid="tweet"]').forEach(tweet => {
-                        if(tweet.getAttribute('data-scanned')) return;
-                        tweet.setAttribute('data-scanned', 'true');
-                        
-                        counter++;
-                        
-                        /* Banner Logic - Inject INSIDE article at bottom */
-                        if(showInfo && counter % 5 === 0) {
-                            var banner = document.createElement('div');
-                            banner.style.cssText = 'background:rgba(0,255,136,0.1); border:1px dashed #00ff88; color:#00ff88; text-align:center; padding:5px; margin-top:10px; border-radius:8px; font-size:12px; font-family:monospace;';
-                            banner.innerHTML = '🛡️ CleanTwitter: ' + counter + ' Posts checked';
-                            // Append to the tweet's content container usually
-                            tweet.appendChild(banner);
-                        }
-
-                        /* Recording Logic */
-                        if(doRecord) {
-                            var txtEl = tweet.querySelector('[data-testid="tweetText"]');
-                            var userEl = tweet.querySelector('[data-testid="User-Name"]');
-                            var imgEl = tweet.querySelector('img[src*="media"]');
-                            
-                            if(txtEl || imgEl) {
-                                recorded.push({
-                                    user: userEl ? userEl.innerText.split('\\n')[0] : 'Unknown',
-                                    text: txtEl ? txtEl.innerText : '',
-                                    img: imgEl ? imgEl.src : null
-                                });
-                                if(dlBtn) dlBtn.innerText = '📥 ' + recorded.length;
-                            }
-                        }
-                    });
-                }
-
-                setInterval(clean, 1500);
-                createOverlay('🐦 CleanTwitter Started!');
-            })();`.replace(/\s+/g, ' ').trim();
-
-            bookmarkletBtn.setAttribute('href', code);
+            if(data.length > 0) {
+                empty.style.display = 'none';
+                grid.innerHTML = '';
+                data.reverse().forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'tweet-card';
+                    card.innerHTML = `
+                        <div class="tweet-user">👤 ${t.user || 'Unbekannt'}</div>
+                        <div class="tweet-text">${t.text || ''}</div>
+                        ${t.img ? `<img src="${t.img}" class="tweet-img" loading="lazy">` : ''}
+                        <div style="font-size:0.7rem; color:#555; margin-top:10px;">🕒 ${new Date(t.date).toLocaleTimeString()}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+                countDisplay.innerText = data.length + ' Tweets gespeichert';
+            }
         }
+
+        function clearCache() {
+            if(confirm('Wirklich alles löschen?')) {
+                localStorage.removeItem('twitter_clean_cache');
+                location.reload();
+            }
+        }
+
+        function downloadArchive() {
+            const raw = localStorage.getItem('twitter_clean_cache');
+            if(!raw) return alert('Nichts zu downloaden!');
+            const data = JSON.parse(raw);
+            let html = '<html><head><meta charset="utf-8"><title>Twitter Archive</title><style>body{font-family:sans-serif;padding:20px;background:#eee;} .card{background:#fff;padding:20px;margin:10px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img{max-width:400px;border-radius:10px;margin-top:10px;}</style></head><body><h1>📦 Archiv ('+data.length+')</h1>';
+            data.forEach(t => html += `<div class="card"><h3>${t.user}</h3><p>${t.text}</p>${t.img ? '<img src="'+t.img+'">' : ''}</div>`);
+            html += '</body></html>';
+            const b = new Blob([html], {type:'text/html'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'archive.html'; a.click();
+        }
+
+        // --- 2. GENERATOR LOGIC (Erstellt den Code) ---
+        // Der Trick: Das Bookmarklet schreibt in den localStorage von cali72mero.github.io via iframe bridge oder speichert es lokal und man muss es manuell syncen?
+        // NEIN: Da Bookmarklets auf twitter.com laufen, können sie NICHT direkt auf github.io zugreifen (Cross-Origin Policy).
+        // LÖSUNG: Wir nutzen GM_style storage simulation oder öffnen kurz ein Fenster.
+        // EINFACHE LÖSUNG FÜR USER: Der Code speichert es im "twitter.com" LocalStorage. 
+        // Um es auf der GitHub Seite anzuzeigen, bräuchte man eine Extension.
+        // ABER: Der User will es auf der GitHub Seite sehen.
+        // TRICK: Wir bauen einen "Import" Button, oder wir nutzen window.open postMessage?
+        // BESSER: Das Bookmarklet öffnet am Ende ein kleines Popup zur GitHub Seite und übergibt die Daten via URL Hash (wenn klein) oder postMessage.
+        
+        // WARTE: Der User will "auf der GitHub Seite anzeigen". Das geht nur, wenn die Daten dorthin kommen.
+        // Da Twitter und GitHub verschiedene Domains sind, geht LocalStorage NICHT geteilt.
+        // WORKAROUND: Das Bookmarklet hat jetzt einen "Export to GitHub Viewer" Button.
+
+        const code = `javascript:(function(){
+            /* STORE SETUP */
+            var db = JSON.parse(localStorage.getItem('tw_cache_v1') || '[]');
+            
+            /* UI */
+            var panel = document.createElement('div');
+            panel.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:99999; display:flex; gap:10px;';
+            
+            var countBtn = document.createElement('button');
+            countBtn.innerText = '🔴 0 Rec';
+            countBtn.style.cssText = 'background:#ff4444; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; font-family:sans-serif;';
+            
+            var viewBtn = document.createElement('button');
+            viewBtn.innerText = '👀 View on GitHub';
+            viewBtn.style.cssText = 'background:#00ff88; color:#000; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer; font-family:sans-serif;';
+            
+            // MAGIC: Send data to GitHub Page via postMessage to opened window
+            viewBtn.onclick = function() {
+                var win = window.open('https://cali72mero.github.io/twitter-clean-tracker/?import=true', 'tw_viewer');
+                setTimeout(function(){
+                    win.postMessage({type:'import_tweets', data:db}, '*');
+                }, 2000); // Wait for load
+            };
+
+            panel.appendChild(countBtn);
+            panel.appendChild(viewBtn);
+            document.body.appendChild(panel);
+
+            /* SCANNER */
+            setInterval(function(){
+                document.querySelectorAll('article[data-testid="tweet"]').forEach(t => {
+                    if(t.dataset.scanned) return;
+                    t.dataset.scanned = true;
+                    
+                    var txt = t.innerText;
+                    var imgEl = t.querySelector('img[src*="media"]');
+                    var userEl = t.querySelector('[data-testid="User-Name"]');
+                    
+                    if(txt && userEl) {
+                        var item = {
+                            user: userEl.innerText.split('\\n')[0],
+                            text: txt.substring(0, 200),
+                            img: imgEl ? imgEl.src : null,
+                            date: Date.now()
+                        };
+                        
+                        // Dedupe
+                        if(!db.some(x => x.text === item.text)) {
+                            db.push(item);
+                            if(db.length > 500) db.shift(); // Max 500
+                            localStorage.setItem('tw_cache_v1', JSON.stringify(db));
+                            countBtn.innerText = '🔴 ' + db.length;
+                        }
+                    }
+                });
+                
+                // Cleanup Ads
+                document.querySelectorAll('[data-testid="promoted"], [aria-label*="Werbung"]').forEach(e => e.remove());
+            }, 1000);
+        })();`.replace(/\\s+/g, ' ').trim();
+
+        document.getElementById('bookmarkletBtn').href = code;
 
         function copyCode() {
-            navigator.clipboard.writeText(bookmarkletBtn.getAttribute('href')).then(() => {
-                const s = document.getElementById('copyStatus'); s.style.opacity = '1'; setTimeout(() => s.style.opacity='0', 2000);
-            });
+            navigator.clipboard.writeText(document.getElementById('bookmarkletBtn').href);
+            alert('Kopiert!');
         }
-        
-        generateCode();
+
+        // --- 3. RECEIVER LOGIC (Empfängt Daten von Twitter) ---
+        window.addEventListener('message', function(e) {
+            if(e.data.type === 'import_tweets') {
+                const newData = e.data.data;
+                const current = JSON.parse(localStorage.getItem('twitter_clean_cache') || '[]');
+                
+                // Merge without duplicates
+                newData.forEach(item => {
+                    if(!current.some(c => c.text === item.text)) {
+                        current.push(item);
+                    }
+                });
+                
+                localStorage.setItem('twitter_clean_cache', JSON.stringify(current));
+                loadCache();
+                alert('✅ ' + newData.length + ' Tweets erfolgreich importiert!');
+            }
+        });
+
+        // Init Load
+        loadCache();
+
     </script>
 </body>
 </html>
