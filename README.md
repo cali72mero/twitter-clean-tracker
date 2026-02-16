@@ -1,10 +1,22 @@
-# 🐦 CleanTwitter v5.1 - Rate Limit Protected
+# 🐦 CleanTwitter v5.1.2 - UNBEGRENZT!
 
-> **Smart Twitter Media Tracker mit Stealth Mode & Duplicate-Detection**
+> **Smart Twitter Media Tracker mit Stealth Mode - OHNE LIMITS!**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-5.1-blue.svg)](https://github.com/cali72mero/twitter-clean-tracker)
+[![Version](https://img.shields.io/badge/Version-5.1.2-blue.svg)](https://github.com/cali72mero/twitter-clean-tracker)
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)](https://cali72mero.github.io/twitter-clean-tracker/)
+
+---
+
+## ⚡ Version 5.1.2 - UNBEGRENZT!
+
+```diff
++ ♾️ KEIN Tweet-Limit mehr!
++ 🚀 Scrolle so lange du willst - 1000, 5000, 10000+ Tweets!
++ ✅ Auto-Pause KOMPLETT entfernt
++ 🛡️ Stealth Mode mit zufälligen Delays
++ 📊 Nur Storage-Limit (ca. 2000-3000 Tweets)
+```
 
 ---
 
@@ -17,6 +29,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - ✅ **Links extrahiert** (alle URLs)
 - ✅ **Threads erkennt** (zusammenhängende Tweets)
 - ✅ **Duplikate filtert** (Retweets automatisch skippen)
+- ♾️ **UNBEGRENZT** (kein Tweet-Limit!)
 
 ### ❌ Was macht es NICHT?
 
@@ -25,36 +38,61 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - ❌ **Kein Ban-Risiko** - nur DOM-Scraping
 - ❌ **Keine Datenübertragung** - 100% privat
 - ❌ **Keine Installation nötig** - reines Bookmarklet
+- ❌ **KEIN Tweet-Limit** - scrolle unbegrenzt!
 
 ---
 
-## 🛡️ Sicherheit & Rate Limit Protection
+## 🛡️ SICHERHEIT - Warum KEIN Ban-Risiko?
 
-### Warum KEIN Ban-Risiko?
-
-**Der entscheidende Unterschied:**
+### 🔒 Der entscheidende Unterschied:
 
 ```diff
-❌ Twitter Bots/Apps (gefährlich):
+❌ Twitter Bots/Apps (GEFÄHRLICH):
    fetch('https://api.twitter.com/...')
-   → Sendet Requests an Twitter Server
+   → Sendet HTTP-Requests an Twitter Server
+   → Twitter registriert JEDEN Request
    → Rate Limits: 300 Requests/15min
    → Bei Überschreitung: ACCOUNT BAN!
+   → Beispiele: Twitter API Apps, Drittanbieter-Tools
 
-✅ CleanTwitter (sicher):
+✅ CleanTwitter (100% SICHER):
    document.querySelectorAll('article')
-   → Liest nur lokales HTML im Browser
-   → Keine Server-Requests
-   → Twitter merkt NICHTS!
+   → Liest nur HTML im Browser-Speicher
+   → Keine Server-Requests = Twitter merkt NICHTS
+   → Wie normales Lesen von Tweets
+   → Browser zeigt eh alle Daten an
+   → Wir lesen nur was schon da ist!
 ```
 
-### 🕵️ Stealth Mode Features
+### 🔬 Technische Erklärung:
 
-- **Zufällige Delays** (2-5s) - wirkt menschlich
-- **Auto-Pause** nach X Tweets - verhindert Überlastung
-- **Einstellbare Intervalle** - 1.5s bis 10s
-- **Session Counter** - behält Überblick
-- **Pause/Resume** - manuelle Kontrolle
+**Was Twitter sieht:**
+```
+1. Du öffnest twitter.com
+2. Du scrollst durch Feed
+3. Du liest Tweets
+4. Du scrollst weiter
+```
+
+**Was Twitter NICHT sieht:**
+```
+❌ KEINE zusätzlichen API-Calls
+❌ KEINE erkennbare Automatisierung
+❌ KEINE Bot-Signatur
+❌ KEINE Requests an deren Server
+```
+
+### 🛡️ Warum Stealth Mode?
+
+**Auch wenn kein Ban-Risiko:**
+- Wirkt noch **menschlicher** durch zufällige Delays
+- Verhindert Browser-Überlastung
+- Gibt Bildern Zeit zum Laden
+- Best Practice für Web-Scraping
+
+**Aber wichtig:**
+> Selbst OHNE Stealth Mode = KEIN Ban-Risiko!
+> Stealth ist nur zusätzliche Vorsicht.
 
 ---
 
@@ -63,7 +101,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 ### Option 1: Drag & Drop (Desktop)
 
 1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-2. **Ziehe** den Button "💾 CleanTwitter v5.1" in deine Lesezeichenleiste
+2. **Ziehe** den Button "💾 CleanTwitter v5.1.2" in deine Lesezeichenleiste
 3. **Fertig!** Auf Twitter/X klicken um zu starten
 
 ### Option 2: Manuell (Mobile/Desktop)
@@ -74,34 +112,54 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 4. **Füge** den Code als URL ein
 5. **Fertig!** Auf Twitter/X nutzen
 
+### ⚠️ Alte Version? Cache leeren!
+
+**Wenn du noch alte Einstellungen siehst:**
+
+```bash
+# Desktop:
+1. Strg+Shift+R (Windows/Linux)
+2. Cmd+Shift+R (Mac)
+3. Oder: Strg+F5
+
+# Sicher gehen:
+1. Altes Bookmarklet LÖSCHEN
+2. Browser-Cache leeren (Strg+Shift+Del)
+3. Seite neu laden
+4. Neues Bookmarklet ziehen
+```
+
 ---
 
-## 📋 Features im Detail
+## 📋 Features v5.1.2
 
-### ✨ Version 5.1 (Aktuell)
+### ♾️ Unbegrenztes Scrollen
+- **Kein Tweet-Limit** mehr!
+- Scrolle so lange du willst
+- 1000, 5000, 10000+ Tweets möglich
+- Nur Storage-Limit (ca. 2000-3000 Tweets)
 
-#### 🛡️ Rate Limit Protection
+### 🛡️ Rate Limit Protection
 - **Stealth Mode**: Zufällige Delays (2-5s)
-- **Auto-Pause**: Nach X Tweets (Standard: 100)
-- **Session Counter**: Zeigt Fortschritt
-- **Pause Button**: Badge anklicken zum Pausieren
+- **Manuelle Pause**: Badge anklicken
+- **Kein Ban-Risiko**: Keine API-Calls!
 
-#### 🧠 Smart Detection
+### 🧠 Smart Detection
 - **Duplicate-Detection**: Retweets werden übersprungen
 - **Thread-Erkennung**: Zusammenhängende Tweets gruppiert
 - **Link-Extractor**: URLs separat gespeichert
 
-#### 💾 Storage Management
-- **Unbegrenzter Cache**: Keine automatische Löschung
+### 💾 Storage Management
+- **Unbegrenzter Cache**: Bis zu ~5MB (2000-3000 Tweets)
 - **Storage-Warnung**: Progressbar bei >80%
 - **Tägliche Stats**: Heute gespeicherte Tweets
 
-#### 📱 Mobile-Optimierung
+### 📱 Mobile-Optimierung
 - **Responsive Design**: Funktioniert auf allen Geräten
 - **Touch-Friendly**: Große Buttons
 - **iOS PWA-Ready**: Als App speicherbar
 
-#### 📤 Export-Optionen
+### 📤 Export-Optionen
 - **HTML Export**: Archiv-Datei
 - **ZIP Download**: Alle Medien gebündelt
 - **Links TXT**: Alle URLs als Textdatei
@@ -110,16 +168,17 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 ## ⚙️ Einstellungen
 
-### Empfohlene Settings (SAFE MODE)
+### Empfohlene Settings (v5.1.2)
 
 ```javascript
 ✅ Stealth Mode: AN
 ✅ Scan-Intervall: 3s (Normal)
-✅ Max. Tweets/Session: 100
-✅ Auto-Pause: AN
 ✅ Retweets skippen: AN
 ✅ Threads erkennen: AN
 ✅ Links extrahieren: AN
+
+❌ Auto-Pause: ENTFERNT (gibt's nicht mehr!)
+❌ Max. Tweets: ENTFERNT (unbegrenzt!)
 ```
 
 ### Verfügbare Intervalle
@@ -139,15 +198,15 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 1. Gehe auf [twitter.com](https://twitter.com) / [x.com](https://x.com)
 2. Klicke das Bookmarklet in deiner Leiste
-3. Alert erscheint: **"🐦 CleanTwitter v5.1!"**
-4. Badge erscheint unten rechts: **🛡️ 0**
+3. Alert erscheint: **"🐦 CleanTwitter v5.1.2!"**
+4. Badge erscheint unten rechts: **♾️ 0**
 
 ### Schritt 2: Scrollen
 
 1. **Scrolle LANGSAM** durch deinen Feed
 2. Warte bis Bilder/Videos laden
-3. Badge zählt hoch: **🛡️ 5**, **🛡️ 12**, etc.
-4. Bei 100 Tweets: **⏸️ 100** + Auto-Pause
+3. Badge zählt hoch: **♾️ 5**, **♾️ 12**, etc.
+4. **KEIN Limit!** Läuft unbegrenzt weiter!
 
 ### Schritt 3: Dashboard öffnen
 
@@ -160,90 +219,76 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 - **Badge anklicken** → Pausiert
 - **Badge wieder anklicken** → Fortsetzen
-- **Grün** = Aktiv | **Gelb** = Pausiert | **Rot** = Limit
+- **Grün** = Aktiv | **Gelb** = Pausiert
 
 ---
 
-## 📊 Dashboard Features
+## 📊 Console-Logs (F12)
 
-### Übersicht-Statistiken
+### v5.1.2 UNLIMITED:
 
-```
-📈 TÄGLICHE ZUSAMMENFASSUNG
-┌─────────────────────────────────┐
-│  42 Heute  │  28 Bilder        │
-│  10 Videos │   5 Threads       │
-│  87 Links                       │
-└─────────────────────────────────┘
-
-📦 GESAMT
-┌─────────────────────────────────┐
-│  230 Tweets │ 180 Bilder        │
-│   35 Videos │  15 GIFs          │
-│  1.2 MB Cache                   │
-└─────────────────────────────────┘
-```
-
-### Storage Progress
-
-```
-┌─────────────────────────────────┐
-│ [████████░░░░░░░░] 42%         │
-│ 2100 KB von ~5000 KB           │
-└─────────────────────────────────┘
+```javascript
+[CT]v5.1.2 UNLIMITED | Interval:3247ms | KEIN LIMIT!
+[CT]+3 T:3      // +3 neue Tweets, 3 gesamt
+[CT]+5 T:8      // +5 neue, 8 gesamt
+[CT]+12 T:20
+[CT]+7 T:27
+...
+[CT]+5 T:1024   // 1000+ Tweets!
+[CT]+3 T:1027
+...
+[CT]+8 T:5238   // 5000+ Tweets!
+[CT]+2 T:5240
+... UNBEGRENZT! ♾️
 ```
 
-### Tweet Cards
+### Badge-Anzeige:
 
-- **Thread-Badge**: 🧵 THREAD (orange)
-- **Media-Badge**: 🖼️ IMG / 🎥 VIDEO / 🎬 GIF
-- **Download-Button**: 💾 Direkt downloaden
-- **Timestamp**: Datum & Uhrzeit
-
----
-
-## 🔧 Technische Details
-
-### Wie funktioniert es?
-
-1. **DOM-Scraping**: Liest `document.querySelectorAll('article[data-testid="tweet"]')`
-2. **Element-Extraktion**: Findet Text, User, Bilder, Videos
-3. **localStorage**: Speichert alles lokal im Browser
-4. **Kein Backend**: Alles Client-Side, keine Server
-
-### Browser-Kompatibilität
-
-- ✅ **Chrome/Edge**: Vollständig unterstützt
-- ✅ **Firefox**: Vollständig unterstützt
-- ✅ **Safari**: Vollständig unterstützt
-- ✅ **Opera**: Vollständig unterstützt
-- ✅ **Mobile**: iOS & Android unterstützt
-
-### Storage Limits
-
-- **localStorage**: ~5-10 MB (Browser-abhängig)
-- **Empfehlung**: Export bei 5 MB
-- **Alert**: Automatisch bei >80%
+```
+♾️ 0      → Start
+♾️ 124    → Nach 5 Minuten
+♾️ 523    → Nach 20 Minuten
+♾️ 1284   → Nach 1 Stunde
+♾️ 5420   → Nach 4 Stunden
+... KEIN LIMIT! ...
+```
 
 ---
 
 ## ❓ FAQ
 
-### Allgemein
+### 🛡️ Sicherheit
 
 **Q: Kann Twitter mich bannen?**
-A: **NEIN!** Wir machen keine API-Calls. Wir lesen nur HTML wie ein normaler Browser.
+A: **NEIN!** Wir machen keine API-Calls. Wir lesen nur HTML wie ein normaler Browser. Twitter sieht nur dass du scrollst und Tweets liest.
 
 **Q: Sieht Twitter unser Tool?**
-A: **NEIN!** Alles läuft lokal. Keine Server-Kommunikation.
+A: **NEIN!** Alles läuft lokal im Browser. Keine Server-Kommunikation. Keine Requests an Twitter's API.
+
+**Q: Was ist mit Rate Limits?**
+A: Rate Limits gelten nur für API-Calls. Wir machen keine → Keine Rate Limits!
+
+**Q: Brauche ich VPN oder Proxy?**
+A: **NEIN!** Völlig unnötig. Das Tool ist 100% sicher ohne VPN.
 
 **Q: Ist es legal?**
-A: **JA!** Wir scrapen nur öffentliche Tweets die du eh siehst.
+A: **JA!** Wir scrapen nur öffentliche Tweets die du eh siehst. Wie ein Browser mit Notizblock.
 
-**Q: Funktioniert es auf privaten Accounts?**
-A: **JA**, wenn du ihnen folgst und sie siehst.
+### 📊 Limits
 
-### Technisch
+**Q: Wie viele Tweets kann ich speichern?**
+A: **UNBEGRENZT** bis zum Browser-Storage-Limit (~5MB = ca. 2000-3000 Tweets).
+
+**Q: Was passiert bei 2000 Tweets?**
+A: Storage-Warnung erscheint. Exportiere als ZIP, clear Cache, weiter scrollen!
+
+**Q: Gibt es ein Tweet-Limit pro Session?**
+A: **NEIN!** v5.1.2 hat KEIN Limit mehr. Auto-Pause ist komplett entfernt.
+
+**Q: Wie viele Tweets pro Stunde?**
+A: Bei 3s Intervall: ~1200 Tweets/Stunde. Abhängig von Feed-Dichte.
+
+### 🔧 Technisch
 
 **Q: Wo werden Daten gespeichert?**
 A: Nur in deinem Browser (`localStorage`). Nirgendwo sonst.
@@ -257,7 +302,10 @@ A: **JA!** HTML, ZIP (alle Medien), TXT (Links).
 **Q: Wie lösche ich Daten?**
 A: Dashboard → "🗑️ Clear" Button.
 
-### Probleme
+**Q: Funktioniert es auf privaten Accounts?**
+A: **JA**, wenn du ihnen folgst und sie siehst.
+
+### 🐛 Probleme
 
 **Q: Badge erscheint nicht?**
 A: Seite neu laden (F5) und Bookmarklet erneut klicken.
@@ -265,42 +313,86 @@ A: Seite neu laden (F5) und Bookmarklet erneut klicken.
 **Q: Bilder werden nicht gespeichert?**
 A: Zu schnell gescrollt! Langsam scrollen, Bilder müssen laden.
 
-**Q: 503 Error in Console?**
-A: Twitter-Server-Problem, nicht unser Tool. Seite neu laden.
+**Q: GitHub Pages zeigt alte Version?**
+A: Cache leeren! Strg+Shift+R oder Strg+F5. Altes Bookmarklet löschen!
+
+**Q: Tool pausiert ständig?**
+A: Du hast noch v5.1.0/v5.1.1! Neue Version holen, Cache leeren!
 
 **Q: Dashboard zeigt nichts?**
 A: Noch keine Tweets gespeichert. Auf Twitter scrollen!
 
 ---
 
-## 📸 Screenshots
+## 🔄 Changelog
 
-### Dashboard
-![Dashboard Overview](https://via.placeholder.com/800x400/1a1a1a/00ff88?text=Dashboard+Coming+Soon)
+### v5.1.2 (2026-02-16) - UNBEGRENZT!
+- ♾️ **KEIN Tweet-Limit** mehr!
+- 🚀 Scrolle so lange du willst - 1000, 5000, 10000+ Tweets!
+- 🐛 **Auto-Pause KOMPLETT entfernt**
+- 🐛 **Max. Tweets Setting entfernt**
+- ✅ Badge zeigt ♾️ statt 🛡️
+- 📊 Console: "UNLIMITED | KEIN LIMIT!"
+- 🛡️ Stealth Mode bleibt aktiv
 
-### Twitter Badge
-![Twitter Badge](https://via.placeholder.com/200x150/000000/00ff88?text=Badge+Active)
+### v5.1.1 (2026-02-16) - Auto-Pause Fix
+- 🐛 Auto-Pause default OFF (war bug in v5.1.0)
+- 📈 Max. Tweets auf 1000 erhöht
+- ✅ Badge-Klick für Pause/Resume gefixt
 
-### Settings Panel
-![Settings](https://via.placeholder.com/600x400/1a1a1a/4444ff?text=Settings+Panel)
+### v5.1.0 (2026-02-16) - Rate Limit Protection
+- ✅ Rate Limit Protection
+- ✅ Stealth Mode mit zufälligen Delays
+- ✅ Auto-Pause nach X Tweets
+- ✅ Session Counter
+- ✅ Pause/Resume Button
+
+### v5.0 (2026-02-16) - Smart Features
+- ✅ Duplicate-Detection (Retweets skippen)
+- ✅ Thread-Erkennung
+- ✅ Link-Extractor
+- ✅ Tägliche Zusammenfassung
+- ✅ Storage-Warnung mit Progressbar
+- ✅ Mobile-Optimierung
+
+### v4.2 (2026-02-16) - Unbegrenzter Cache
+- ✅ Unbegrenzter Cache
+- ✅ Cache-Größe Anzeige
+- ✅ Warnung bei großem Cache
+- ✅ Verbesserte Console-Logs
+
+### v4.0 (2026-02-15) - Media Download
+- ✅ ZIP Download
+- ✅ HTML Export
+- ✅ GIF Support
+- ✅ Tweet-Text Anzeige
 
 ---
 
-## 🛣️ Roadmap
+## 🛠️ Entwicklung
 
-### v5.2 (geplant)
-- [ ] **Suche & Filter** - Tweets durchsuchbar
-- [ ] **Favoriten-System** - Wichtige Tweets markieren
-- [ ] **JSON Export** - Für Backups
-- [ ] **Dark/Light Mode Toggle**
-- [ ] **Masonry Layout** - Pinterest-Style Grid
+### Lokaler Test:
 
-### v6.0 (geplant)
-- [ ] **Cloud-Sync** - Dropbox/Google Drive
-- [ ] **Multi-Device Sync** - Zwischen Geräten
-- [ ] **Advanced Stats** - Charts & Graphs
-- [ ] **Tag-System** - Tweets kategorisieren
-- [ ] **Whitelist/Blacklist** - User-Filter
+```bash
+# Repo klonen
+git clone https://github.com/cali72mero/twitter-clean-tracker.git
+cd twitter-clean-tracker
+
+# index.html im Browser öffnen
+open index.html  # Mac
+start index.html # Windows
+xdg-open index.html # Linux
+```
+
+### Code-Struktur:
+
+```
+twitter-clean-tracker/
+├── index.html       # Dashboard + Bookmarklet Generator
+├── loader.js        # (optional) Alternativer Loader
+├── README.md        # Diese Datei
+└── LICENSE          # MIT License
+```
 
 ---
 
@@ -313,37 +405,6 @@ Beiträge sind willkommen!
 3. **Commit** deine Changes (`git commit -m 'Add AmazingFeature'`)
 4. **Push** zum Branch (`git push origin feature/AmazingFeature`)
 5. **Open** einen Pull Request
-
----
-
-## 📝 Changelog
-
-### v5.1 (2026-02-16)
-- ✅ Rate Limit Protection
-- ✅ Stealth Mode mit zufälligen Delays
-- ✅ Auto-Pause nach X Tweets
-- ✅ Session Counter
-- ✅ Pause/Resume Button
-
-### v5.0 (2026-02-16)
-- ✅ Duplicate-Detection (Retweets skippen)
-- ✅ Thread-Erkennung
-- ✅ Link-Extractor
-- ✅ Tägliche Zusammenfassung
-- ✅ Storage-Warnung mit Progressbar
-- ✅ Mobile-Optimierung
-
-### v4.2 (2026-02-16)
-- ✅ Unbegrenzter Cache
-- ✅ Cache-Größe Anzeige
-- ✅ Warnung bei großem Cache
-- ✅ Verbesserte Console-Logs
-
-### v4.0 (2026-02-15)
-- ✅ ZIP Download
-- ✅ HTML Export
-- ✅ GIF Support
-- ✅ Tweet-Text Anzeige
 
 ---
 
@@ -369,7 +430,7 @@ copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+AUTHRS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
@@ -382,6 +443,7 @@ SOFTWARE.
 - **Live Demo**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
 - **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
 - **Issues**: [github.com/cali72mero/twitter-clean-tracker/issues](https://github.com/cali72mero/twitter-clean-tracker/issues)
+- **Latest Release**: [github.com/cali72mero/twitter-clean-tracker/releases](https://github.com/cali72mero/twitter-clean-tracker/releases)
 
 ---
 
@@ -406,6 +468,64 @@ Wenn dir das Projekt gefällt:
 
 Dieses Tool ist für **persönliche Nutzung** gedacht. Bitte respektiere Twitter's Terms of Service und die Privatsphäre anderer User. Nutze es verantwortungsvoll.
 
+**Wichtig:**
+- Scraped nur öffentliche Tweets
+- Respektiere private Accounts
+- Keine kommerzielle Nutzung ohne Erlaubnis
+- Kein Spam oder Missbrauch
+
 ---
 
-**Made with ❤️ by cali72mero | v5.1 | 2026**
+**Made with ❤️ by cali72mero | v5.1.2 | 2026**
+
+---
+
+## 📚 Weitere Infos
+
+### Warum DOM-Scraping sicher ist:
+
+1. **Browser lädt Tweets bereits:**
+   - Twitter sendet HTML an deinen Browser
+   - Browser rendert die Tweets
+   - Wir lesen nur was schon da ist
+
+2. **Keine zusätzlichen Requests:**
+   - Keine fetch()-Calls
+   - Keine XMLHttpRequest
+   - Keine WebSocket-Verbindungen
+
+3. **Unsichtbar für Twitter:**
+   - Läuft nur in deinem Browser
+   - Keine Server-Kommunikation
+   - Keine erkennbare Signatur
+
+4. **Vergleichbar mit:**
+   - Browser DevTools (F12)
+   - Copy & Paste
+   - Screenshot-Tool
+   - "Seite speichern als..."
+
+### Rate Limits erklärt:
+
+**Twitter API Rate Limits:**
+```
+GET /tweets/:id          → 900 Requests / 15min
+GET /users/:id/tweets    → 1500 Requests / 15min
+POST /tweets             → 200 Requests / 15min
+
+Bei Überschreitung:
+→ HTTP 429 (Too Many Requests)
+→ Account-Warnung
+→ Temporärer Ban möglich
+```
+
+**CleanTwitter:**
+```
+document.querySelectorAll() → Unbegrenzt!
+Keine API-Calls             → Keine Rate Limits!
+Keine HTTP-Requests         → Kein Ban-Risiko!
+```
+
+---
+
+**🚀 Viel Spaß mit CleanTwitter v5.1.2 - UNLIMITED! ♾️**
