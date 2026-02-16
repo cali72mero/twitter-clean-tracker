@@ -23,17 +23,32 @@
         .generator-box { background: #111; padding: 30px; border-radius: 20px; margin-bottom: 40px; text-align: center; border: 1px solid #333; }
         .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 1.2rem; }
         .stat-item { background: #222; padding: 10px 20px; border-radius: 10px; }
+        
+        .changelog { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary); }
+        .changelog h3 { color: var(--primary); margin-top: 0; }
+        .changelog ul { color: #aaa; line-height: 1.8; }
     </style>
 </head>
 <body>
 
+    <!-- CHANGELOG -->
+    <div class="changelog">
+        <h3>🆕 Version 3.2 - Shadow DOM Update</h3>
+        <ul>
+            <li>✅ <strong>Shadow DOM Integration</strong>: Button ist jetzt komplett isoliert vom Twitter-DOM</li>
+            <li>✅ <strong>MutationObserver</strong>: Button wird automatisch neu eingefügt, falls Twitter ihn entfernt</li>
+            <li>✅ <strong>Verbesserte Sichtbarkeit</strong>: Keine CSS-Konflikte mehr mit Twitter's React-App</li>
+            <li>✅ <strong>Pointer-Events Fix</strong>: Host ist transparent, nur Panel ist klickbar</li>
+        </ul>
+    </div>
+
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter Dashboard v3.1</h1>
+        <h1>🐦 CleanTwitter Dashboard v3.2</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             1. Ziehe den Button in deine Leiste.<br>
             2. Nutze ihn auf Twitter.<br>
-            3. Unten rechts auf Twitter erscheint ein Button "👀 View on GitHub".
+            3. Unten rechts auf Twitter erscheint ein Button "👀 View Dashboard" (jetzt im Shadow DOM!).
         </p>
         
         <a id="bookmarkletBtn" class="btn" href="#">💾 CleanTwitter + Record</a>
@@ -56,7 +71,7 @@
         
         <div id="empty" class="empty-state">
             <h3>Noch leer hier! 🕸️</h3>
-            <p>Geh auf Twitter, aktiviere das Bookmarklet und klicke dann auf den neuen Button "👀 View on GitHub".</p>
+            <p>Geh auf Twitter, aktiviere das Bookmarklet und klicke dann auf den neuen Button "👀 View Dashboard".</p>
         </div>
     </div>
 
@@ -125,126 +140,15 @@
             a.click();
         }
 
-        // --- BOOKMARKLET CODE GENERATION ---
-        const code = `javascript:(function(){
-            /* 1. SETUP UI: FORCE CREATION */
-            var existing = document.getElementById('clean-tw-panel');
-            if(existing) existing.remove(); // Reset UI if running again
-
-            var panel = document.createElement('div');
-            panel.id = 'clean-tw-panel';
-            // Important: Use fixed positioning with high z-index and ensure it's visible
-            panel.style.cssText = 'position:fixed !important; bottom:20px !important; right:20px !important; z-index:2147483647 !important; display:flex; flex-direction:column; gap:8px; align-items:flex-end; pointer-events:auto;';
-            
-            var badge = document.createElement('div');
-            badge.innerText = '🔴 Rec: 0';
-            badge.style.cssText = 'background:rgba(0,0,0,0.8); color:#ff4444; padding:8px 12px; border-radius:8px; font-weight:bold; font-family:monospace; border:1px solid #333; font-size:12px; min-width:60px; text-align:center;';
-            
-            var sendBtn = document.createElement('button');
-            sendBtn.innerText = '👀 View on GitHub';
-            sendBtn.style.cssText = 'background:#00ff88; color:#000; border:none; padding:10px 15px; border-radius:20px; font-weight:bold; cursor:pointer; font-family:system-ui, sans-serif; box-shadow:0 4px 12px rgba(0,255,136,0.3); font-size:13px; transition:transform 0.1s;';
-            
-            sendBtn.onmouseover = function(){ this.style.transform='scale(1.05)'; };
-            sendBtn.onmouseout = function(){ this.style.transform='scale(1)'; };
-
-            /* 2. SEND DATA TO GITHUB PAGE */
-            sendBtn.onclick = function() {
-                var stored = JSON.parse(localStorage.getItem('tw_clean_cache') || '[]');
-                
-                // Open window and keep reference
-                var win = window.open('https://cali72mero.github.io/twitter-clean-tracker/', 'tw_viewer');
-                
-                if(win) {
-                    badge.innerText = '⏳ Sending...';
-                    // Try sending data multiple times to catch the window loading state
-                    var attempts = 0;
-                    var interval = setInterval(function(){
-                        win.postMessage({type: 'import_tweets', data: stored}, '*');
-                        attempts++;
-                        if(attempts > 8) {
-                            clearInterval(interval);
-                            badge.innerText = '✅ Sent!';
-                            setTimeout(() => badge.innerText = '🔴 Rec: ' + stored.length, 2000);
-                        }
-                    }, 800);
-                } else {
-                    alert('Popup blocked! Please allow popups for Twitter to view the dashboard.');
-                }
-            };
-
-            panel.appendChild(badge);
-            panel.appendChild(sendBtn);
-            document.body.appendChild(panel);
-
-            /* 3. SPOOF UA */
-            try { Object.defineProperty(navigator, 'userAgent', {get:()=>'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1'}); } catch(e){}
-
-            /* 4. SCANNER LOOP */
-            var seenIds = new Set();
-            
-            function scan() {
-                // Clean Ads
-                var junk = document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]');
-                junk.forEach(el => el.remove());
-
-                // Capture Tweets
-                var tweets = document.querySelectorAll('article[data-testid="tweet"]');
-                var cache = JSON.parse(localStorage.getItem('tw_clean_cache') || '[]');
-                var newCount = 0;
-
-                tweets.forEach(t => {
-                    var txtEl = t.querySelector('[data-testid="tweetText"]');
-                    var userEl = t.querySelector('[data-testid="User-Name"]');
-                    var imgEl = t.querySelector('img[src*="media"]');
-                    
-                    if(userEl && (txtEl || imgEl)) {
-                        var txt = txtEl ? txtEl.innerText : '';
-                        var user = userEl.innerText.split('\\n')[0];
-                        
-                        // Create ID based on text content to avoid duplicates
-                        var id = user + '|' + txt.substring(0, 30);
-                        
-                        if(!seenIds.has(id)) {
-                            seenIds.add(id);
-                            // Avoid re-saving if already in localStorage from previous session
-                            if(!cache.some(c => c.text === txt && c.user === user)) {
-                                cache.push({
-                                    user: user,
-                                    text: txt,
-                                    img: imgEl ? imgEl.src : null,
-                                    date: Date.now()
-                                });
-                                newCount++;
-                            }
-                        }
-                    }
-                });
-
-                if(newCount > 0) {
-                    // Limit local storage size (keep last 200)
-                    if(cache.length > 200) cache = cache.slice(cache.length - 200);
-                    localStorage.setItem('tw_clean_cache', JSON.stringify(cache));
-                    badge.innerText = '🔴 Rec: ' + cache.length;
-                    
-                    // Visual Feedback
-                    badge.style.borderColor = '#00ff88';
-                    setTimeout(()=>badge.style.borderColor='#333', 500);
-                }
-            }
-            
-            setInterval(scan, 1500);
-            scan();
-            
-            // Initial Notification
-            alert('🐦 CleanTwitter v3.1 gestartet!\\nUnten rechts ist jetzt dein Dashboard-Button.');
-
-        })();`.replace(/\s+/g, ' ').trim();
+        // --- BOOKMARKLET CODE GENERATION (v3.2 - Shadow DOM) ---
+        const code = `javascript:(function(){'use strict';var e=document.getElementById('clean-tw-host');if(e)e.remove();var t=document.createElement('div');t.id='clean-tw-host';t.style.cssText='position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;pointer-events:none!important;';var o=t.attachShadow({mode:'open'}),n=document.createElement('style');n.textContent=':host{all:initial}.panel{display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:auto}.badge{background:rgba(0,0,0,0.95);color:#ff4444;padding:8px 12px;border-radius:8px;font-weight:bold;font-family:monospace;border:2px solid #333;font-size:12px;min-width:70px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.5)}.btn{background:#00ff88;color:#000;border:none;padding:10px 16px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:system-ui;box-shadow:0 4px 12px rgba(0,255,136,0.5);font-size:13px;transition:transform 0.1s}.btn:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(0,255,136,0.7)}';var a=document.createElement('div');a.className='panel';var r=document.createElement('div');r.className='badge';r.innerText='🔴 Rec: 0';var i=document.createElement('button');i.className='btn';i.innerText='👀 View Dashboard';i.onclick=function(){var e=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),t=window.open('https://cali72mero.github.io/twitter-clean-tracker/','tw_viewer');if(t){r.innerText='⏳ Sending...';var o=0,n=setInterval(function(){t.postMessage({type:'import_tweets',data:e},'*');o++;if(o>8){clearInterval(n);r.innerText='✅ Sent!';setTimeout(()=>r.innerText='🔴 Rec: '+e.length,2e3)}},800)}else{alert('Popup blocked! Enable popups for Twitter.')}};a.appendChild(r);a.appendChild(i);o.appendChild(n);o.appendChild(a);document.body.appendChild(t);var c=new MutationObserver(function(){if(!document.body.contains(t)){document.body.appendChild(t)}});c.observe(document.body,{childList:true,subtree:false});try{Object.defineProperty(navigator,'userAgent',{get:()=>'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1'})}catch(e){}var l=new Set;function d(){document.querySelectorAll('[data-testid="skeleton"], [data-testid="PromotedTweet"], [aria-label*="Who to follow"]').forEach(e=>e.remove());var e=document.querySelectorAll('article[data-testid="tweet"]'),t=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'),o=0;e.forEach(e=>{var n=e.querySelector('[data-testid="tweetText"]'),a=e.querySelector('[data-testid="User-Name"]'),i=e.querySelector('img[src*="media"]');if(a&&(n||i)){var c=n?n.innerText:'',d=a.innerText.split('\\n')[0],s=d+'|'+c.substring(0,30);if(!l.has(s)){l.add(s);if(!t.some(e=>e.text===c&&e.user===d)){t.push({user:d,text:c,img:i?i.src:null,date:Date.now()});o++}}}});if(o>0){if(t.length>200)t=t.slice(t.length-200);localStorage.setItem('tw_clean_cache',JSON.stringify(t));r.innerText='🔴 Rec: '+t.length;r.style.borderColor='#00ff88';setTimeout(()=>r.style.borderColor='#333',500)}}setInterval(d,1500);d();alert('🐦 CleanTwitter v3.2 loaded!\\nButton ist jetzt im Shadow DOM (unten rechts).')})();`;
 
         document.getElementById('bookmarkletBtn').href = code;
 
         function copyCode() {
             navigator.clipboard.writeText(document.getElementById('bookmarkletBtn').href)
-                .then(() => alert('Code kopiert!'));
+                .then(() => alert('✅ Code kopiert! Einfach in Vivaldi als Lesezeichen einfügen.'))
+                .catch(() => alert('❌ Fehler beim Kopieren. Nutze den Drag & Drop Button.'));
         }
 
         // --- LISTENER (Empfängt Daten vom Twitter-Fenster) ---
