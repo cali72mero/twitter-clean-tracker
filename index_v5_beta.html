@@ -134,7 +134,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        const CACHE_KEY = 'tw_clean_cache'; // FIX: Konsistenter Key!
+        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC ---
+        const CACHE_KEY = 'tw_clean_cache'; // MUSS GLEICH SEIN
         
         let settings = {
             stealthMode: true,
@@ -176,6 +177,7 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
+            // BOOKMARKLET CODE - MIT POSTMESSAGE FIX
             const code = `(function(){
                 console.log('[CT] v5.0 BETA START');
                 var CFG = ${CONFIG};
@@ -202,14 +204,16 @@
                     
                     s.onclick = function(){
                         var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
+                        // ÖFFNET DAS DASHBOARD
                         var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html', 'ct_dashboard');
-                        if(w){
-                            b.innerText = '⏳ Sync';
-                            var i=0, t=setInterval(function(){
-                                w.postMessage({type:'import_tweets', data:c}, '*');
-                                if(++i > 5){ clearInterval(t); upd(); }
-                            }, 800);
-                        } else alert('Popup!');
+                        
+                        // SENDE DATEN SOFORT UND MEHRFACH (um sicherzugehen dass es ankommt)
+                        b.innerText = '⏳ Sync...';
+                        var i = 0;
+                        var t = setInterval(function(){
+                            if(w) w.postMessage({type:'import_tweets', data:c}, '*');
+                            if(++i > 10){ clearInterval(t); upd(); }
+                        }, 500);
                     };
                     
                     p.appendChild(b);
@@ -528,9 +532,11 @@
             });
         }
 
-        // FIX: postMessage Listener hinzugefügt!
+        // IMPROVED LISTENER
         window.addEventListener('message', (event) => {
+            // Nur vertrauenswürdige Messages verarbeiten (optional: origin check)
             if (event.data && event.data.type === 'import_tweets') {
+                console.log('Empfange Daten...', event.data.data.length);
                 const newTweets = event.data.data;
                 const currentCache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
                 
@@ -545,6 +551,12 @@
                 if(addedCount > 0) {
                     localStorage.setItem(CACHE_KEY, JSON.stringify(currentCache));
                     loadCache();
+                    // Feedback an User
+                    const statInfo = document.createElement('div');
+                    statInfo.innerText = `✅ ${addedCount} neue Tweets importiert!`;
+                    statInfo.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
+                    document.body.appendChild(statInfo);
+                    setTimeout(() => statInfo.remove(), 3000);
                 }
             }
         });
