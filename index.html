@@ -28,7 +28,7 @@
         .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 1.2rem; flex-wrap: wrap; }
         .stat-item { background: #222; padding: 10px 20px; border-radius: 10px; }
         
-        .changelog { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #333; }
+        .changelog { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary); }
         .changelog h3 { color: var(--primary); margin-top: 0; }
         .changelog ul { color: #aaa; line-height: 1.8; }
         
@@ -87,9 +87,9 @@
 
     <!-- DRAG INSTRUCTION -->
     <div class="drag-instruction">
-        <h3>🎉 Version 4.2.2 (STABLE)</h3>
-        <p><strong>Die stabile Version mit funktionierendem ZIP-Export!</strong></p>
-        <p><a href="index_v5_beta.html" style="color: #00ff88;">⚠️ Zur Beta v5.0 wechseln (experimentell)</a></p>
+        <h3>🎉 Version 4.2.2 - ZIP Fix!</h3>
+        <p><strong>NEU:</strong> Stabilerer ZIP-Download für viele Bilder!</p>
+        <p><strong>WICHTIG:</strong> Langsam scrollen, damit Bilder laden können!</p>
     </div>
 
     <!-- SETTINGS -->
@@ -102,9 +102,20 @@
         <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">✅ Buttons sind STANDARDMÄSSIG AN! Nach Änderung Bookmarklet neu ziehen.</p>
     </div>
 
+    <!-- CHANGELOG -->
+    <div class="changelog">
+        <h3>🆕 Version 4.2.2 - ZIP Stability Fix</h3>
+        <ul>
+            <li>🐛 <strong>ZIP-Fix:</strong> Download stoppt nicht mehr bei vielen Bildern (600+)</li>
+            <li>⏳ <strong>Lade-Anzeige:</strong> Zeigt Fortschritt beim ZIP-Erstellen</li>
+            <li>✨ <strong>Multi-Image Support:</strong> Speichert weiterhin ALLE Bilder eines Posts!</li>
+            <li>💾 <strong>Download-Buttons</strong>: Laden jetzt alle Bilder auf einmal</li>
+        </ul>
+    </div>
+
     <!-- GENERATOR TEIL -->
     <div class="generator-box">
-        <h1>🐦 CleanTwitter v4.2.2 (STABLE)</h1>
+        <h1>🐦 CleanTwitter Dashboard v4.2.2</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
             <strong style="font-size: 1.2em; color: var(--primary);">Ziehe den Button in deine Leiste ↓</strong>
         </p>
