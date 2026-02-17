@@ -135,7 +135,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC ---
-        const CACHE_KEY = 'tw_clean_cache'; // MUSS GLEICH SEIN
+        const CACHE_KEY = 'tw_clean_cache';
 
         const ALLOWED_IMPORT_ORIGINS = new Set([
             'https://twitter.com',
@@ -152,13 +152,11 @@
         }
 
         function makeKey(t) {
-            // Best: stable tweet id from /status/<id>
             if(t && t.tid) return 'tid:' + String(t.tid);
             if(t && t.url) {
                 const m = String(t.url).match(/\/status\/(\d+)/);
                 if(m) return 'tid:' + m[1];
             }
-            // Fallback: user + normalized text + media signature
             const user = norm(t && t.user);
             const text = norm(t && t.text);
             const mediaSig = t && t.video ? ('v:' + t.video) : ('i:' + (t && t.imgs ? (t.imgs[0] || '') : (t && t.img ? t.img : '')));
@@ -167,15 +165,9 @@
 
         function mergeTweet(existing, incoming) {
             if(!existing || !incoming) return existing || incoming;
-
-            // Prefer filled text
             if(!norm(existing.text) && norm(incoming.text)) existing.text = incoming.text;
-
-            // Prefer tid/url if missing
             if(!existing.tid && incoming.tid) existing.tid = incoming.tid;
             if(!existing.url && incoming.url) existing.url = incoming.url;
-
-            // Merge media
             if(incoming.video && !existing.video) existing.video = incoming.video;
             const aImgs = existing.imgs || (existing.img ? [existing.img] : []);
             const bImgs = incoming.imgs || (incoming.img ? [incoming.img] : []);
@@ -184,14 +176,9 @@
                 existing.imgs = mergedImgs;
                 delete existing.img;
             }
-
-            // Keep earliest date if both exist
             if(existing.date && incoming.date) existing.date = Math.min(existing.date, incoming.date);
             else if(!existing.date && incoming.date) existing.date = incoming.date;
-
-            // Preserve thread marker
             if(incoming.isThread && !existing.isThread) existing.isThread = true;
-
             return existing;
         }
 
@@ -208,14 +195,12 @@
             const saved = localStorage.getItem('ct_settings_v5');
             if(saved) settings = JSON.parse(saved);
             else localStorage.setItem('ct_settings_v5', JSON.stringify(settings));
-
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('rateLimit').checked = settings.rateLimit;
             document.getElementById('skipRetweets').checked = settings.skipRetweets;
             document.getElementById('detectThreads').checked = settings.detectThreads;
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
             document.getElementById('greenBadge').checked = settings.greenBadge;
-
             updateBookmarklet();
         }
 
@@ -226,7 +211,6 @@
             settings.detectThreads = document.getElementById('detectThreads').checked;
             settings.showDlButtons = document.getElementById('showDlButtons').checked;
             settings.greenBadge = document.getElementById('greenBadge').checked;
-
             localStorage.setItem('ct_settings_v5', JSON.stringify(settings));
             updateBookmarklet();
             alert('✅ Einstellungen gespeichert!\n\nBITTE DAS BOOKMARKLET NEU IN DIE LEISTE ZIEHEN!');
@@ -234,20 +218,15 @@
 
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
-
-            // BOOKMARKLET CODE - FIX: dedupe + ack sync + better IDs
             const code = `(function(){
                 console.log('[CT] v5.0 BETA START');
                 var CFG = ${CONFIG};
                 var P, B;
                 var scanCount = 0;
                 var paused = false;
-
                 var badgeColor = CFG.greenBadge ? '#0f8' : '#f44';
                 var badgeIcon = CFG.greenBadge ? '♾️' : '🔴';
-
                 function norm(s){ return (s||'').replace(/\s+/g,' ').trim(); }
-
                 function extractTid(article){
                     try{
                         var a = article.querySelector('a[href*="/status/"]');
@@ -257,64 +236,51 @@
                         return m ? m[1] : null;
                     }catch(e){ return null; }
                 }
-
                 function mk(){
                     var p = document.createElement('div');
                     p.id = 'ct-p';
                     p.style.cssText = 'position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';
-
                     var b = document.createElement('div');
                     b.id = 'ct-b';
                     b.innerText = badgeIcon + ' 0';
                     b.style.cssText = 'all:initial!important;background:rgba(0,0,0,0.95)!important;color:'+badgeColor+'!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important;box-shadow:0 4px 10px rgba(0,0,0,0.5)!important';
-
                     var s = document.createElement('button');
                     s.innerText = '👀 View';
                     s.style.cssText = 'all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
-
                     s.onclick = function(){
                         var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
                         var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html', 'ct_dashboard');
-
                         var batchId = 'b' + Date.now() + '_' + Math.random().toString(16).slice(2);
                         b.innerText = '⏳ Sync...';
-
                         var tries = 0;
                         var maxTries = 12;
-
                         function stop(){
                             if(t) clearInterval(t);
                             window.removeEventListener('message', onMsg);
                             upd();
                         }
-
                         function onMsg(ev){
                             if(ev && ev.data && ev.data.type === 'import_ack' && ev.data.batchId === batchId){
                                 console.log('[CT] import ack', ev.data);
                                 stop();
                             }
                         }
-
                         window.addEventListener('message', onMsg);
-
                         var t = setInterval(function(){
                             tries++;
                             if(w) w.postMessage({type:'import_tweets', batchId: batchId, data:c}, '*');
                             if(tries >= maxTries) stop();
                         }, 500);
                     };
-
                     p.appendChild(b);
                     p.appendChild(s);
                     P=p; B=b;
                     return p;
                 }
-
                 function upd(){
                     var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
                     if(B) B.innerText = (paused ? '⏸️' : badgeIcon) + ' ' + c.length;
                 }
-
                 function dlMedia(url, name){
                     fetch(url).then(r => r.blob()).then(blob => {
                         var a = document.createElement('a');
@@ -323,16 +289,13 @@
                         a.click();
                     }).catch(() => alert('DL Error'));
                 }
-
                 function addDL(){
                     if(!CFG.showDlButtons) return;
                     document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){
                         if(t.dataset.ctDl) return;
                         t.dataset.ctDl = '1';
-
                         var imgs = t.querySelectorAll('img[src*="media"]');
                         var vid = t.querySelector('video[src]');
-
                         if(imgs.length > 0 || vid){
                             var btn = document.createElement('button');
                             btn.innerText = '💾';
@@ -347,12 +310,9 @@
                         }
                     });
                 }
-
                 function sc(){
                     if(paused) return;
-
                     document.querySelectorAll('[data-testid="skeleton"]').forEach(e => e.remove());
-
                     var ts = document.querySelectorAll('article[data-testid="tweet"]');
                     var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
                     var existingKeys = new Set();
@@ -363,70 +323,54 @@
                             if(m) existingKeys.add('tid:'+m[1]);
                         }
                     });
-
                     var added = 0;
-
                     ts.forEach(function(t){
                         if(CFG.skipRetweets && t.innerText.includes('reposted')) return;
-
                         var txt = t.querySelector('[data-testid="tweetText"]');
                         var u = t.querySelector('[data-testid="User-Name"]');
                         var imgs = t.querySelectorAll('img[src*="media"]');
                         var vid = t.querySelector('video[src]');
-
                         if(u && (txt || imgs.length > 0 || vid)){
                             var text = txt ? txt.innerText : '';
                             var user = u.innerText.split('\\n')[0];
-
                             var tid = extractTid(t);
                             var key = tid ? ('tid:'+tid) : (norm(user)+'|'+norm(text).substring(0,80));
                             if(existingKeys.has(key)) return;
-
                             var item = {user:user, text:text, date:Date.now()};
                             if(tid) {
                                 item.tid = tid;
                                 item.url = location.origin + '/i/status/' + tid;
                             }
-
                             if(vid) item.video = vid.src;
                             else if(imgs.length > 0) item.imgs = Array.from(imgs).map(i => i.src);
-
                             if(CFG.detectThreads && document.title.includes('Thread')) item.isThread = true;
-
                             c.push(item);
                             existingKeys.add(key);
                             added++;
                             scanCount++;
                         }
                     });
-
                     if(added > 0){
                         localStorage.setItem('tw_clean_cache', JSON.stringify(c));
                         upd();
                         console.log('[CT] +' + added + ' Total:' + c.length);
                     }
-
                     if(CFG.rateLimit && scanCount >= 50){
                         paused = true;
                         scanCount = 0;
                         if(B) B.innerText = '⏸️ Limit';
                         setTimeout(() => { paused = false; upd(); }, 30000);
                     }
-
                     var nextScan = CFG.stealthMode ? (Math.random() * 4000 + 2000) : 1500;
                     setTimeout(sc, nextScan);
                 }
-
                 var e = document.getElementById('ct-p');
                 if(!e) document.body.appendChild(mk());
-
                 upd();
                 sc();
                 setInterval(addDL, 2000);
-
                 alert('⚠️ CleanTwitter v5.0 BETA STARTED!');
             })();`;
-
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
 
@@ -449,20 +393,17 @@
             const raw = localStorage.getItem(CACHE_KEY);
             if(!raw) return alert('Cache ist leer!');
             const data = JSON.parse(raw);
-
             const zip = new JSZip();
             const imgFolder = zip.folder('images');
             const vidFolder = zip.folder('videos');
-
             document.getElementById('loadingOverlay').style.display = 'flex';
             const status = document.getElementById('loadingStatus');
-
             let imgIdx = 1, vidIdx = 1, processed = 0, total = 0;
             data.forEach(t => {
                 if(t.imgs) total += t.imgs.length;
                 else if(t.img || t.video) total++;
             });
-
+            console.log('[CT] ZIP Export START - Total files:', total);
             for(const t of data) {
                 try {
                     if(t.imgs && t.imgs.length > 0) {
@@ -472,9 +413,11 @@
                                 if(response.ok) {
                                     const blob = await response.blob();
                                     const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                    imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                                    imgFolder.file(`image_${imgIdx}.${ext}`, blob);
+                                    console.log(`[CT]+1 Total:${imgIdx}`);
+                                    imgIdx++;
                                 }
-                            } catch(e) { console.error('Skip img', e); }
+                            } catch(e) { console.error('[CT] Skip img', e); }
                             processed++;
                             status.innerText = `Verarbeite... (${processed}/${total})`;
                             if(processed % 10 === 0) await new Promise(r => setTimeout(r, 50));
@@ -485,32 +428,36 @@
                             if(response.ok) {
                                 const blob = await response.blob();
                                 const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                                imgFolder.file(`image_${imgIdx}.${ext}`, blob);
+                                console.log(`[CT]+1 Total:${imgIdx}`);
+                                imgIdx++;
                             }
-                        } catch(e) {}
+                        } catch(e) { console.error('[CT] Skip img', e); }
                         processed++;
                     } else if(t.video) {
                         try {
                             const response = await fetch(t.video);
                             if(response.ok) {
                                 const blob = await response.blob();
-                                vidFolder.file(`video_${vidIdx++}.mp4`, blob);
+                                vidFolder.file(`video_${vidIdx}.mp4`, blob);
+                                console.log(`[CT]+1 Total:${vidIdx} (video)`);
+                                vidIdx++;
                             }
-                        } catch(e) {}
+                        } catch(e) { console.error('[CT] Skip video', e); }
                         processed++;
                     }
                     if(processed % 20 === 0) await new Promise(r => setTimeout(r, 100));
-                } catch(e) { console.error('Error:', e); }
+                } catch(e) { console.error('[CT] Error:', e); }
             }
-
             status.innerText = 'Erstelle ZIP... (fast fertig!)';
+            console.log('[CT] ZIP: Generating archive...');
             const content = await zip.generateAsync({type: 'blob'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(content);
             a.download = `twitter_media_${Date.now()}.zip`;
             a.click();
-
             document.getElementById('loadingOverlay').style.display = 'none';
+            console.log('[CT] ZIP Export DONE!');
             alert('✅ ZIP-Download erfolgreich!');
         }
 
@@ -525,19 +472,15 @@
             const raw = localStorage.getItem(CACHE_KEY);
             if(!raw) return alert('Cache ist leer!');
             const data = JSON.parse(raw);
-
             let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv</title><style>body{font-family:system-ui;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
-
             data.forEach(t => {
                 let media = '';
                 if(t.video) media = `<video src="${t.video}" controls></video>`;
                 else if(t.imgs) media = `<div class="grid">` + t.imgs.map(s => `<img src="${s}">`).join('') + `</div>`;
                 else if(t.img) media = `<img src="${t.img}">`;
-
                 html += `<div class="card"><div>👤 ${t.user} • ${new Date(t.date).toLocaleString()}</div><div>${(t.text || '').replace(/\n/g, '<br>')}</div>${media}</div>`;
             });
             html += '</body></html>';
-
             const blob = new Blob([html], {type:'text/html'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -550,13 +493,10 @@
             const data = raw ? JSON.parse(raw) : [];
             const grid = document.getElementById('grid');
             const empty = document.getElementById('empty');
-
             document.getElementById('countDisplay').innerText = data.length;
-
             const sizeBytes = new Blob([raw || '']).size;
             const sizeKB = Math.round(sizeBytes / 1024);
             document.getElementById('sizeDisplay').innerText = sizeKB;
-
             const sizeInfo = document.getElementById('sizeInfo');
             if(sizeKB > 5000) {
                 sizeInfo.style.background = '#ff4444';
@@ -564,7 +504,6 @@
             } else {
                 sizeInfo.style.background = '#333';
             }
-
             let imgCount = 0, vidCount = 0;
             data.forEach(t => {
                 if(t.imgs) imgCount += t.imgs.length;
@@ -573,21 +512,17 @@
             });
             document.getElementById('imgCount').innerText = imgCount;
             document.getElementById('vidCount').innerText = vidCount;
-
             if(data.length > 0) {
                 empty.style.display = 'none';
                 grid.innerHTML = '';
-
                 data.slice().reverse().forEach((t, idx) => {
                     const card = document.createElement('div');
                     card.className = 'tweet-card';
                     const safeText = (t.text || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     const safeUser = (t.user || '').replace(/</g, "&lt;");
-
                     let mediaHTML = '';
                     let badge = '';
                     let dlBtn = '';
-
                     if(t.video) {
                         mediaHTML = `<video src="${t.video}" class="tweet-video" controls></video>`;
                         badge = '<div class="media-badge">🎥 VIDEO</div>';
@@ -606,7 +541,6 @@
                         const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
                         dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.img}', 'image_${idx}.${ext}')">💾 Bild</button>`;
                     }
-
                     card.innerHTML = `
                         ${badge}
                         <div class="tweet-user">👤 ${safeUser}</div>
@@ -635,29 +569,19 @@
             });
         }
 
-        // FIXED IMPORT LISTENER (dedupe + merge + ack)
         window.addEventListener('message', (event) => {
             if(!event || !event.data || event.data.type !== 'import_tweets') return;
-
-            // Optional origin check (skip "null" origins)
-            if(event.origin && event.origin !== 'null' && !ALLOWED_IMPORT_ORIGINS.has(event.origin)) {
-                return;
-            }
-
+            if(event.origin && event.origin !== 'null' && !ALLOWED_IMPORT_ORIGINS.has(event.origin)) return;
             const batchId = event.data.batchId;
             const newTweets = Array.isArray(event.data.data) ? event.data.data : [];
-
             const currentCache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
             const byKey = new Map();
-
             currentCache.forEach(t => {
                 const k = makeKey(t);
                 if(!byKey.has(k)) byKey.set(k, t);
             });
-
             let addedCount = 0;
             let mergedCount = 0;
-
             newTweets.forEach(nt => {
                 const k = makeKey(nt);
                 if(!byKey.has(k)) {
@@ -672,12 +596,9 @@
                     if(afterImgs > beforeImgs || (nt && nt.video && !existing.video)) mergedCount++;
                 }
             });
-
-            // Persist even if only merged (media might have improved)
             if(addedCount > 0 || mergedCount > 0) {
                 localStorage.setItem(CACHE_KEY, JSON.stringify(currentCache));
                 loadCache();
-
                 const statInfo = document.createElement('div');
                 statInfo.innerText = addedCount > 0
                     ? `✅ ${addedCount} neue Tweets importiert!` + (mergedCount ? ` (🧩 ${mergedCount} aktualisiert)` : '')
@@ -686,8 +607,6 @@
                 document.body.appendChild(statInfo);
                 setTimeout(() => statInfo.remove(), 3000);
             }
-
-            // Ack back to sender so it can stop re-sending
             try {
                 if(event.source && typeof event.source.postMessage === 'function') {
                     event.source.postMessage({type:'import_ack', batchId: batchId, added: addedCount, merged: mergedCount}, event.origin || '*');
