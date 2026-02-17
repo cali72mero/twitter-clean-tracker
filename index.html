@@ -145,7 +145,6 @@
             if(saved) settings = JSON.parse(saved);
             else localStorage.setItem('ct_settings_v5', JSON.stringify(settings));
             
-            // UI Update
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('rateLimit').checked = settings.rateLimit;
             document.getElementById('skipRetweets').checked = settings.skipRetweets;
@@ -172,8 +171,6 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
-            // --- FIX 1: View Button öffnet jetzt URL korrekt und sendet Message ---
-            // --- FIX 2: Download Button Logik verbessert ---
             const code = `(function(){
                 console.log('[CT] v5.0 GOLD START');
                 var CFG = ${CONFIG};
@@ -198,20 +195,20 @@
                     s.innerText = '👀 View';
                     s.style.cssText = 'all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     
-                    // --- VIEW BUTTON FIX ---
                     s.onclick = function(){
                         var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                        // Öffnet Dashboard und sendet Daten
+                        // FORCE POST MESSAGE - Sending to * to ensure it arrives (Dashboard validates origin or accepts it)
                         var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/', 'ct_dashboard');
                         if(w){
                             b.innerText = '⏳ Senden...';
                             var attempts = 0;
+                            // Sende 10x in 5 Sekunden Intervallen, um sicherzustellen dass das Fenster geladen ist
                             var t = setInterval(function(){
                                 w.postMessage({type:'import_tweets', data:c}, '*');
                                 attempts++;
-                                if(attempts > 10){ 
+                                if(attempts > 20){ 
                                     clearInterval(t); 
-                                    b.innerText = '✅ Fertig';
+                                    b.innerText = '✅ Gesendet';
                                     setTimeout(upd, 2000);
                                 }
                             }, 500);
@@ -228,7 +225,9 @@
 
                 function upd(){
                     var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                    if(B) B.innerText = (paused ? '⏸️' : badgeIcon) + ' ' + c.length;
+                    // RESET CHECK: Wenn Array leer ist, MUSS 0 angezeigt werden
+                    var count = c ? c.length : 0;
+                    if(B) B.innerText = (paused ? '⏸️' : badgeIcon) + ' ' + count;
                 }
 
                 function dlMedia(url, name){
@@ -259,8 +258,6 @@
                                 if(vid) dlMedia(vid.src, 'video_'+Date.now()+'.mp4');
                                 else imgs.forEach((img,i) => dlMedia(img.src, 'img_'+Date.now()+'_'+i+'.jpg'));
                             };
-                            
-                            // Button oben links im Tweet einfügen
                             t.style.position = 'relative'; 
                             t.appendChild(btn);
                         }
@@ -325,6 +322,9 @@
                 var e = document.getElementById('ct-p');
                 if(!e) document.body.appendChild(mk());
                 
+                // Force Update on Start
+                upd();
+                
                 sc(); 
                 setInterval(addDL, 2000);
                 
@@ -342,16 +342,39 @@
 
         // INIT PAGE
         loadSettings();
-        // Listener für importierte Tweets
+        
+        // --- RECEIVE DATA FIX ---
         window.addEventListener('message', (event) => {
+            // Empfange von ÜBERALL (Stern), damit es lokal und live funktioniert
             if(event.data && event.data.type === 'import_tweets') {
-                console.log('Empfange Tweets...', event.data.data.length);
-                localStorage.setItem('twitter_clean_cache', JSON.stringify(event.data.data));
-                loadCache();
+                console.log('✅ DATEN EMPFANGEN:', event.data.data.length);
+                const newData = event.data.data;
+                const currentData = JSON.parse(localStorage.getItem('twitter_clean_cache') || '[]');
+                
+                // Merge Data (keine Duplikate)
+                let added = 0;
+                newData.forEach(n => {
+                    if(!currentData.some(c => c.text === n.text && c.user === n.user)) {
+                        currentData.push(n);
+                        added++;
+                    }
+                });
+                
+                if(added > 0 || currentData.length > 0) {
+                    localStorage.setItem('twitter_clean_cache', JSON.stringify(currentData));
+                    loadCache();
+                    // Feedback an User
+                    const btn = document.querySelector('.btn'); 
+                    if(btn) {
+                        const oldText = btn.innerText;
+                        btn.innerText = `✅ ${added} neue Tweets importiert!`;
+                        setTimeout(() => btn.innerText = oldText, 3000);
+                    }
+                }
             }
         });
         
-        loadCache(); // Initial laden
+        loadCache(); 
         
         // --- ZIP FUNCTION ---
         async function downloadZIP() {
