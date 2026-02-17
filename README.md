@@ -9,6 +9,18 @@
 
 ---
 
+## ⚠️ WICHTIG: NUR DESKTOP BROWSER!
+
+**📱 HANDY/MOBILE NICHT UNTERSTÜTZT:**
+- ❌ **iOS Safari:** Bookmarklets werden blockiert (Sicherheitsgründe)
+- ❌ **Android Chrome/Firefox:** Keine Lesezeichenleiste zum Ausführen
+- ❌ **Twitter App:** Erlaubt keine JavaScript-Injection
+- ✅ **Desktop Browser:** Chrome, Firefox, Edge, Safari (Mac)
+
+**Technische Limitation:** Bookmarklets funktionieren nur auf Desktop-Browsern. Mobile Browser und Apps unterstützen diese Technologie nicht.
+
+---
+
 ## ✅ STABLE VERSION
 
 **v4.2.2 ist jetzt STABLE:**
@@ -165,7 +177,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 2. **Ziehe** den Button "💾 CleanTwitter v4.2.2" in deine Lesezeichenleiste
 3. **Fertig!** Auf Twitter/X klicken um zu starten
 
-### Option 2: Manuell (Mobile/Desktop)
+### Option 2: Manuell (Desktop)
 
 1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
 2. **Klick:** "📋 Code kopieren"

@@ -12,6 +12,20 @@
 
 ---
 
+## ⚠️ WICHTIG: NUR DESKTOP BROWSER!
+
+**📱 HANDY/MOBILE NICHT UNTERSTÜTZT:**
+- ❌ **iOS Safari:** Bookmarklets werden blockiert (Sicherheitsgründe)
+- ❌ **Android Chrome/Firefox:** Keine Lesezeichenleiste zum Ausführen
+- ❌ **Twitter App:** Erlaubt keine JavaScript-Injection
+- ✅ **Desktop Browser:** Chrome, Firefox, Edge, Safari (Mac)
+
+**Grund:** Bookmarklet-Technologie funktioniert NUR auf Desktop. Mobile Browser unterstützen `javascript:` URLs nicht mehr aus Sicherheitsgründen. Eine mobile Version (PWA/App) ist technisch nicht möglich, da Twitter's DOM-Struktur nur über Desktop-Browser-APIs zugänglich ist.
+
+**📌 Es wird NIE eine Handy-Version geben** - diese Limitation gilt für ALLE Bookmarklet-basierten Tools.
+
+---
+
 ## ⚠️ WICHTIG: v4.2.2 STABLE NUTZEN!
 
 **Wenn du Stabilität willst, nutze v4.2.2 STABLE statt v5.0 BETA:**
@@ -174,7 +188,7 @@
 
 **Version:** v5.0 BETA
 **Browser:** [Chrome/Firefox/Safari] [Version]
-**OS:** [Windows/Mac/Linux/Android/iOS]
+**OS:** [Windows/Mac/Linux] (KEINE Handys!)
 
 **Problem:**
 [Beschreibung]
