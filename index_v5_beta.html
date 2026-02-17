@@ -134,8 +134,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC + CONSOLE LOGS ---
-        const CACHE_KEY = 'tw_clean_cache'; // MUSS GLEICH SEIN
+        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC + CONSOLE LOGS + FIX ---
+        const CACHE_KEY = 'tw_clean_cache';
         
         let settings = {
             stealthMode: true,
@@ -177,7 +177,7 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
-            // BOOKMARKLET CODE - MIT POSTMESSAGE FIX + CONSOLE LOGS
+            // BOOKMARKLET CODE - MIT BUGFIX: scanCount reset nach View
             const code = `(function(){
                 console.log('[CT] v5.0 BETA START');
                 var CFG = ${CONFIG};
@@ -206,6 +206,11 @@
                         var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
                         console.log('[CT] \ud83d\udc40 Opening Dashboard with', c.length, 'tweets');
                         var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html', 'ct_dashboard');
+                        
+                        // BUGFIX: Reset scanCount & unpause
+                        scanCount = 0;
+                        paused = false;
+                        console.log('[CT] \ud83d\udd04 Reset scanCount - continue scanning!');
                         
                         b.innerText = '\u23f3 Sync...';
                         var i = 0;
