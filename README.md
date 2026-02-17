@@ -1,101 +1,48 @@
-# 🏆 CleanTwitter v5.0 GOLD
+# 🐦 CleanTwitter Tracker
 
-> **Twitter Media Tracker - Jetzt mit Stealth-Mode & Anti-Ban Protection!**
+Der ultimative, leichte Twitter/X Media & Tweet Saver. Speichert Tweets, Bilder (auch Galerien!), Videos und GIFs direkt im Browser. Keine Server, 100% lokal.
 
-[![License: Custom](https://img.shields.io/badge/License-Custom-blue.svg)](#-nutzungsbedingungen)
-[![Version](https://img.shields.io/badge/Version-5.0_GOLD-gold.svg)](https://github.com/cali72mero/twitter-clean-tracker)
-[![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://cali72mero.github.io/twitter-clean-tracker/)
-[![Safe](https://img.shields.io/badge/Ban--Risk-NONE-green.svg)](#️-sicherheit)
+## 📥 Installation
 
----
+**👉 [HIER KLICKEN FÜR STABLE VERSION (v4.2.2)](https://cali72mero.github.io/twitter-clean-tracker/)**
 
-## 🚨 NEU: VERSION 5.0 GOLD IST DA!
-
-**v5.0 ist das größte Update bisher! Alle Bugs der v4.x Serie wurden behoben:**
-- ✅ **Anti-Ban System (Stealth Mode)**
-- ✅ **Grünes Badge (statt Rot)**
-- ✅ **Rate Limit Protection**
-- ✅ **Thread-Erkennung**
-
-> **Alte Version gesucht?**
-> Wenn du lieber die alte Version nutzen willst: [Hier ist v4.2.2 (Legacy)](index_v4.2.2.html)
+1. Gehe auf die verlinkte Seite.
+2. Ziehe den **"CleanTwitter v4.2.2"** Button in deine Lesezeichen-Leiste.
+3. Gehe auf Twitter/X.
+4. Klicke auf das Lesezeichen.
 
 ---
 
-## ⚡ Features & Sicherheit (v5.0)
+## 🧪 BETA VERSION (v5.0)
 
-### 🛡️ SICHERHEIT (Anti-Ban):
-Das Tool scannt jetzt nicht mehr "stumpf" alle 1.5 Sekunden, sondern verhält sich wie ein Mensch:
-- **Stealth Mode:** Zufällige Scan-Intervalle zwischen 2s und 6s. Twitter kann das nicht von normalem Scrollen unterscheiden.
-- **Rate Limit Protection:** Nach 50 Tweets macht das Tool automatisch 30 Sekunden Pause, damit Twitter dich nicht sperrt.
+**⚠️ ACHTUNG:** Diese Version hat noch Fehler (z.B. Zähler-Bugs)! Nutzung auf eigene Gefahr.
 
-### ✅ WAS NEU IST:
-
-```diff
-+ 🛡️ STEALTH MODE (zufällige Intervalle)
-+ ⏸️ Rate Limit Pause (30s Pause nach 50 Tweets)
-+ ♾️ Grünes Badge (endlich kein Rot mehr!)
-+ 🧵 Thread-Erkennung (markiert Serien)
-+ ⚙️ EINSTELLUNGEN-MENÜ (direkt im Dashboard!)
-+ ✂️ Retweet-Filter (optional einschaltbar)
-```
-
-### ⚙️ Das neue Einstellungen-Menü:
-
-Du kannst jetzt alles im Dashboard konfigurieren. Wenn du Features abschaltest, sind sie **komplett inaktiv** im Code:
-
-- `[x] Stealth Mode` (An/Aus)
-- `[x] Rate Limit Protection` (An/Aus)
-- `[x] Retweets ignorieren` (An/Aus)
-- `[x] Download-Buttons` (An/Aus)
-
-**WICHTIG:** Nach dem Ändern musst du das Bookmarklet **neu in die Leiste ziehen!**
+👉 **[HIER GEHTS ZUR BETA (v5.0)](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
 
 ---
 
-## 🚀 Installation
+## 📜 Versionshistorie
 
-### Option 1: Drag & Drop (Desktop)
+### ✅ v4.2.2 (STABLE) - Aktuelle Hauptversion
+*   **ZIP Fix:** Download großer Galerien (>600 Bilder) funktioniert jetzt zuverlässig.
+*   **Ladebalken:** Visuelles Feedback beim Erstellen der ZIP-Datei.
+*   **Multi-Image:** Speichert ALLE Bilder eines Tweets, nicht nur das erste.
+*   **Konsole:** Zeigt Logs in der F12 Konsole an (wichtig zur Kontrolle).
 
-1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-2. **Ziehe** den goldenen Button "🏆 CleanTwitter v5.0 GOLD" in deine Leiste
-3. **Fertig!**
+### ⚠️ v5.0 (BETA) - Experimentell
+*   *Feature:* Stealth Mode (zufällige Intervalle gegen Shadowbans).
+*   *Feature:* Neue UI mit Einstellungen.
+*   *Bug:* Startet manchmal mit extrem hohen, falschen Zählerwerten.
+*   *Bug:* Keine Ausgaben in der F12 Konsole (Download schwer zu prüfen).
 
-### Option 2: Manuell
-
-1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-2. **Klick:** "📋 Code kopieren"
-3. **Erstelle** ein neues Lesezeichen & füge den Code ein.
-
----
-
-## 🐛 Bekannte Probleme (v5.0)
-
-*(Aktuell keine kritischen Bugs bekannt!)*
-
-- Falls der Download bei >1000 Bildern hängt: Nutze den ZIP-Export, der wurde in v4.2.2 schon gefixt und ist auch hier drin.
+### v4.1
+*   Erste Version mit ZIP-Export.
+*   Problem: ZIP-Export brach bei zu vielen Bildern ab.
 
 ---
 
-## 🔄 Changelog
-
-### v5.0 GOLD (17.02.2026) - THE BIG UPDATE
-- 🛡️ **Stealth Mode:** Zufällige Intervalle (2s-6s)
-- ⏸️ **Rate Limit:** Auto-Pause bei zu vielen Requests
-- 🎨 **UI:** Grünes Badge (♾️) & Goldenes Design
-- ⚙️ **Settings:** Komplett neues Menü
-- 🧵 **Smart:** Thread-Erkennung & Retweet-Filter
-
-### v4.2.2 (Legacy)
-- 📦 ZIP-Export gefixt
-
----
-
-## 🔗 Links
-
-- **Live Demo v5.0**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-- **Alte Version (v4.2.2)**: [cali72mero.github.io/twitter-clean-tracker/index_v4.2.2.html](https://cali72mero.github.io/twitter-clean-tracker/index_v4.2.2.html)
-
----
-
-**Made with ❤️ by cali72mero | v5.0 GOLD | 2026**
+## 🛠️ Features (Stable)
+*   **100% Client-Side:** Daten bleiben in deinem Browser (LocalStorage).
+*   **Unbegrenzter Cache:** Speichere tausende Tweets (bis dein Browser voll ist).
+*   **Bilder & Videos:** Erkennt und lädt MP4s, GIFs und JPG/PNGs.
+*   **JSON & HTML Export:** Sichere deine Daten als Datei.
