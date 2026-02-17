@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐦 CleanTwitter GOLD v5.0 BETA Dashboard</title>
+    <title>🐦 CleanTwitter v5.0.1 BETA Dashboard</title>
     <style>
         :root { --primary: #FFD700; --bg: #050505; --surface: #111; --text: #eee; --accent: #00ff88; }
         body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -28,7 +28,7 @@
         .setting-group { margin-bottom: 20px; }
         .setting-item { margin: 10px 0; display: flex; align-items: center; gap: 10px; }
         .setting-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
-        .setting-item label { cursor: pointer; color: #ddd; }
+        .setting-item label { cursor: pointer; color: #ddd; flex: 1; }
         .badge-preview { font-family: monospace; background: rgba(0,0,0,0.9); padding: 5px 10px; border-radius: 5px; border: 1px solid #333; color: var(--accent); display: inline-block; margin-left: 10px; }
         .generator-box { background: #111; padding: 30px; border-radius: 20px; margin-bottom: 40px; text-align: center; border: 2px solid var(--primary); }
         .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 1.2rem; flex-wrap: wrap; }
@@ -37,6 +37,11 @@
         .img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 10px; border-radius: 8px; overflow: hidden; }
         .img-grid img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 16/9; }
         .img-grid img:only-child { grid-column: span 2; aspect-ratio: auto; }
+
+        .slider-container { display: flex; flex-direction: column; gap: 5px; margin: 15px 0; }
+        .slider-label { color: #ddd; font-size: 0.9rem; }
+        .slider-value { color: var(--accent); font-weight: bold; font-size: 0.9rem; }
+        input[type="range"] { width: 100%; height: 6px; border-radius: 5px; background: #333; outline: none; accent-color: var(--primary); }
 
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .loader { border: 5px solid #333; border-top: 5px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
@@ -52,21 +57,61 @@
     </div>
 
     <div class="settings-box">
-        <h3>⚙️ Einstellungen & Sicherheit (v5.0 BETA)</h3>
-        <p style="color: #ff4444; border: 1px solid #ff4444; padding: 10px; border-radius: 8px;">
-            ⚠️ <strong>ACHTUNG BETA:</strong> Diese Version kann Fehler enthalten (falsche Zähler, fehlende Logs).
-            Nutze v4.2.2 für Stabilität!
+        <h3>⚙️ Erweiterte Einstellungen (v5.0.1 BETA)</h3>
+        <p style="color: #00ff88; border: 1px solid #00ff88; padding: 10px; border-radius: 8px;">
+            ✨ <strong>NEU IN v5.0.1:</strong> Erweiterte Steuerung! Passe Rate Limits, Geschwindigkeit & mehr an.
         </p>
 
         <div class="setting-group">
             <h4 style="color: #aaa; margin: 10px 0;">🛡️ Sicherheit & Stealth</h4>
             <div class="setting-item">
                 <input type="checkbox" id="stealthMode" onchange="saveSettings()" checked>
-                <label for="stealthMode"><strong>Stealth Mode (Anti-Ban):</strong> Zufällige Intervalle (2s - 6s) statt fix 1.5s</label>
+                <label for="stealthMode"><strong>Stealth Mode:</strong> Zufällige Intervalle statt fix</label>
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="rateLimit" onchange="saveSettings()" checked>
-                <label for="rateLimit"><strong>Rate Limit Protection:</strong> Pause nach 50 Tweets für 30 Sekunden</label>
+                <label for="rateLimit"><strong>Rate Limit Protection:</strong> Automatische Pausen</label>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <h4 style="color: #aaa; margin: 10px 0;">🎯 Rate Limit Kontrolle</h4>
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="slider-label">🔢 Pause nach X Tweets:</span>
+                    <span class="slider-value" id="limitValue">50</span>
+                </div>
+                <input type="range" id="limitSlider" min="10" max="200" value="50" oninput="updateSliders()">
+                <small style="color: #666;">⚠️ Niedriger = sicherer, aber langsamer (Empf: 30-80)</small>
+            </div>
+
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="slider-label">⏱️ Pause-Dauer (Sekunden):</span>
+                    <span class="slider-value" id="pauseDurValue">30</span>
+                </div>
+                <input type="range" id="pauseDurSlider" min="10" max="300" value="30" step="10" oninput="updateSliders()">
+                <small style="color: #666;">Wie lange nach Rate Limit pausieren</small>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <h4 style="color: #aaa; margin: 10px 0;">⏱️ Scan-Geschwindigkeit</h4>
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="slider-label">🐢 Min Intervall (Sekunden):</span>
+                    <span class="slider-value" id="minIntervalValue">2</span>
+                </div>
+                <input type="range" id="minIntervalSlider" min="1" max="10" value="2" step="0.5" oninput="updateSliders()">
+            </div>
+
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="slider-label">🐇 Max Intervall (Sekunden):</span>
+                    <span class="slider-value" id="maxIntervalValue">6</span>
+                </div>
+                <input type="range" id="maxIntervalSlider" min="2" max="15" value="6" step="0.5" oninput="updateSliders()">
+                <small style="color: #666;">⚠️ Stealth Mode nutzt Zufallswerte zwischen Min/Max</small>
             </div>
         </div>
 
@@ -78,7 +123,7 @@
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="detectThreads" onchange="saveSettings()" checked>
-                <label for="detectThreads">Thread-Erkennung (zusammenhängende Posts markieren)</label>
+                <label for="detectThreads">Thread-Erkennung</label>
             </div>
         </div>
 
@@ -86,26 +131,30 @@
             <h4 style="color: #aaa; margin: 10px 0;">🎨 UI & Buttons</h4>
             <div class="setting-item">
                 <input type="checkbox" id="showDlButtons" onchange="saveSettings()" checked>
-                <label for="showDlButtons">Download-Buttons direkt auf Twitter anzeigen</label>
+                <label for="showDlButtons">Download-Buttons auf Twitter anzeigen</label>
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="greenBadge" onchange="saveSettings()" checked>
-                <label for="greenBadge">Grünes Infinity-Badge statt Rot <span class="badge-preview">♾️ 42</span></label>
+                <label for="greenBadge">Grünes Infinity-Badge <span class="badge-preview">♾️ 42</span></label>
+            </div>
+            <div class="setting-item">
+                <input type="checkbox" id="showPauseBtn" onchange="saveSettings()" checked>
+                <label for="showPauseBtn">⏸️ Pause/Resume Button auf Twitter zeigen</label>
             </div>
         </div>
 
         <p style="color: var(--primary); font-size: 0.9rem; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
-            ✅ <strong>WICHTIG:</strong> Nach jeder Änderung musst du das Bookmarklet <strong>neu in die Leiste ziehen!</strong>
+            ✅ <strong>WICHTIG:</strong> Nach Änderungen Bookmarklet <strong>neu in Leiste ziehen!</strong>
         </p>
     </div>
 
     <div class="generator-box">
-        <h1>⚠️ CleanTwitter v5.0 BETA</h1>
+        <h1>✨ CleanTwitter v5.0.1 BETA</h1>
         <p style="color: #aaa; margin-bottom: 20px;">
-            <strong style="font-size: 1.2em; color: var(--primary);">Experimentelle Version mit Anti-Ban!</strong>
+            <strong style="font-size: 1.2em; color: var(--primary);">Mit erweiterten Einstellungen!</strong>
         </p>
 
-        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">⚠️ CleanTwitter v5.0 BETA</a>
+        <a id="bookmarkletBtn" class="btn" href="javascript:void(0);" draggable="true">✨ CleanTwitter v5.0.1 BETA</a>
         <br><br>
         <button class="btn" style="background: transparent; border: 1px solid #555; color: #aaa; cursor: pointer;" onclick="copyCode()">📋 Code kopieren</button>
     </div>
@@ -128,37 +177,22 @@
         <div id="grid" class="tweet-grid"></div>
         <div id="empty" class="empty-state">
             <h3>Noch leer hier! 🕸️</h3>
-            <p>Aktiviere v5.0 auf Twitter und starte den Stealth-Mode!</p>
+            <p>Aktiviere v5.0.1 auf Twitter und passe die Einstellungen an!</p>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC ---
         const CACHE_KEY = 'tw_clean_cache';
+        const ALLOWED_IMPORT_ORIGINS = new Set(['https://twitter.com', 'https://x.com', 'https://cali72mero.github.io']);
 
-        const ALLOWED_IMPORT_ORIGINS = new Set([
-            'https://twitter.com',
-            'https://x.com',
-            'https://cali72mero.github.io'
-        ]);
-
-        function norm(s) {
-            return (s || '').replace(/\s+/g, ' ').trim();
-        }
-
-        function uniq(arr) {
-            return Array.from(new Set((arr || []).filter(Boolean)));
-        }
+        function norm(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
+        function uniq(arr) { return Array.from(new Set((arr || []).filter(Boolean))); }
 
         function makeKey(t) {
             if(t && t.tid) return 'tid:' + String(t.tid);
-            if(t && t.url) {
-                const m = String(t.url).match(/\/status\/(\d+)/);
-                if(m) return 'tid:' + m[1];
-            }
-            const user = norm(t && t.user);
-            const text = norm(t && t.text);
+            if(t && t.url) { const m = String(t.url).match(/\/status\/(\d+)/); if(m) return 'tid:' + m[1]; }
+            const user = norm(t && t.user), text = norm(t && t.text);
             const mediaSig = t && t.video ? ('v:' + t.video) : ('i:' + (t && t.imgs ? (t.imgs[0] || '') : (t && t.img ? t.img : '')));
             return user + '|' + text.substring(0, 80) + '|' + mediaSig;
         }
@@ -172,10 +206,7 @@
             const aImgs = existing.imgs || (existing.img ? [existing.img] : []);
             const bImgs = incoming.imgs || (incoming.img ? [incoming.img] : []);
             const mergedImgs = uniq(aImgs.concat(bImgs));
-            if(mergedImgs.length > 0) {
-                existing.imgs = mergedImgs;
-                delete existing.img;
-            }
+            if(mergedImgs.length > 0) { existing.imgs = mergedImgs; delete existing.img; }
             if(existing.date && incoming.date) existing.date = Math.min(existing.date, incoming.date);
             else if(!existing.date && incoming.date) existing.date = incoming.date;
             if(incoming.isThread && !existing.isThread) existing.isThread = true;
@@ -183,13 +214,18 @@
         }
 
         let settings = {
-            stealthMode: true,
-            rateLimit: true,
-            skipRetweets: false,
-            detectThreads: true,
-            showDlButtons: true,
-            greenBadge: true
+            stealthMode: true, rateLimit: true, skipRetweets: false, detectThreads: true,
+            showDlButtons: true, greenBadge: true, showPauseBtn: true,
+            pauseLimit: 50, pauseDuration: 30, minInterval: 2, maxInterval: 6
         };
+
+        function updateSliders() {
+            document.getElementById('limitValue').innerText = document.getElementById('limitSlider').value;
+            document.getElementById('pauseDurValue').innerText = document.getElementById('pauseDurSlider').value;
+            document.getElementById('minIntervalValue').innerText = document.getElementById('minIntervalSlider').value;
+            document.getElementById('maxIntervalValue').innerText = document.getElementById('maxIntervalSlider').value;
+            saveSettings();
+        }
 
         function loadSettings() {
             const saved = localStorage.getItem('ct_settings_v5');
@@ -201,6 +237,12 @@
             document.getElementById('detectThreads').checked = settings.detectThreads;
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
             document.getElementById('greenBadge').checked = settings.greenBadge;
+            document.getElementById('showPauseBtn').checked = settings.showPauseBtn;
+            document.getElementById('limitSlider').value = settings.pauseLimit || 50;
+            document.getElementById('pauseDurSlider').value = settings.pauseDuration || 30;
+            document.getElementById('minIntervalSlider').value = settings.minInterval || 2;
+            document.getElementById('maxIntervalSlider').value = settings.maxInterval || 6;
+            updateSliders();
             updateBookmarklet();
         }
 
@@ -211,411 +253,95 @@
             settings.detectThreads = document.getElementById('detectThreads').checked;
             settings.showDlButtons = document.getElementById('showDlButtons').checked;
             settings.greenBadge = document.getElementById('greenBadge').checked;
+            settings.showPauseBtn = document.getElementById('showPauseBtn').checked;
+            settings.pauseLimit = parseInt(document.getElementById('limitSlider').value);
+            settings.pauseDuration = parseInt(document.getElementById('pauseDurSlider').value);
+            settings.minInterval = parseFloat(document.getElementById('minIntervalSlider').value);
+            settings.maxInterval = parseFloat(document.getElementById('maxIntervalSlider').value);
             localStorage.setItem('ct_settings_v5', JSON.stringify(settings));
             updateBookmarklet();
-            alert('✅ Einstellungen gespeichert!\n\nBITTE DAS BOOKMARKLET NEU IN DIE LEISTE ZIEHEN!');
         }
 
         function updateBookmarklet() {
-            const CONFIG = JSON.stringify(settings);
+            const CFG = JSON.stringify(settings);
             const code = `(function(){
-                console.log('[CT] v5.0 BETA START');
-                var CFG = ${CONFIG};
-                var P, B;
-                var scanCount = 0;
-                var paused = false;
-                var badgeColor = CFG.greenBadge ? '#0f8' : '#f44';
-                var badgeIcon = CFG.greenBadge ? '♾️' : '🔴';
+                console.log('[CT] v5.0.1 BETA START');
+                var CFG = ${CFG}, P, B, PauseBtn, scanCount = 0, paused = false;
+                var badgeColor = CFG.greenBadge ? '#0f8' : '#f44', badgeIcon = CFG.greenBadge ? '\u267e\ufe0f' : '\ud83d\udd34';
                 function norm(s){ return (s||'').replace(/\s+/g,' ').trim(); }
-                function extractTid(article){
-                    try{
-                        var a = article.querySelector('a[href*="/status/"]');
-                        if(!a) return null;
-                        var href = a.getAttribute('href') || '';
-                        var m = href.match(/\/status\/(\d+)/);
-                        return m ? m[1] : null;
-                    }catch(e){ return null; }
-                }
+                function extractTid(a){ try{ var l=a.querySelector('a[href*="/status/"]'); if(!l)return null; var m=l.getAttribute('href').match(/\/status\/(\d+)/); return m?m[1]:null; }catch(e){return null;} }
                 function mk(){
-                    var p = document.createElement('div');
-                    p.id = 'ct-p';
+                    var p = document.createElement('div'); p.id = 'ct-p';
                     p.style.cssText = 'position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;display:flex!important;flex-direction:column!important;gap:8px!important';
-                    var b = document.createElement('div');
-                    b.id = 'ct-b';
-                    b.innerText = badgeIcon + ' 0';
+                    var b = document.createElement('div'); b.id = 'ct-b'; b.innerText = badgeIcon + ' 0';
                     b.style.cssText = 'all:initial!important;background:rgba(0,0,0,0.95)!important;color:'+badgeColor+'!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important;box-shadow:0 4px 10px rgba(0,0,0,0.5)!important';
-                    var s = document.createElement('button');
-                    s.innerText = '👀 View';
+                    var s = document.createElement('button'); s.innerText = '\ud83d\udc40 View';
                     s.style.cssText = 'all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
-                    s.onclick = function(){
-                        var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                        var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html', 'ct_dashboard');
-                        var batchId = 'b' + Date.now() + '_' + Math.random().toString(16).slice(2);
-                        b.innerText = '⏳ Sync...';
-                        var tries = 0;
-                        var maxTries = 12;
-                        function stop(){
-                            if(t) clearInterval(t);
-                            window.removeEventListener('message', onMsg);
-                            upd();
-                        }
-                        function onMsg(ev){
-                            if(ev && ev.data && ev.data.type === 'import_ack' && ev.data.batchId === batchId){
-                                console.log('[CT] import ack', ev.data);
-                                stop();
-                            }
-                        }
-                        window.addEventListener('message', onMsg);
-                        var t = setInterval(function(){
-                            tries++;
-                            if(w) w.postMessage({type:'import_tweets', batchId: batchId, data:c}, '*');
-                            if(tries >= maxTries) stop();
-                        }, 500);
-                    };
-                    p.appendChild(b);
-                    p.appendChild(s);
-                    P=p; B=b;
-                    return p;
+                    s.onclick = function(){ var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'), w=window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html','ct_dashboard'), bid='b'+Date.now()+'_'+Math.random().toString(16).slice(2); b.innerText='\u23f3 Sync...'; var tries=0, max=12; function stop(){ if(t)clearInterval(t); window.removeEventListener('message',onMsg); upd(); } function onMsg(ev){ if(ev&&ev.data&&ev.data.type==='import_ack'&&ev.data.batchId===bid){ console.log('[CT] ack',ev.data); stop(); }} window.addEventListener('message',onMsg); var t=setInterval(function(){ tries++; if(w)w.postMessage({type:'import_tweets',batchId:bid,data:c},'*'); if(tries>=max)stop(); },500); };
+                    if(CFG.showPauseBtn){ var pb=document.createElement('button'); pb.innerText='\u23f8\ufe0f'; pb.style.cssText='all:initial!important;background:#ff8800!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important'; pb.onclick=function(){ paused=!paused; pb.innerText=paused?'\u25b6\ufe0f':'\u23f8\ufe0f'; upd(); }; p.appendChild(pb); PauseBtn=pb; }
+                    p.appendChild(b); p.appendChild(s); P=p; B=b; return p;
                 }
-                function upd(){
-                    var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                    if(B) B.innerText = (paused ? '⏸️' : badgeIcon) + ' ' + c.length;
-                }
-                function dlMedia(url, name){
-                    fetch(url).then(r => r.blob()).then(blob => {
-                        var a = document.createElement('a');
-                        a.href = URL.createObjectURL(blob);
-                        a.download = name;
-                        a.click();
-                    }).catch(() => alert('DL Error'));
-                }
-                function addDL(){
-                    if(!CFG.showDlButtons) return;
-                    document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){
-                        if(t.dataset.ctDl) return;
-                        t.dataset.ctDl = '1';
-                        var imgs = t.querySelectorAll('img[src*="media"]');
-                        var vid = t.querySelector('video[src]');
-                        if(imgs.length > 0 || vid){
-                            var btn = document.createElement('button');
-                            btn.innerText = '💾';
-                            btn.style.cssText = 'position:absolute!important;top:5px!important;left:5px!important;z-index:999!important;background:rgba(0,0,0,0.6)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important;';
-                            btn.onclick = function(e){
-                                e.preventDefault(); e.stopPropagation();
-                                if(vid) dlMedia(vid.src, 'video_'+Date.now()+'.mp4');
-                                else imgs.forEach((img,i) => dlMedia(img.src, 'img_'+Date.now()+'_'+i+'.jpg'));
-                            };
-                            t.style.position = 'relative';
-                            t.appendChild(btn);
-                        }
-                    });
-                }
-                function sc(){
-                    if(paused) return;
-                    document.querySelectorAll('[data-testid="skeleton"]').forEach(e => e.remove());
-                    var ts = document.querySelectorAll('article[data-testid="tweet"]');
-                    var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                    var existingKeys = new Set();
-                    c.forEach(function(x){
-                        if(x && x.tid) existingKeys.add('tid:'+String(x.tid));
-                        else if(x && x.url){
-                            var m = String(x.url).match(/\/status\/(\d+)/);
-                            if(m) existingKeys.add('tid:'+m[1]);
-                        }
-                    });
-                    var added = 0;
-                    ts.forEach(function(t){
-                        if(CFG.skipRetweets && t.innerText.includes('reposted')) return;
-                        var txt = t.querySelector('[data-testid="tweetText"]');
-                        var u = t.querySelector('[data-testid="User-Name"]');
-                        var imgs = t.querySelectorAll('img[src*="media"]');
-                        var vid = t.querySelector('video[src]');
-                        if(u && (txt || imgs.length > 0 || vid)){
-                            var text = txt ? txt.innerText : '';
-                            var user = u.innerText.split('\\n')[0];
-                            var tid = extractTid(t);
-                            var key = tid ? ('tid:'+tid) : (norm(user)+'|'+norm(text).substring(0,80));
-                            if(existingKeys.has(key)) return;
-                            var item = {user:user, text:text, date:Date.now()};
-                            if(tid) {
-                                item.tid = tid;
-                                item.url = location.origin + '/i/status/' + tid;
-                            }
-                            if(vid) item.video = vid.src;
-                            else if(imgs.length > 0) item.imgs = Array.from(imgs).map(i => i.src);
-                            if(CFG.detectThreads && document.title.includes('Thread')) item.isThread = true;
-                            c.push(item);
-                            existingKeys.add(key);
-                            added++;
-                            scanCount++;
-                        }
-                    });
-                    if(added > 0){
-                        localStorage.setItem('tw_clean_cache', JSON.stringify(c));
-                        upd();
-                        console.log('[CT] +' + added + ' Total:' + c.length);
-                    }
-                    if(CFG.rateLimit && scanCount >= 50){
-                        paused = true;
-                        scanCount = 0;
-                        if(B) B.innerText = '⏸️ Limit';
-                        setTimeout(() => { paused = false; upd(); }, 30000);
-                    }
-                    var nextScan = CFG.stealthMode ? (Math.random() * 4000 + 2000) : 1500;
-                    setTimeout(sc, nextScan);
-                }
-                var e = document.getElementById('ct-p');
-                if(!e) document.body.appendChild(mk());
-                upd();
-                sc();
-                setInterval(addDL, 2000);
-                alert('⚠️ CleanTwitter v5.0 BETA STARTED!');
+                function upd(){ var c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'); if(B)B.innerText=(paused?'\u23f8\ufe0f':badgeIcon)+' '+c.length; }
+                function dlMedia(url,name){ fetch(url).then(r=>r.blob()).then(blob=>{ var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); }).catch(()=>alert('DL Error')); }
+                function addDL(){ if(!CFG.showDlButtons)return; document.querySelectorAll('article[data-testid="tweet"]').forEach(function(t){ if(t.dataset.ctDl)return; t.dataset.ctDl='1'; var imgs=t.querySelectorAll('img[src*="media"]'), vid=t.querySelector('video[src]'); if(imgs.length>0||vid){ var btn=document.createElement('button'); btn.innerText='\ud83d\udcbe'; btn.style.cssText='position:absolute!important;top:5px!important;left:5px!important;z-index:999!important;background:rgba(0,0,0,0.6)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important;'; btn.onclick=function(e){ e.preventDefault();e.stopPropagation(); if(vid)dlMedia(vid.src,'video_'+Date.now()+'.mp4'); else imgs.forEach((img,i)=>dlMedia(img.src,'img_'+Date.now()+'_'+i+'.jpg')); }; t.style.position='relative'; t.appendChild(btn); }}); }
+                function sc(){ if(paused)return; document.querySelectorAll('[data-testid="skeleton"]').forEach(e=>e.remove()); var ts=document.querySelectorAll('article[data-testid="tweet"]'), c=JSON.parse(localStorage.getItem('tw_clean_cache')||'[]'), existingKeys=new Set(); c.forEach(function(x){ if(x&&x.tid)existingKeys.add('tid:'+String(x.tid)); else if(x&&x.url){ var m=String(x.url).match(/\/status\/(\d+)/); if(m)existingKeys.add('tid:'+m[1]); }}); var added=0; ts.forEach(function(t){ if(CFG.skipRetweets&&t.innerText.includes('reposted'))return; var txt=t.querySelector('[data-testid="tweetText"]'), u=t.querySelector('[data-testid="User-Name"]'), imgs=t.querySelectorAll('img[src*="media"]'), vid=t.querySelector('video[src]'); if(u&&(txt||imgs.length>0||vid)){ var text=txt?txt.innerText:'', user=u.innerText.split('\\n')[0], tid=extractTid(t), key=tid?('tid:'+tid):(norm(user)+'|'+norm(text).substring(0,80)); if(existingKeys.has(key))return; var item={user:user,text:text,date:Date.now()}; if(tid){ item.tid=tid; item.url=location.origin+'/i/status/'+tid; } if(vid)item.video=vid.src; else if(imgs.length>0)item.imgs=Array.from(imgs).map(i=>i.src); if(CFG.detectThreads&&document.title.includes('Thread'))item.isThread=true; c.push(item); existingKeys.add(key); added++; scanCount++; }}); if(added>0){ localStorage.setItem('tw_clean_cache',JSON.stringify(c)); upd(); console.log('[CT] +'+added+' Total:'+c.length); } if(CFG.rateLimit&&scanCount>=CFG.pauseLimit){ paused=true; scanCount=0; if(B)B.innerText='\u23f8\ufe0f Limit'; setTimeout(()=>{ paused=false; upd(); }, CFG.pauseDuration*1000); } var nextScan=CFG.stealthMode?(Math.random()*(CFG.maxInterval-CFG.minInterval)*1000+CFG.minInterval*1000):1500; setTimeout(sc,nextScan); }
+                var e=document.getElementById('ct-p'); if(!e)document.body.appendChild(mk()); upd(); sc(); setInterval(addDL,2000); alert('\u2728 CleanTwitter v5.0.1 BETA STARTED!');
             })();`;
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
         }
 
-        function copyCode() {
-            navigator.clipboard.writeText(document.getElementById('bookmarkletBtn').href)
-                .then(() => alert('✅ Code kopiert!'))
-                .catch(() => alert('❌ Fehler beim Kopieren'));
-        }
-
-        function downloadMedia(url, filename) {
-            fetch(url).then(res => res.blob()).then(blob => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                a.click();
-            }).catch(() => alert('Download failed'));
-        }
+        function copyCode() { navigator.clipboard.writeText(document.getElementById('bookmarkletBtn').href).then(()=>alert('\u2705 Code kopiert!')).catch(()=>alert('\u274c Fehler')); }
+        function downloadMedia(url, filename) { fetch(url).then(res=>res.blob()).then(blob=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); }).catch(()=>alert('Download failed')); }
 
         async function downloadZIP() {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if(!raw) return alert('Cache ist leer!');
-            const data = JSON.parse(raw);
-            const zip = new JSZip();
-            const imgFolder = zip.folder('images');
-            const vidFolder = zip.folder('videos');
+            const raw = localStorage.getItem(CACHE_KEY); if(!raw) return alert('Cache leer!');
+            const data = JSON.parse(raw), zip = new JSZip(), imgFolder = zip.folder('images'), vidFolder = zip.folder('videos');
             document.getElementById('loadingOverlay').style.display = 'flex';
             const status = document.getElementById('loadingStatus');
             let imgIdx = 1, vidIdx = 1, processed = 0, total = 0;
-            data.forEach(t => {
-                if(t.imgs) total += t.imgs.length;
-                else if(t.img || t.video) total++;
-            });
-            console.log('[CT] ZIP Export START - Total files:', total);
+            data.forEach(t => { if(t.imgs) total += t.imgs.length; else if(t.img || t.video) total++; });
+            console.log('[CT] ZIP START - Total:', total);
             for(const t of data) {
                 try {
                     if(t.imgs && t.imgs.length > 0) {
                         for(const src of t.imgs) {
-                            try {
-                                const response = await fetch(src);
-                                if(response.ok) {
-                                    const blob = await response.blob();
-                                    const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                    imgFolder.file(`image_${imgIdx}.${ext}`, blob);
-                                    console.log(`[CT]+1 Total:${imgIdx}`);
-                                    imgIdx++;
-                                }
-                            } catch(e) { console.error('[CT] Skip img', e); }
-                            processed++;
-                            status.innerText = `Verarbeite... (${processed}/${total})`;
-                            if(processed % 10 === 0) await new Promise(r => setTimeout(r, 50));
+                            try { const res = await fetch(src); if(res.ok){ const blob = await res.blob(); const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg'; imgFolder.file(`image_${imgIdx}.${ext}`, blob); console.log(`[CT]+1 Total:${imgIdx}`); imgIdx++; }} catch(e) { console.error('[CT] Skip',e); }
+                            processed++; status.innerText = `Verarbeite... (${processed}/${total})`; if(processed % 10 === 0) await new Promise(r => setTimeout(r, 50));
                         }
-                    } else if(t.img) {
-                        try {
-                            const response = await fetch(t.img);
-                            if(response.ok) {
-                                const blob = await response.blob();
-                                const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                imgFolder.file(`image_${imgIdx}.${ext}`, blob);
-                                console.log(`[CT]+1 Total:${imgIdx}`);
-                                imgIdx++;
-                            }
-                        } catch(e) { console.error('[CT] Skip img', e); }
-                        processed++;
-                    } else if(t.video) {
-                        try {
-                            const response = await fetch(t.video);
-                            if(response.ok) {
-                                const blob = await response.blob();
-                                vidFolder.file(`video_${vidIdx}.mp4`, blob);
-                                console.log(`[CT]+1 Total:${vidIdx} (video)`);
-                                vidIdx++;
-                            }
-                        } catch(e) { console.error('[CT] Skip video', e); }
-                        processed++;
-                    }
+                    } else if(t.img) { try { const res = await fetch(t.img); if(res.ok){ const blob = await res.blob(); const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg'; imgFolder.file(`image_${imgIdx}.${ext}`, blob); console.log(`[CT]+1 Total:${imgIdx}`); imgIdx++; }} catch(e) {} processed++;
+                    } else if(t.video) { try { const res = await fetch(t.video); if(res.ok){ const blob = await res.blob(); vidFolder.file(`video_${vidIdx}.mp4`, blob); console.log(`[CT]+1 Total:${vidIdx} (video)`); vidIdx++; }} catch(e) {} processed++; }
                     if(processed % 20 === 0) await new Promise(r => setTimeout(r, 100));
                 } catch(e) { console.error('[CT] Error:', e); }
             }
-            status.innerText = 'Erstelle ZIP... (fast fertig!)';
-            console.log('[CT] ZIP: Generating archive...');
+            status.innerText = 'Erstelle ZIP...';
+            console.log('[CT] ZIP: Generating...');
             const content = await zip.generateAsync({type: 'blob'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = `twitter_media_${Date.now()}.zip`;
-            a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = `twitter_media_${Date.now()}.zip`; a.click();
             document.getElementById('loadingOverlay').style.display = 'none';
-            console.log('[CT] ZIP Export DONE!');
-            alert('✅ ZIP-Download erfolgreich!');
+            console.log('[CT] ZIP DONE!'); alert('\u2705 ZIP erfolgreich!');
         }
 
-        function clearCache() {
-            if(confirm('Cache wirklich löschen?')) {
-                localStorage.removeItem(CACHE_KEY);
-                loadCache();
-            }
-        }
-
-        function downloadArchive() {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if(!raw) return alert('Cache ist leer!');
-            const data = JSON.parse(raw);
-            let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv</title><style>body{font-family:system-ui;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}</style></head><body><h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
-            data.forEach(t => {
-                let media = '';
-                if(t.video) media = `<video src="${t.video}" controls></video>`;
-                else if(t.imgs) media = `<div class="grid">` + t.imgs.map(s => `<img src="${s}">`).join('') + `</div>`;
-                else if(t.img) media = `<img src="${t.img}">`;
-                html += `<div class="card"><div>👤 ${t.user} • ${new Date(t.date).toLocaleString()}</div><div>${(t.text || '').replace(/\n/g, '<br>')}</div>${media}</div>`;
-            });
-            html += '</body></html>';
-            const blob = new Blob([html], {type:'text/html'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `twitter_archive_${Date.now()}.html`;
-            a.click();
-        }
+        function clearCache() { if(confirm('Cache l\u00f6schen?')) { localStorage.removeItem(CACHE_KEY); loadCache(); }}
+        function downloadArchive() { const raw = localStorage.getItem(CACHE_KEY); if(!raw) return alert('Cache leer!'); const data = JSON.parse(raw); let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv</title><style>body{font-family:system-ui;background:#eee;padding:20px;max-width:800px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}</style></head><body><h1>\ud83d\udce6 Twitter Archiv (${data.length} Tweets)</h1>`; data.forEach(t => { let media = ''; if(t.video) media = `<video src="${t.video}" controls></video>`; else if(t.imgs) media = `<div class="grid">` + t.imgs.map(s => `<img src="${s}">`).join('') + `</div>`; else if(t.img) media = `<img src="${t.img}">`; html += `<div class="card"><div>\ud83d\udc64 ${t.user} \u2022 ${new Date(t.date).toLocaleString()}</div><div>${(t.text || '').replace(/\n/g, '<br>')}</div>${media}</div>`; }); html += '</body></html>'; const blob = new Blob([html], {type:'text/html'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `twitter_archive_${Date.now()}.html`; a.click(); }
 
         function loadCache() {
-            const raw = localStorage.getItem(CACHE_KEY);
-            const data = raw ? JSON.parse(raw) : [];
-            const grid = document.getElementById('grid');
-            const empty = document.getElementById('empty');
+            const raw = localStorage.getItem(CACHE_KEY), data = raw ? JSON.parse(raw) : [], grid = document.getElementById('grid'), empty = document.getElementById('empty');
             document.getElementById('countDisplay').innerText = data.length;
-            const sizeBytes = new Blob([raw || '']).size;
-            const sizeKB = Math.round(sizeBytes / 1024);
+            const sizeBytes = new Blob([raw || '']).size, sizeKB = Math.round(sizeBytes / 1024);
             document.getElementById('sizeDisplay').innerText = sizeKB;
             const sizeInfo = document.getElementById('sizeInfo');
-            if(sizeKB > 5000) {
-                sizeInfo.style.background = '#ff4444';
-                sizeInfo.style.color = '#fff';
-            } else {
-                sizeInfo.style.background = '#333';
-            }
+            if(sizeKB > 5000) { sizeInfo.style.background = '#ff4444'; sizeInfo.style.color = '#fff'; } else { sizeInfo.style.background = '#333'; }
             let imgCount = 0, vidCount = 0;
-            data.forEach(t => {
-                if(t.imgs) imgCount += t.imgs.length;
-                else if(t.img) imgCount++;
-                if(t.video) vidCount++;
-            });
-            document.getElementById('imgCount').innerText = imgCount;
-            document.getElementById('vidCount').innerText = vidCount;
-            if(data.length > 0) {
-                empty.style.display = 'none';
-                grid.innerHTML = '';
-                data.slice().reverse().forEach((t, idx) => {
-                    const card = document.createElement('div');
-                    card.className = 'tweet-card';
-                    const safeText = (t.text || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    const safeUser = (t.user || '').replace(/</g, "&lt;");
-                    let mediaHTML = '';
-                    let badge = '';
-                    let dlBtn = '';
-                    if(t.video) {
-                        mediaHTML = `<video src="${t.video}" class="tweet-video" controls></video>`;
-                        badge = '<div class="media-badge">🎥 VIDEO</div>';
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.video}', 'video_${idx}.mp4')">💾 Video</button>`;
-                    } else if(t.imgs && t.imgs.length > 0) {
-                        mediaHTML = '<div class="img-grid">';
-                        t.imgs.forEach(src => {
-                            mediaHTML += `<img src="${src}" loading="lazy">`;
-                        });
-                        mediaHTML += '</div>';
-                        badge = `<div class="media-badge">🖼️ ${t.imgs.length} IMGS</div>`;
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadGallery(['${t.imgs.join("','")}'])">💾 Alle ${t.imgs.length} Bilder</button>`;
-                    } else if(t.img) {
-                        mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`;
-                        badge = '<div class="media-badge">🖼️ IMG</div>';
-                        const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.img}', 'image_${idx}.${ext}')">💾 Bild</button>`;
-                    }
-                    card.innerHTML = `
-                        ${badge}
-                        <div class="tweet-user">👤 ${safeUser}</div>
-                        <div class="tweet-text">${safeText}</div>
-                        ${mediaHTML}
-                        ${settings.showDlButtons ? dlBtn : ''}
-                        <div style="font-size:0.75rem; color:#555; margin-top:10px; border-top:1px solid #333; padding-top:5px;">
-                            🕒 ${new Date(t.date).toLocaleString()}
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } else {
-                empty.style.display = 'block';
-                grid.innerHTML = '';
-            }
+            data.forEach(t => { if(t.imgs) imgCount += t.imgs.length; else if(t.img) imgCount++; if(t.video) vidCount++; });
+            document.getElementById('imgCount').innerText = imgCount; document.getElementById('vidCount').innerText = vidCount;
+            if(data.length > 0) { empty.style.display = 'none'; grid.innerHTML = ''; data.slice().reverse().forEach((t, idx) => { const card = document.createElement('div'); card.className = 'tweet-card'; const safeText = (t.text || '').replace(/</g, "&lt;").replace(/>/g, "&gt;"), safeUser = (t.user || '').replace(/</g, "&lt;"); let mediaHTML = '', badge = '', dlBtn = ''; if(t.video) { mediaHTML = `<video src="${t.video}" class="tweet-video" controls></video>`; badge = '<div class="media-badge">\ud83c\udfa5 VIDEO</div>'; dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.video}', 'video_${idx}.mp4')">\ud83d\udcbe Video</button>`; } else if(t.imgs && t.imgs.length > 0) { mediaHTML = '<div class="img-grid">'; t.imgs.forEach(src => { mediaHTML += `<img src="${src}" loading="lazy">`; }); mediaHTML += '</div>'; badge = `<div class="media-badge">\ud83d\uddbc\ufe0f ${t.imgs.length} IMGS</div>`; dlBtn = `<button class="tweet-dl-btn" onclick="downloadGallery(['${t.imgs.join("','") }'])">\ud83d\udcbe Alle ${t.imgs.length} Bilder</button>`; } else if(t.img) { mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`; badge = '<div class="media-badge">\ud83d\uddbc\ufe0f IMG</div>'; const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg'; dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.img}', 'image_${idx}.${ext}')">\ud83d\udcbe Bild</button>`; } card.innerHTML = `${badge}<div class="tweet-user">\ud83d\udc64 ${safeUser}</div><div class="tweet-text">${safeText}</div>${mediaHTML}${settings.showDlButtons ? dlBtn : ''}<div style="font-size:0.75rem; color:#555; margin-top:10px; border-top:1px solid #333; padding-top:5px;">\ud83d\udd52 ${new Date(t.date).toLocaleString()}</div>`; grid.appendChild(card); }); } else { empty.style.display = 'block'; grid.innerHTML = ''; }
         }
 
-        function downloadGallery(urls) {
-            if(!urls || urls.length === 0) return;
-            urls.forEach((url, i) => {
-                setTimeout(() => {
-                    const ext = url.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                    downloadMedia(url, `image_${Date.now()}_${i}.${ext}`);
-                }, i * 300);
-            });
-        }
+        function downloadGallery(urls) { if(!urls || urls.length === 0) return; urls.forEach((url, i) => { setTimeout(() => { const ext = url.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg'; downloadMedia(url, `image_${Date.now()}_${i}.${ext}`); }, i * 300); }); }
 
-        window.addEventListener('message', (event) => {
-            if(!event || !event.data || event.data.type !== 'import_tweets') return;
-            if(event.origin && event.origin !== 'null' && !ALLOWED_IMPORT_ORIGINS.has(event.origin)) return;
-            const batchId = event.data.batchId;
-            const newTweets = Array.isArray(event.data.data) ? event.data.data : [];
-            const currentCache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
-            const byKey = new Map();
-            currentCache.forEach(t => {
-                const k = makeKey(t);
-                if(!byKey.has(k)) byKey.set(k, t);
-            });
-            let addedCount = 0;
-            let mergedCount = 0;
-            newTweets.forEach(nt => {
-                const k = makeKey(nt);
-                if(!byKey.has(k)) {
-                    currentCache.push(nt);
-                    byKey.set(k, nt);
-                    addedCount++;
-                } else {
-                    const existing = byKey.get(k);
-                    const beforeImgs = (existing && existing.imgs) ? existing.imgs.length : 0;
-                    mergeTweet(existing, nt);
-                    const afterImgs = (existing && existing.imgs) ? existing.imgs.length : 0;
-                    if(afterImgs > beforeImgs || (nt && nt.video && !existing.video)) mergedCount++;
-                }
-            });
-            if(addedCount > 0 || mergedCount > 0) {
-                localStorage.setItem(CACHE_KEY, JSON.stringify(currentCache));
-                loadCache();
-                const statInfo = document.createElement('div');
-                statInfo.innerText = addedCount > 0
-                    ? `✅ ${addedCount} neue Tweets importiert!` + (mergedCount ? ` (🧩 ${mergedCount} aktualisiert)` : '')
-                    : `🧩 ${mergedCount} Tweets aktualisiert!`;
-                statInfo.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
-                document.body.appendChild(statInfo);
-                setTimeout(() => statInfo.remove(), 3000);
-            }
-            try {
-                if(event.source && typeof event.source.postMessage === 'function') {
-                    event.source.postMessage({type:'import_ack', batchId: batchId, added: addedCount, merged: mergedCount}, event.origin || '*');
-                }
-            } catch(e) {}
-        });
+        window.addEventListener('message', (event) => { if(!event || !event.data || event.data.type !== 'import_tweets') return; if(event.origin && event.origin !== 'null' && !ALLOWED_IMPORT_ORIGINS.has(event.origin)) return; const batchId = event.data.batchId, newTweets = Array.isArray(event.data.data) ? event.data.data : [], currentCache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'), byKey = new Map(); currentCache.forEach(t => { const k = makeKey(t); if(!byKey.has(k)) byKey.set(k, t); }); let addedCount = 0, mergedCount = 0; newTweets.forEach(nt => { const k = makeKey(nt); if(!byKey.has(k)) { currentCache.push(nt); byKey.set(k, nt); addedCount++; } else { const existing = byKey.get(k), beforeImgs = (existing && existing.imgs) ? existing.imgs.length : 0; mergeTweet(existing, nt); const afterImgs = (existing && existing.imgs) ? existing.imgs.length : 0; if(afterImgs > beforeImgs || (nt && nt.video && !existing.video)) mergedCount++; }}); if(addedCount > 0 || mergedCount > 0) { localStorage.setItem(CACHE_KEY, JSON.stringify(currentCache)); loadCache(); const statInfo = document.createElement('div'); statInfo.innerText = addedCount > 0 ? `\u2705 ${addedCount} neue Tweets importiert!` + (mergedCount ? ` (\ud83e\udde9 ${mergedCount} aktualisiert)` : '') : `\ud83e\udde9 ${mergedCount} Tweets aktualisiert!`; statInfo.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;'; document.body.appendChild(statInfo); setTimeout(() => statInfo.remove(), 3000); } try { if(event.source && typeof event.source.postMessage === 'function') { event.source.postMessage({type:'import_ack', batchId: batchId, added: addedCount, merged: mergedCount}, event.origin || '*'); }} catch(e) {} });
 
-        loadSettings();
-        loadCache();
+        loadSettings(); loadCache();
     </script>
 </body>
 </html>
