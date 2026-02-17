@@ -134,7 +134,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // --- V5 BETA LOGIC - COMPLETE FIX FOR RATE LIMIT RESUME ---
+        // --- V5 BETA LOGIC - COMPLETE FIX: RESTART sc() after resume ---
         const CACHE_KEY = 'tw_clean_cache';
         
         let settings = {
@@ -177,7 +177,7 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
-            // BOOKMARKLET CODE - COMPLETE FIX: scanCount reset BOTH after View AND after Resume
+            // BOOKMARKLET CODE - CRITICAL FIX: RESTART sc() after resume!
             const code = `(function(){
                 console.log('[CT] v5.0 BETA START');
                 var CFG = ${CONFIG};
@@ -207,7 +207,7 @@
                         console.log('[CT] \ud83d\udc40 Opening Dashboard with', c.length, 'tweets');
                         var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html', 'ct_dashboard');
                         
-                        // BUGFIX: Reset scanCount & unpause
+                        // Reset scanCount & unpause
                         scanCount = 0;
                         paused = false;
                         console.log('[CT] \ud83d\udd04 Reset scanCount - continue scanning!');
@@ -331,10 +331,12 @@
                         console.log('[CT] \u26a0\ufe0f Rate Limit! Pause 30s... (scanCount=' + scanCount + ')');
                         setTimeout(() => { 
                             paused = false;
-                            scanCount = 0;  // CRITICAL FIX: Reset HIER!
+                            scanCount = 0;
                             upd(); 
                             console.log('[CT] \u25b6\ufe0f Resumed! (scanCount reset)');
+                            sc();  // ⭐ CRITICAL FIX: RESTART scanning!
                         }, 30000);
+                        return;  // ⭐ WICHTIG: Stoppe die rekursive Chain HIER!
                     }
                     
                     var nextScan = CFG.stealthMode ? (Math.random() * 4000 + 2000) : 1500;
