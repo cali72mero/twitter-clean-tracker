@@ -134,7 +134,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC + CONSOLE LOGS + FIX ---
+        // --- V5 BETA LOGIC - COMPLETE FIX FOR RATE LIMIT RESUME ---
         const CACHE_KEY = 'tw_clean_cache';
         
         let settings = {
@@ -177,7 +177,7 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
-            // BOOKMARKLET CODE - MIT BUGFIX: scanCount reset nach View
+            // BOOKMARKLET CODE - COMPLETE FIX: scanCount reset BOTH after View AND after Resume
             const code = `(function(){
                 console.log('[CT] v5.0 BETA START');
                 var CFG = ${CONFIG};
@@ -327,13 +327,13 @@
 
                     if(CFG.rateLimit && scanCount > 50){
                         paused = true;
-                        scanCount = 0;
                         if(B) B.innerText = '\u23f8\ufe0f Limit';
-                        console.log('[CT] \u26a0\ufe0f Rate Limit! Pause 30s...');
+                        console.log('[CT] \u26a0\ufe0f Rate Limit! Pause 30s... (scanCount=' + scanCount + ')');
                         setTimeout(() => { 
-                            paused = false; 
+                            paused = false;
+                            scanCount = 0;  // CRITICAL FIX: Reset HIER!
                             upd(); 
-                            console.log('[CT] \u25b6\ufe0f Resumed!');
+                            console.log('[CT] \u25b6\ufe0f Resumed! (scanCount reset)');
                         }, 30000);
                     }
                     
