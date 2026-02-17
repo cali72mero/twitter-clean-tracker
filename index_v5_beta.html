@@ -81,7 +81,7 @@
                     <span class="slider-label">🔢 Pause nach X Tweets:</span>
                     <span class="slider-value" id="limitValue">50</span>
                 </div>
-                <input type="range" id="limitSlider" min="10" max="200" value="50" oninput="updateSliders()">
+                <input type="range" id="limitSlider" min="10" max="200" value="50">
                 <small style="color: #666;">⚠️ Niedriger = sicherer, aber langsamer (Empf: 30-80)</small>
             </div>
 
@@ -90,7 +90,7 @@
                     <span class="slider-label">⏱️ Pause-Dauer (Sekunden):</span>
                     <span class="slider-value" id="pauseDurValue">30</span>
                 </div>
-                <input type="range" id="pauseDurSlider" min="10" max="300" value="30" step="10" oninput="updateSliders()">
+                <input type="range" id="pauseDurSlider" min="10" max="300" value="30" step="10">
                 <small style="color: #666;">Wie lange nach Rate Limit pausieren</small>
             </div>
         </div>
@@ -102,7 +102,7 @@
                     <span class="slider-label">🐢 Min Intervall (Sekunden):</span>
                     <span class="slider-value" id="minIntervalValue">2</span>
                 </div>
-                <input type="range" id="minIntervalSlider" min="1" max="10" value="2" step="0.5" oninput="updateSliders()">
+                <input type="range" id="minIntervalSlider" min="1" max="10" value="2" step="0.5">
             </div>
 
             <div class="slider-container">
@@ -110,7 +110,7 @@
                     <span class="slider-label">🐇 Max Intervall (Sekunden):</span>
                     <span class="slider-value" id="maxIntervalValue">6</span>
                 </div>
-                <input type="range" id="maxIntervalSlider" min="2" max="15" value="6" step="0.5" oninput="updateSliders()">
+                <input type="range" id="maxIntervalSlider" min="2" max="15" value="6" step="0.5">
                 <small style="color: #666;">⚠️ Stealth Mode nutzt Zufallswerte zwischen Min/Max</small>
             </div>
         </div>
@@ -219,18 +219,44 @@
             pauseLimit: 50, pauseDuration: 30, minInterval: 2, maxInterval: 6
         };
 
-        function updateSliders() {
-            document.getElementById('limitValue').innerText = document.getElementById('limitSlider').value;
-            document.getElementById('pauseDurValue').innerText = document.getElementById('pauseDurSlider').value;
-            document.getElementById('minIntervalValue').innerText = document.getElementById('minIntervalSlider').value;
-            document.getElementById('maxIntervalValue').innerText = document.getElementById('maxIntervalSlider').value;
-            saveSettings();
+        function syncSlidersToUI() {
+            document.getElementById('limitValue').innerText = settings.pauseLimit;
+            document.getElementById('pauseDurValue').innerText = settings.pauseDuration;
+            document.getElementById('minIntervalValue').innerText = settings.minInterval;
+            document.getElementById('maxIntervalValue').innerText = settings.maxInterval;
+            document.getElementById('limitSlider').value = settings.pauseLimit;
+            document.getElementById('pauseDurSlider').value = settings.pauseDuration;
+            document.getElementById('minIntervalSlider').value = settings.minInterval;
+            document.getElementById('maxIntervalSlider').value = settings.maxInterval;
+        }
+
+        function attachSliderHandlers() {
+            document.getElementById('limitSlider').addEventListener('input', function(e) {
+                document.getElementById('limitValue').innerText = e.target.value;
+            });
+            document.getElementById('limitSlider').addEventListener('change', saveSettings);
+
+            document.getElementById('pauseDurSlider').addEventListener('input', function(e) {
+                document.getElementById('pauseDurValue').innerText = e.target.value;
+            });
+            document.getElementById('pauseDurSlider').addEventListener('change', saveSettings);
+
+            document.getElementById('minIntervalSlider').addEventListener('input', function(e) {
+                document.getElementById('minIntervalValue').innerText = e.target.value;
+            });
+            document.getElementById('minIntervalSlider').addEventListener('change', saveSettings);
+
+            document.getElementById('maxIntervalSlider').addEventListener('input', function(e) {
+                document.getElementById('maxIntervalValue').innerText = e.target.value;
+            });
+            document.getElementById('maxIntervalSlider').addEventListener('change', saveSettings);
         }
 
         function loadSettings() {
             const saved = localStorage.getItem('ct_settings_v5');
             if(saved) settings = JSON.parse(saved);
             else localStorage.setItem('ct_settings_v5', JSON.stringify(settings));
+            
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('rateLimit').checked = settings.rateLimit;
             document.getElementById('skipRetweets').checked = settings.skipRetweets;
@@ -238,11 +264,9 @@
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
             document.getElementById('greenBadge').checked = settings.greenBadge;
             document.getElementById('showPauseBtn').checked = settings.showPauseBtn;
-            document.getElementById('limitSlider').value = settings.pauseLimit || 50;
-            document.getElementById('pauseDurSlider').value = settings.pauseDuration || 30;
-            document.getElementById('minIntervalSlider').value = settings.minInterval || 2;
-            document.getElementById('maxIntervalSlider').value = settings.maxInterval || 6;
-            updateSliders();
+            
+            syncSlidersToUI();
+            attachSliderHandlers();
             updateBookmarklet();
         }
 
