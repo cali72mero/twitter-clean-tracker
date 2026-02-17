@@ -34,7 +34,7 @@
 
 ## ✨ BETA: v5.0 EXPERIMENTAL VERFÜGBAR!
 
-**🧪 v5.0 BETA - EXPERIMENTAL - NUR ZUM TESTEN!**
+**🧘 v5.0 BETA - EXPERIMENTAL - NUR ZUM TESTEN!**
 
 👉 **[ZUR BETA v5.0 WECHSELN](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
 
@@ -118,7 +118,7 @@ v4.2.2 STABLE:   ✅ JETZT (17.02.2026)
                  (ZIP Stability - Production Ready!)
                  → EMPFOHLEN FÜR ALLE!
 
-v5.0 BETA:       🧪 EXPERIMENTAL (17.02.2026)
+v5.0 BETA:       🧘 EXPERIMENTAL (17.02.2026)
                  (Neue Features, aber instabil!)
                  ⚠️ NUR FÜR TESTER!
                
@@ -155,6 +155,101 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 ```
 
 **Du bist sicher! 💚**
+
+---
+
+## ⚠️ DISCLAIMER & HAFTUNGSAUSSCHLUSS
+
+### 📜 WICHTIGE HINWEISE:
+
+**🚨 KEINE HAFTUNG:**
+```diff
+- Der Entwickler übernimmt KEINE Haftung für:
+  • Konto-Sperrungen durch Twitter/X
+  • Datenverlust oder Fehlfunktionen
+  • Schäden jeglicher Art
+  • Verstöße gegen Twitter-Nutzungsbedingungen
+```
+
+**🔴 KONTO-SPERRUNG MÖGLICH (wenn auch unwahrscheinlich):**
+
+```yaml
+STABLE v4.2.2:
+  Risiko: SEHR GERING
+  Grund: Alles lokal, kein API-Zugriff
+  Status: ✅ Sicher für tägliche Nutzung
+  
+BETA v5.0:
+  Risiko: ERWARTET HÖHER (experimentell!)
+  Grund: Neue Features könnten auffällig sein
+  Status: ⚠️ NUR ZUM TESTEN!
+  Warnung: Beta ist instabil und hat Fehler
+  Möglichkeit: Twitter könnte Verhalten erkennen
+```
+
+**WARUM SOLLTE ES NICHT PASSIEREN:**
+- ✅ Alles läuft **lokal** in deinem Browser
+- ✅ **Keine API-Calls** an Twitter/X Server
+- ✅ Liest nur **sichtbares HTML** (wie normales Scrollen)
+- ✅ **Keine automatischen Actions** (Likes, Retweets, etc.)
+- ✅ STABLE v4.2.2 ist **sehr unauffällig**
+
+**ABER TROTZDEM:**
+- ⚠️ **Beta v5.0** könnte instabil sein
+- ⚠️ Beta hat **Fehler die erkannt werden könnten**
+- ⚠️ Twitter **könnte Patterns erkennen**
+- ⚠️ **Nutzung auf eigene Gefahr!**
+
+---
+
+### 🎯 NUR FÜR PRIVATE NUTZUNG:
+
+```diff
++ ✅ ERLAUBT:
+  • Für eigene Zwecke nutzen
+  • Eigene Tweets/Medien archivieren
+  • Persönliche Sammlung erstellen
+  • Code für Lernzwecke studieren
+  
+- ❌ VERBOTEN:
+  • Twitter/X schaden oder beeinträchtigen
+  • Massen-Scraping von fremden Accounts
+  • Daten verkaufen oder weitergeben
+  • Für illegale Zwecke nutzen
+  • Gegen Twitter-Nutzungsbedingungen verstoßen
+  • Spam oder Missbrauch
+```
+
+**❗ WICHTIG:**
+- 🎯 Dieses Tool ist **NUR für private Zwecke**
+- 🚫 **NICHT nutzen um Twitter X zu schaden**
+- 👨‍💻 Wurde als **Hobby-Projekt entwickelt**
+- ❤️ **NICHT entwickelt um Twitter X zu schaden**
+- 🎮 Es ist nur ein **Hobby-Programm**
+- ⛔ **NICHT für illegale Zwecke nutzen**
+
+---
+
+### 📜 NUTZUNG AUF EIGENE VERANTWORTUNG:
+
+```
+MIT DER NUTZUNG VON CleanTwitter BESTÄTIGST DU:
+
+1. Du nutzt das Tool auf eigene Gefahr
+2. Du verstehst das Risiko von Konto-Sperrungen (besonders bei Beta)
+3. Du nutzt es nur für private, legale Zwecke
+4. Du wirst es nicht nutzen um Twitter/X zu schaden
+5. Der Entwickler haftet nicht für Schäden
+6. Du hast die Nutzungsbedingungen von Twitter/X gelesen
+7. Du akzeptierst die Experimental-Natur der Beta-Version
+```
+
+**👨‍⚖️ RECHTLICHER HINWEIS:**
+- Dieses Projekt ist ein **Hobby-Projekt**
+- Es wurde **NICHT entwickelt um Twitter/X zu schaden**
+- Es dient **NUR privaten Archivierungszwecken**
+- Der Entwickler trägt **KEINE Verantwortung** für Missbrauch
+- **Nutze es verantwortungsvoll und legal!**
 
 ---
 
