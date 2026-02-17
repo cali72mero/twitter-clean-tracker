@@ -1,68 +1,82 @@
 # 🧪 BETA TESTING & TROUBLESHOOTING
 
-> **Für v4.2 BETA Tester & Problem-Löser**
+> **Für v5.0 BETA Tester & Problem-Löser**
 
 ---
 
-## 📍 AKTUELLE VERSION: v4.2 BETA
+## 📍 AKTUELLE VERSION: v5.0 BETA
 
-**Release:** 16.02.2026
-**Status:** 🟡 BETA (stabil, aber mit bekannten Limitationen)
-**Nächste Version:** v5.0 STABLE (wenn möglich)
+**Release:** 17.02.2026
+**Status:** 🟡 EXPERIMENTAL (neue Features, aber mit bekannten Bugs!)
+**Empfohlen:** v4.2.2 STABLE für bestes Erlebnis
 
 ---
 
-## ✅ WAS IN v4.2 FUNKTIONIERT:
+## ⚠️ WICHTIG: v4.2.2 STABLE NUTZEN!
+
+**Wenn du Stabilität willst, nutze v4.2.2 STABLE statt v5.0 BETA:**
+- ✅ Keine Duplikat-Bugs
+- ✅ Stabile Bilder-Anzeige
+- ✅ Zuverlässiger ZIP-Export
+- ✅ Produktiv getestet
+
+👉 **[Zur STABLE Version](https://cali72mero.github.io/twitter-clean-tracker/)**
+
+---
+
+## ✅ WAS IN v5.0 BETA FUNKTIONIERT:
 
 ```diff
-+ ♾️ Unbegrenzter Cache
++ 🛡️ Stealth Mode (zufällige Intervalle 2s-6s)
++ ⏸️ Rate Limit Protection (Pause nach 50 Tweets)
++ 🧵 Thread-Erkennung
++ ✂️ Retweet-Filter
++ ♾️ Grünes Infinity-Badge statt Rot
 + 💾 Download-Buttons bei Tweets
 + 🖼️/🎥/🎬 Medien-Download (Bilder, Videos, GIFs)
 + 📥 HTML-Export
 + 🗂️ ZIP-Export
-+ 📊 Storage-Warnung bei >5MB
-+ ⚙️ Settings (Download-Buttons on/off)
-+ 📱 Mobile-Optimierung
-+ 👀 Dashboard Import via View-Button (Feature)
++ ⚙️ Erweiterte Settings (mehr Optionen als v4.2.2)
 ```
 
 ---
 
-## ⚠️ BEKANNTE LIMITATIONEN (v4.2)
+## ⚠️ BEKANNTE BUGS (v5.0 BETA)
 
-### 1. Kein Rate Limit Protection
+### 1. Bilder werden DOPPELT angezeigt
 
-**Status:** v4.2 scannt in einem festen Intervall (1.5s) und hat keinen Stealth/Pause-Mode.
+**Status:** 🐛 Kritischer Bug! Bilder und Tweets erscheinen mehrfach im Dashboard.
+
+**Ursache:** 
+- postMessage Sync zwischen Twitter und Dashboard führt zu Duplikaten
+- Deduplizierung funktioniert nicht richtig
+- Import-Logik fügt Daten mehrfach hinzu
 
 **Workaround:**
-- Langsam scrollen
-- Regelmäßige Pausen machen
-- Seite neu laden = Stop
+- **Nutze v4.2.2 STABLE stattdessen** (keine Duplikate!)
+- ODER: Ignoriere Duplikate und nutze ZIP-Export
+- ODER: Cache vor View-Button leeren
 
-**Geplant (wenn möglich):** v5.0
-
----
-
-### 2. Keine Smart Features
-
-**Fehlt in v4.2:**
-- ❌ Thread-Erkennung
-- ❌ Link-Extraktion
-- ❌ Retweet-Filter
-- ❌ Tägliche Stats
-
-**Geplant (wenn möglich):** v5.0
+**Geplant:** Fix kommt bald!
 
 ---
 
-### 3. Badge Design
+### 2. Falsche Zähler beim Start
 
-**v4.2:**
-- 🔴 Rot, statisch
+**Status:** Manchmal startet der Badge mit unrealistisch hohen Zahlen.
 
-**Geplant (wenn möglich):** v5.0
-- ♾️ Grün, animiert
-- ⏸️ Pause/Resume
+**Workaround:**
+- Cache leeren und neu starten
+- Seite neu laden
+
+---
+
+### 3. Keine Console Logs
+
+**Status:** F12 Console zeigt weniger Debug-Infos als v4.2.2.
+
+**Workaround:**
+- Für Debug: v4.2.2 STABLE nutzen
 
 ---
 
@@ -96,7 +110,34 @@
 **Lösung:**
 1. Seite neu laden (F5)
 2. Bookmarklet nochmal klicken
-3. Console checken (F12): siehst du `[CT]v4.2`?
+3. Console checken (F12): siehst du `[CT] v5.0 BETA START`?
+
+---
+
+### Problem: Sync funktioniert nicht
+
+**Status:** v5.0 BETA kann Sync-Probleme haben.
+
+**Lösung:**
+- View-Button mehrfach klicken
+- Warte 5 Sekunden zwischen Klicks
+- **ODER: Wechsle zu v4.2.2 STABLE** für stabilen Import
+
+---
+
+## 🆚 v5.0 BETA vs v4.2.2 STABLE
+
+| Feature | v4.2.2 STABLE | v5.0 BETA |
+|---------|---------------|-----------|
+| **Stabilität** | ✅ Produktiv | ⚠️ Experimental |
+| **Duplikat-Bug** | ✅ Keine | ❌ Vorhanden |
+| **Stealth Mode** | ❌ Nein | ✅ Ja (2-6s) |
+| **Rate Limit** | ❌ Nein | ✅ Pause nach 50 |
+| **Thread-Erkennung** | ❌ Nein | ✅ Ja |
+| **Retweet-Filter** | ❌ Nein | ✅ Ja |
+| **Badge-Design** | 🔴 Rot | ♾️ Grün |
+| **Console Logs** | ✅ Voll | ⚠️ Reduziert |
+| **Empfehlung** | ✅ **NUTZEN!** | ⚠️ Nur testen |
 
 ---
 
@@ -104,23 +145,24 @@
 
 - Wenn etwas nicht passt: Screenshot + Console-Logs (F12) machen.
 - Bitte immer Browser + OS dazuschreiben.
+- Bei Duplikat-Bug: Nutze v4.2.2 STABLE statt v5.0 BETA!
 
 ---
 
-## 📅 RELEASE-TIMELINE (Ziele, keine Garantie)
+## 📅 RELEASE-TIMELINE
 
 ```
-📍 16.02.2026
-   ✅ v4.2 BETA
+✅ 17.02.2026
+   v4.2.2 STABLE (PRODUKTIV - EMPFOHLEN!)
 
-📍 Wenn möglich (unter der Woche)
-   🔄 v4.3 BETA (kleine Verbesserungen/Docs)
+🧪 17.02.2026
+   v5.0 BETA (EXPERIMENTAL - nur zum Testen!)
 
-📍 Wenn möglich (Wochenende/nächste Woche)
-   🎉 v5.0 STABLE
+🚀 Bald
+   v5.0 STABLE (wenn Duplikat-Bug behoben)
 
 📍 Später
-   🚀 v5.1 Performance
+   v5.1 Performance-Boost
 ```
 
 ---
@@ -130,7 +172,7 @@
 ```markdown
 ## Bug Report
 
-**Version:** v4.2 BETA
+**Version:** v5.0 BETA
 **Browser:** [Chrome/Firefox/Safari] [Version]
 **OS:** [Windows/Mac/Linux/Android/iOS]
 
@@ -150,6 +192,7 @@
 - [ ] Seite neu geladen
 - [ ] Langsam gescrollt
 - [ ] Popups erlaubt
+- [ ] v4.2.2 STABLE getestet
 ```
 
 ---
@@ -157,10 +200,10 @@
 ## 🔗 WICHTIGE LINKS
 
 - **README:** [README.md](README.md)
-- **Live Demo:** [GitHub Pages](https://cali72mero.github.io/twitter-clean-tracker/)
+- **v4.2.2 STABLE (EMPFOHLEN!):** [GitHub Pages](https://cali72mero.github.io/twitter-clean-tracker/)
+- **v5.0 BETA (mit Bugs!):** [Beta Version](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
 - **Issues:** [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
-- **Releases:** [Alle Versionen](https://github.com/cali72mero/twitter-clean-tracker/releases)
 
 ---
 
-**Last Updated:** v4.2 BETA (16.02.2026)
+**Last Updated:** v5.0 BETA (17.02.2026)
