@@ -1,48 +1,50 @@
 # 🐦 CleanTwitter Tracker
 
-Der ultimative, leichte Twitter/X Media & Tweet Saver. Speichert Tweets, Bilder (auch Galerien!), Videos und GIFs direkt im Browser. Keine Server, 100% lokal.
+Ein superleichter, privater Twitter/X Media Saver. Speichert Tweets, Bilder und Videos direkt im Browser (LocalStorage). Keine Server, kein Login, 100% lokal.
 
-## 📥 Installation
+## 🚀 Installation (v4.2.2 - STABLE)
 
-**👉 [HIER KLICKEN FÜR STABLE VERSION (v4.2.2)](https://cali72mero.github.io/twitter-clean-tracker/)**
+1.  Öffne das Dashboard: **[HIER KLICKEN](https://cali72mero.github.io/twitter-clean-tracker/)**
+2.  Ziehe den Button **"💾 CleanTwitter v4.2.2"** in deine Lesezeichen-Leiste.
+3.  Gehe auf Twitter/X.
+4.  Klicke auf das Lesezeichen, um das Tracking zu starten.
 
-1. Gehe auf die verlinkte Seite.
-2. Ziehe den **"CleanTwitter v4.2.2"** Button in deine Lesezeichen-Leiste.
-3. Gehe auf Twitter/X.
-4. Klicke auf das Lesezeichen.
+## 🧪 BETA VERSION (v5.0 - EXPERIMENTAL)
 
----
+**⚠️ ACHTUNG:** Diese Version enthält noch Fehler (falsche Zähler, fehlende Logs). Nutzung auf eigene Gefahr!
 
-## 🧪 BETA VERSION (v5.0)
-
-**⚠️ ACHTUNG:** Diese Version hat noch Fehler (z.B. Zähler-Bugs)! Nutzung auf eigene Gefahr.
-
-👉 **[HIER GEHTS ZUR BETA (v5.0)](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
+👉 **[ZUR BETA VERSION (v5.0)](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
 
 ---
 
-## 📜 Versionshistorie
+## 🛠️ Features
 
-### ✅ v4.2.2 (STABLE) - Aktuelle Hauptversion
-*   **ZIP Fix:** Download großer Galerien (>600 Bilder) funktioniert jetzt zuverlässig.
-*   **Ladebalken:** Visuelles Feedback beim Erstellen der ZIP-Datei.
-*   **Multi-Image:** Speichert ALLE Bilder eines Tweets, nicht nur das erste.
-*   **Konsole:** Zeigt Logs in der F12 Konsole an (wichtig zur Kontrolle).
+*   **100% Privat:** Daten verlassen nie deinen Browser.
+*   **Unbegrenzter Speicher:** Nutzt den LocalStorage (bis zu 5-10MB Text, Medien werden on-the-fly geladen).
+*   **Media Downloader:** Lädt Bilder (auch Galerien!), Videos und GIFs.
+*   **ZIP-Export:** Lade alle gesammelten Medien als ZIP-Datei herunter.
+*   **HTML-Archiv:** Speichere deine Tweets als durchsuchbare HTML-Datei.
+*   **Duplikat-Schutz:** Speichert jeden Tweet nur einmal.
 
-### ⚠️ v5.0 (BETA) - Experimentell
-*   *Feature:* Stealth Mode (zufällige Intervalle gegen Shadowbans).
-*   *Feature:* Neue UI mit Einstellungen.
-*   *Bug:* Startet manchmal mit extrem hohen, falschen Zählerwerten.
-*   *Bug:* Keine Ausgaben in der F12 Konsole (Download schwer zu prüfen).
+## 📜 Changelog
+
+### v4.2.2 (Aktuell - Stable)
+*   **ZIP Fix:** Download großer Galerien funktioniert jetzt stabil.
+*   **Multi-Image:** Speichert alle Bilder eines Tweets zuverlässig.
+*   **Ladebalken:** Visuelles Feedback beim ZIP-Export.
+
+### v5.0 (Beta)
+*   *Neu:* Stealth Mode (Anti-Ban Intervalle).
+*   *Neu:* Einstellungs-Menü.
+*   *Bug:* Startet manchmal mit falschen Zähler-Werten.
+*   *Bug:* Keine Konsolen-Logs.
 
 ### v4.1
-*   Erste Version mit ZIP-Export.
-*   Problem: ZIP-Export brach bei zu vielen Bildern ab.
+*   Erste Version mit ZIP-Funktion.
 
----
+### v3.0
+*   Basis-Version mit LocalStorage.
 
-## 🛠️ Features (Stable)
-*   **100% Client-Side:** Daten bleiben in deinem Browser (LocalStorage).
-*   **Unbegrenzter Cache:** Speichere tausende Tweets (bis dein Browser voll ist).
-*   **Bilder & Videos:** Erkennt und lädt MP4s, GIFs und JPG/PNGs.
-*   **JSON & HTML Export:** Sichere deine Daten als Datei.
+## ⚖️ Rechtliches
+
+Dieses Tool ist nur für den privaten Gebrauch gedacht. Respektiere die Urheberrechte und die Nutzungsbedingungen von Twitter/X.
