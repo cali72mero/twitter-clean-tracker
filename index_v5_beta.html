@@ -134,7 +134,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC ---
+        // --- V5 BETA LOGIC WITH CROSS-DOMAIN SYNC + CONSOLE LOGS ---
         const CACHE_KEY = 'tw_clean_cache'; // MUSS GLEICH SEIN
         
         let settings = {
@@ -177,7 +177,7 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
-            // BOOKMARKLET CODE - MIT POSTMESSAGE FIX
+            // BOOKMARKLET CODE - MIT POSTMESSAGE FIX + CONSOLE LOGS
             const code = `(function(){
                 console.log('[CT] v5.0 BETA START');
                 var CFG = ${CONFIG};
@@ -186,7 +186,7 @@
                 var paused = false;
                 
                 var badgeColor = CFG.greenBadge ? '#0f8' : '#f44';
-                var badgeIcon = CFG.greenBadge ? '♾️' : '🔴';
+                var badgeIcon = CFG.greenBadge ? '\u267e\ufe0f' : '\ud83d\udd34';
 
                 function mk(){
                     var p = document.createElement('div');
@@ -199,20 +199,26 @@
                     b.style.cssText = 'all:initial!important;background:rgba(0,0,0,0.95)!important;color:'+badgeColor+'!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:70px!important;box-shadow:0 4px 10px rgba(0,0,0,0.5)!important';
                     
                     var s = document.createElement('button');
-                    s.innerText = '👀 View';
+                    s.innerText = '\ud83d\udc40 View';
                     s.style.cssText = 'all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     
                     s.onclick = function(){
                         var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                        // ÖFFNET DAS DASHBOARD
+                        console.log('[CT] \ud83d\udc40 Opening Dashboard with', c.length, 'tweets');
                         var w = window.open('https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html', 'ct_dashboard');
                         
-                        // SENDE DATEN SOFORT UND MEHRFACH (um sicherzugehen dass es ankommt)
-                        b.innerText = '⏳ Sync...';
+                        b.innerText = '\u23f3 Sync...';
                         var i = 0;
                         var t = setInterval(function(){
-                            if(w) w.postMessage({type:'import_tweets', data:c}, '*');
-                            if(++i > 10){ clearInterval(t); upd(); }
+                            if(w) {
+                                w.postMessage({type:'import_tweets', data:c}, '*');
+                                console.log('[CT] \ud83d\udce4 Sending data... (' + (i+1) + '/10)');
+                            }
+                            if(++i > 10){ 
+                                clearInterval(t); 
+                                upd(); 
+                                console.log('[CT] \u2705 Sync complete!');
+                            }
                         }, 500);
                     };
                     
@@ -224,16 +230,21 @@
 
                 function upd(){
                     var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
-                    if(B) B.innerText = (paused ? '⏸️' : badgeIcon) + ' ' + c.length;
+                    if(B) B.innerText = (paused ? '\u23f8\ufe0f' : badgeIcon) + ' ' + c.length;
                 }
 
                 function dlMedia(url, name){
+                    console.log('[CT] \ud83d\udcbe Downloading:', name);
                     fetch(url).then(r => r.blob()).then(blob => {
                         var a = document.createElement('a');
                         a.href = URL.createObjectURL(blob);
                         a.download = name;
                         a.click();
-                    }).catch(() => alert('DL Error'));
+                        console.log('[CT] \u2705 Downloaded:', name);
+                    }).catch(e => {
+                        console.error('[CT] \u274c DL Error:', e);
+                        alert('DL Error');
+                    });
                 }
 
                 function addDL(){
@@ -247,12 +258,16 @@
                         
                         if(imgs.length > 0 || vid){
                             var btn = document.createElement('button');
-                            btn.innerText = '💾';
+                            btn.innerText = '\ud83d\udcbe';
                             btn.style.cssText = 'position:absolute!important;top:5px!important;left:5px!important;z-index:999!important;background:rgba(0,0,0,0.6)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important;';
                             btn.onclick = function(e){
                                 e.preventDefault(); e.stopPropagation();
-                                if(vid) dlMedia(vid.src, 'video_'+Date.now()+'.mp4');
-                                else imgs.forEach((img,i) => dlMedia(img.src, 'img_'+Date.now()+'_'+i+'.jpg'));
+                                if(vid) {
+                                    dlMedia(vid.src, 'video_'+Date.now()+'.mp4');
+                                } else {
+                                    console.log('[CT] \ud83d\uddbc\ufe0f Downloading', imgs.length, 'images');
+                                    imgs.forEach((img,i) => dlMedia(img.src, 'img_'+Date.now()+'_'+i+'.jpg'));
+                                }
                             };
                             t.style.position = 'relative'; 
                             t.appendChild(btn);
@@ -302,13 +317,19 @@
                     if(added > 0){
                         localStorage.setItem('tw_clean_cache', JSON.stringify(c));
                         upd();
+                        console.log('[CT] +' + added + ' Total: ' + c.length);
                     }
 
                     if(CFG.rateLimit && scanCount > 50){
                         paused = true;
                         scanCount = 0;
-                        if(B) B.innerText = '⏸️ Limit';
-                        setTimeout(() => { paused = false; upd(); }, 30000);
+                        if(B) B.innerText = '\u23f8\ufe0f Limit';
+                        console.log('[CT] \u26a0\ufe0f Rate Limit! Pause 30s...');
+                        setTimeout(() => { 
+                            paused = false; 
+                            upd(); 
+                            console.log('[CT] \u25b6\ufe0f Resumed!');
+                        }, 30000);
                     }
                     
                     var nextScan = CFG.stealthMode ? (Math.random() * 4000 + 2000) : 1500;
@@ -321,7 +342,8 @@
                 sc(); 
                 setInterval(addDL, 2000);
                 
-                alert('⚠️ CleanTwitter v5.0 BETA STARTED!');
+                console.log('[CT] v5.0 BETA LOADED!');
+                alert('\u26a0\ufe0f CleanTwitter v5.0 BETA STARTED!');
             })();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
@@ -360,6 +382,8 @@
                 else if(t.img || t.video) total++;
             });
             
+            console.log('[CT] ZIP START - Total:', total);
+            
             for(const t of data) {
                 try {
                     if(t.imgs && t.imgs.length > 0) {
@@ -369,9 +393,11 @@
                                 if(response.ok) {
                                     const blob = await response.blob();
                                     const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                    imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                                    imgFolder.file(`image_${imgIdx}.${ext}`, blob);
+                                    console.log(`[CT] +1 Total: ${imgIdx}`);
+                                    imgIdx++;
                                 }
-                            } catch(e) { console.error('Skip img', e); }
+                            } catch(e) { console.error('[CT] Skip img', e); }
                             processed++;
                             status.innerText = `Verarbeite... (${processed}/${total})`;
                             if(processed % 10 === 0) await new Promise(r => setTimeout(r, 50));
@@ -382,7 +408,9 @@
                             if(response.ok) {
                                 const blob = await response.blob();
                                 const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                imgFolder.file(`image_${imgIdx++}.${ext}`, blob);
+                                imgFolder.file(`image_${imgIdx}.${ext}`, blob);
+                                console.log(`[CT] +1 Total: ${imgIdx}`);
+                                imgIdx++;
                             }
                         } catch(e) {}
                         processed++;
@@ -391,16 +419,19 @@
                             const response = await fetch(t.video);
                             if(response.ok) {
                                 const blob = await response.blob();
-                                vidFolder.file(`video_${vidIdx++}.mp4`, blob);
+                                vidFolder.file(`video_${vidIdx}.mp4`, blob);
+                                console.log(`[CT] +1 Total: ${vidIdx} (video)`);
+                                vidIdx++;
                             }
                         } catch(e) {}
                         processed++;
                     }
                     if(processed % 20 === 0) await new Promise(r => setTimeout(r, 100));
-                } catch(e) { console.error('Error:', e); }
+                } catch(e) { console.error('[CT] Error:', e); }
             }
             
             status.innerText = 'Erstelle ZIP... (fast fertig!)';
+            console.log('[CT] ZIP: Generating...');
             const content = await zip.generateAsync({type: 'blob'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(content);
@@ -408,6 +439,7 @@
             a.click();
             
             document.getElementById('loadingOverlay').style.display = 'none';
+            console.log('[CT] ZIP DONE!');
             alert('✅ ZIP-Download erfolgreich!');
         }
         
@@ -415,6 +447,7 @@
             if(confirm('Cache wirklich löschen?')) {
                 localStorage.removeItem(CACHE_KEY);
                 loadCache();
+                console.log('[CT] Cache cleared!');
             }
         }
         
@@ -496,7 +529,7 @@
                         });
                         mediaHTML += '</div>';
                         badge = `<div class="media-badge">🖼️ ${t.imgs.length} IMGS</div>`;
-                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadGallery(['${t.imgs.join("','")}']])">💾 Alle ${t.imgs.length} Bilder</button>`;
+                        dlBtn = `<button class="tweet-dl-btn" onclick="downloadGallery(['${t.imgs.join("','") }'])">💾 Alle ${t.imgs.length} Bilder</button>`;
                     } else if(t.img) {
                         mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`;
                         badge = '<div class="media-badge">🖼️ IMG</div>';
@@ -524,6 +557,7 @@
         
         function downloadGallery(urls) {
             if(!urls || urls.length === 0) return;
+            console.log('[CT] Downloading gallery:', urls.length, 'images');
             urls.forEach((url, i) => {
                 setTimeout(() => {
                     const ext = url.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
@@ -534,9 +568,8 @@
 
         // IMPROVED LISTENER
         window.addEventListener('message', (event) => {
-            // Nur vertrauenswürdige Messages verarbeiten (optional: origin check)
             if (event.data && event.data.type === 'import_tweets') {
-                console.log('Empfange Daten...', event.data.data.length);
+                console.log('[CT] 📥 Import received:', event.data.data.length, 'tweets');
                 const newTweets = event.data.data;
                 const currentCache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
                 
@@ -551,18 +584,21 @@
                 if(addedCount > 0) {
                     localStorage.setItem(CACHE_KEY, JSON.stringify(currentCache));
                     loadCache();
-                    // Feedback an User
+                    console.log('[CT] ✅ Imported:', addedCount, 'new tweets - Total:', currentCache.length);
                     const statInfo = document.createElement('div');
                     statInfo.innerText = `✅ ${addedCount} neue Tweets importiert!`;
                     statInfo.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
                     document.body.appendChild(statInfo);
                     setTimeout(() => statInfo.remove(), 3000);
+                } else {
+                    console.log('[CT] ℹ️ No new tweets to import (all already cached)');
                 }
             }
         });
 
         loadSettings();
         loadCache();
+        console.log('[CT] Dashboard v5.0 BETA loaded!');
     </script>
 </body>
 </html>
