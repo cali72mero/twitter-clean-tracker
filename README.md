@@ -32,25 +32,26 @@
 
 ---
 
-## ✨ NEUE BETA: v5.0.1 VERFÜGBAR!
+## ✨ BETA: v5.0 EXPERIMENTAL VERFÜGBAR!
 
-**🎉 v5.0 BEENDET - Jetzt v5.0.1 BETA mit erweiterten Einstellungen!**
+**🧪 v5.0 BETA - EXPERIMENTAL - NUR ZUM TESTEN!**
 
-👉 **[ZUR BETA v5.0.1 WECHSELN](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
+👉 **[ZUR BETA v5.0 WECHSELN](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
 
-### 🆕 Neu in v5.0.1 BETA:
-- 🎯 **Einstellbare Rate Limits** (Slider: 10-200 Tweets)
-- ⏱️ **Einstellbare Pause-Dauer** (Slider: 10-300 Sekunden)
-- 🎲 **Einstellbare Scan-Geschwindigkeit** (Min/Max Intervall)
-- ⏸️ **Manueller Pause/Resume Button** direkt auf Twitter!
-- 🔄 **Reset-Counter** ohne Cache zu löschen
-- 🛡️ Stealth Mode, Thread-Erkennung, Retweet-Filter
-- ♾️ Grünes Infinity-Badge
+### 🆕 Neu in v5.0 BETA:
+- 🛡️ **Stealth Mode** (zufällige Scan-Intervalle 2-6s)
+- ⏸️ **Rate Limit Protection** (automatische Pause nach 50 Tweets)
+- 🧵 **Thread-Erkennung** (markiert Threads)
+- ✂️ **Retweet-Filter** (nur Original-Posts)
+- ♾️ **Grünes Infinity-Badge**
+- 💾 **Download-Buttons** auf Tweets
+- 👀 **View-Button** (Dashboard öffnen)
 
-### ⚠️ Bekannte Bugs in v5.0.1 BETA:
-- **🖼️ BILDER-BUG:** Bilder können noch doppelt angezeigt werden (aus v5.0)
-- **📊 Falsche Zähler:** Manchmal unrealistische Startwerte
-- **⏳ Sync-Probleme:** Import manchmal instabil
+### ⚠️ Bekannte Probleme in v5.0 BETA:
+- **🖼️ BILDER-BUG:** Bilder können noch doppelt angezeigt werden
+- **📊 FEHLENDE SLIDER:** Einstellungen noch nicht anpassbar (kommt später)
+- **⏳ SYNC-PROBLEME:** Import manchmal instabil
+- **🐞 BUGS ERWARTET:** Experimental - nicht für Produktion!
 
 **→ Für beste Stabilität: v4.2.2 STABLE nutzen!**
 
@@ -75,40 +76,41 @@
 
 ---
 
-## 🔮 VERSION 5.0.1 BETA - JETZT VERFÜGBAR!
+## 🔮 VERSION 5.0 BETA - EXPERIMENTAL!
 
 ### 🎯 NEUE FEATURES:
 
-**1. Erweiterte Rate Limit Kontrolle:**
+**1. Stealth Mode:**
 ```javascript
-// v5.0.1 BETA - JETZT MIT SLIDERN!
-- 🔢 Pause-Limit: 10-200 Tweets (Standard: 50)
-- ⏱️ Pause-Dauer: 10-300 Sekunden (Standard: 30s)
-- 📊 Echtzeit-Anpassung möglich
+// v5.0 BETA:
+- 🎲 Zufällige Scan-Intervalle (2-6 Sekunden)
+- 👻 Kein erkennbares Bot-Muster
+- 🛡️ Rate Limit Protection (Pause nach 50 Tweets)
 ```
 
-**2. Geschwindigkeits-Kontrolle:**
+**2. Smart Filter:**
 ```javascript
-// v5.0.1 BETA:
-- 🐢 Min Intervall: 1-10 Sekunden (Standard: 2s)
-- 🐇 Max Intervall: 2-15 Sekunden (Standard: 6s)
-- 🎲 Zufällige Werte dazwischen (Stealth!)
+// v5.0 BETA:
+- ✂️ Retweets ignorieren (nur Originals)
+- 🧵 Thread-Erkennung (markiert zusammenhängende Posts)
+- 🔍 Bessere Tweet-Erkennung (TID-basiert)
 ```
 
-**3. Manuelle Steuerung auf Twitter:**
+**3. UI Verbesserungen:**
 ```javascript
-// Neue Buttons direkt im Badge:
-- ⏸️ Pause-Button (manuell stoppen)
-- ▶️ Resume-Button (weiter scannen)
+// Neue Elemente:
+- ♾️ Grünes Infinity-Badge (statt rot)
 - 👀 View-Button (Dashboard öffnen)
+- 💾 Download-Buttons direkt auf Tweets
 ```
 
-**4. Alle v5.0 Features:**
-- 🛡️ Stealth Mode (zufällige Intervalle)
-- 🧵 Thread-Erkennung
-- ✂️ Retweet-Filter
-- ♾️ Grünes Infinity-Badge
-- 💾 Download-Buttons auf Tweets
+### 🚨 WARNUNG:
+
+**v5.0 BETA ist EXPERIMENTAL!**
+- 🐞 **Bugs erwartet** - nicht production-ready
+- 🖼️ **Bilder-Bug:** Duplikate möglich
+- 🔧 **In Entwicklung:** Features unvollständig
+- ⚠️ **Nutze v4.2.2** für tägliche Nutzung!
 
 ### 📅 RELEASE-PLAN:
 
@@ -117,15 +119,11 @@ v4.2.2 STABLE:   ✅ JETZT (17.02.2026)
                  (ZIP Stability - Production Ready!)
                  → EMPFOHLEN FÜR ALLE!
 
-v5.0 BETA:       ✅ BEENDET (17.02.2026)
-                 Nachfolger: v5.0.1 BETA
-
-v5.0.1 BETA:     ✨ JETZT VERFÜGBAR! (17.02.2026)
-                 (Erweiterte Einstellungen!)
-                 ⚠️ EXPERIMENTAL - Bugs möglich
-                 → NUR FÜR TESTER!
+v5.0 BETA:       🧪 EXPERIMENTAL (17.02.2026)
+                 (Neue Features, aber instabil!)
+                 ⚠️ NUR FÜR TESTER!
                
-v5.1 STABLE:     🚀 Kommt bald (wenn Bugs behoben)
+v5.1 STABLE:     🚀 Kommt später (wenn Bugs behoben)
 ```
 
 ---
@@ -181,18 +179,14 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 ## 🔄 Changelog
 
-### v5.0.1 BETA (17.02.2026) - NEW!
-- ✨ **Erweiterte Einstellungen:** Slider für Rate Limits, Geschwindigkeit
-- ⏸️ **Manuelle Kontrolle:** Pause/Resume Button auf Twitter
-- 🎯 **Anpassbare Limits:** 10-200 Tweets, 10-300s Pause
-- 🎲 **Scan-Intervall:** Min/Max einstellbar (1-15s)
-- 🔧 **Alle v5.0 Features:** Stealth, Thread-Detection, Retweet-Filter
-
-### v5.0 BETA (17.02.2026) - BEENDET
+### v5.0 BETA (17.02.2026) - EXPERIMENTAL
 - 🛡️ **Stealth Mode:** Zufällige Intervalle (2s-6s)
 - ⏸️ **Rate Limit:** Automatische Pause nach 50 Tweets
 - 🧵 **Thread-Erkennung:** Markiert zusammenhängende Posts
-- ⚠️ **STATUS:** Durch v5.0.1 ersetzt
+- ✂️ **Retweet-Filter:** Nur Original-Posts speichern
+- ♾️ **Grünes Badge:** Statt rotem Badge
+- 💾 **Download-Buttons:** Direkt auf Tweets
+- ⚠️ **STATUS:** EXPERIMENTAL - Bugs erwartet!
 
 ### v4.2.2 STABLE (17.02.2026) - PRODUCTION READY
 - ✅ **STATUS:** Aus Beta in Stable überführt
@@ -231,7 +225,7 @@ Beiträge sind willkommen!
 ## 🔗 Links
 
 - **Live Demo (STABLE)**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-- **Beta v5.0.1 (NEUE FEATURES!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
+- **Beta v5.0 (EXPERIMENTAL!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
 - **Backup v5.0**: [index_v5_beta_backup.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta_backup.html)
 - **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
 - **Issues**: [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
