@@ -15,7 +15,7 @@
 - ✅ Stabil genug für täglichen Gebrauch
 - ✅ ZIP-Export funktioniert zuverlässig
 - ✅ Alle Features getestet
-- ✅ Bilder werden korrekt angezeigt
+- ✅ Bilder werden korrekt angezeigt (KEINE Duplikate)
 - 🔄 Updates wenn nötig
 
 ---
@@ -34,12 +34,12 @@
 - ♾️ **Grünes Badge** statt rot
 
 ### ⚠️ Bekannte Bugs in v5.0 BETA:
-- **🖼️ BILDER-BUG:** Bilder werden oft doppelt gespeichert und auf der GitHub Site nicht korrekt angezeigt
+- **🖼️ BILDER-BUG:** Bilder werden DOPPELT angezeigt und gespeichert (Duplikate im Dashboard)
 - **📊 Falsche Zähler:** Startet manchmal mit unrealistisch hohen Zahlen
 - **🔇 Keine Logs:** Keine F12 Console Ausgaben mehr
 - **⏳ Sync-Probleme:** Daten-Import zwischen Twitter und Dashboard manchmal instabil
 
-**→ Für Stabilität und korrekte Bilder-Anzeige: Nutze v4.2.2 STABLE!**
+**→ Für Stabilität ohne Duplikate: Nutze v4.2.2 STABLE!**
 
 ---
 
@@ -116,10 +116,10 @@ v4.2.2 STABLE:   ✅ JETZT (17.02.2026)
 
 v5.0 BETA:       🧪 JETZT VERFÜGBAR ZUM TESTEN!
                  (Stealth Mode & neue Features)
-                 ⚠️ BUGS: Bilder-Display, Sync-Probleme
+                 ⚠️ BUGS: Bilder-Duplikate, Sync-Probleme
                  → NUR FÜR TESTER!
                
-v5.0 STABLE:     🚀 Kommt wenn Bilder-Bug behoben
+v5.0 STABLE:     🚀 Kommt wenn Duplikat-Bug behoben
 
 v5.1:            💫 Später (Performance-Boost)
 ```
@@ -252,15 +252,16 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - Warten bis Bilder laden
 - Skeleton-Loader ignorieren
 
-### 2. Bilder werden nicht angezeigt (v5.0 BETA)
+### 2. Bilder werden doppelt angezeigt (v5.0 BETA)
 
-**Problem:** Bilder werden auf Twitter gespeichert aber auf GitHub Site nicht angezeigt
+**Problem:** Bilder und Tweets werden doppelt im Dashboard angezeigt
 
-**Grund:** Cross-Origin Sync-Bug zwischen Twitter und GitHub Pages
+**Grund:** Sync-Bug beim postMessage-Import zwischen Twitter und GitHub Pages
 
 **Workaround:**
-- Nutze v4.2.2 STABLE stattdessen!
-- ODER: Nutze ZIP-Export und lade Bilder lokal
+- Nutze v4.2.2 STABLE stattdessen (keine Duplikate)!
+- ODER: Vor dem View-Klick Cache leeren
+- ODER: Ignoriere Duplikate und nutze ZIP-Export
 
 ---
 
@@ -271,7 +272,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - 📦 **ZIP-Export:** Stabilisiert für viele Bilder (Fix für #Crash bei 600+ Bildern)
 - ⏳ **UI:** Neue Lade-Anzeige beim ZIP-Erstellen
 - 🐛 **Fehlerbehandlung:** Einzelne kaputte Bilder stoppen nicht mehr den ganzen Download
-- 🖼️ **Bilder-Display:** Funktioniert zuverlässig auf Dashboard
+- 🖼️ **Bilder-Display:** Funktioniert zuverlässig ohne Duplikate
 
 ### v5.0 BETA (17.02.2026) - EXPERIMENTAL
 - 🧪 **STATUS:** Jetzt als Beta verfügbar zum Testen!
@@ -279,10 +280,10 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - ⏸️ **Rate Limit:** Automatische Pause nach 50 Tweets
 - 🧵 **Thread-Erkennung:** Markiert zusammenhängende Posts
 - ⚠️ **BUGS:** 
-  - 🖼️ Bilder werden oft doppelt gespeichert
-  - 📺 Bilder auf GitHub Site nicht sichtbar
+  - 🖼️ Bilder werden DOPPELT gespeichert und angezeigt
   - 📊 Falsche Zähler beim Start
   - 🔇 Fehlende Console Logs
+  - ⏳ Sync-Probleme bei postMessage
 
 ### v4.2.1 BETA (16.02.2026)
 - ✨ **Multi-Image Support:** Speichert jetzt ALLE Bilder eines Posts!
@@ -324,7 +325,7 @@ Beiträge sind willkommen!
 ## 🔗 Links
 
 - **Live Demo (STABLE)**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-- **Beta v5.0 (MIT BUGS!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
+- **Beta v5.0 (MIT DUPLIKAT-BUG!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
 - **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
 - **Issues**: [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
 
