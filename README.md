@@ -15,6 +15,7 @@
 - ✅ Stabil genug für täglichen Gebrauch
 - ✅ ZIP-Export funktioniert zuverlässig
 - ✅ Alle Features getestet
+- ✅ Bilder werden korrekt angezeigt
 - 🔄 Updates wenn nötig
 
 ---
@@ -33,11 +34,12 @@
 - ♾️ **Grünes Badge** statt rot
 
 ### ⚠️ Bekannte Bugs in v5.0 BETA:
-- Startet manchmal mit falschen Zählerwerten
-- Keine F12 Console Logs
-- Bilder-Download teilweise instabil
+- **🖼️ BILDER-BUG:** Bilder werden oft doppelt gespeichert und auf der GitHub Site nicht korrekt angezeigt
+- **📊 Falsche Zähler:** Startet manchmal mit unrealistisch hohen Zahlen
+- **🔇 Keine Logs:** Keine F12 Console Ausgaben mehr
+- **⏳ Sync-Probleme:** Daten-Import zwischen Twitter und Dashboard manchmal instabil
 
-**→ Für Stabilität bleib bei v4.2.2 STABLE!**
+**→ Für Stabilität und korrekte Bilder-Anzeige: Nutze v4.2.2 STABLE!**
 
 ---
 
@@ -75,11 +77,11 @@
 
 ## 🔮 VERSION 5.0 - JETZT ALS BETA VERFÜGBAR!
 
-### 🎯 GEPLANTE FIXES:
+### 🎯 NEUE FEATURES (mit Bugs!):
 
 **1. Rate Limit Protection:**
 ```javascript
-// v5.0 BETA (JETZT TESTEN!):
+// v5.0 BETA (JETZT TESTEN - aber mit Bugs!):
 - 🛡️ Stealth Mode mit zufälligen Delays
 - ⏱️ Flexible Intervalle (1.5s - 10s)
 - ⏸️ Pause/Resume-Button
@@ -88,7 +90,7 @@
 
 **2. Smart Features:**
 ```javascript
-// v5.0 BETA (JETZT TESTEN!):
+// v5.0 BETA (JETZT TESTEN - aber mit Bugs!):
 - 🧵 Thread-Erkennung (zusammenhängende Tweets)
 - 🔗 Link-Extraktion (URLs separat speichern)
 - ✂️ Retweet-Filter (automatisch überspringen)
@@ -100,7 +102,7 @@
 // Aktuell (v4.2 STABLE):
 🔴 24  // Rot, statisch
 
-// v5.0 BETA (JETZT TESTEN!):
+// v5.0 BETA (funktioniert, aber andere Bugs!):
 ♾️ 24  // Grün, animiert bei neuen Tweets
 ⏸️ 24  // Gelb bei Pause
 ```
@@ -110,12 +112,14 @@
 ```
 v4.2.2 STABLE:   ✅ JETZT (17.02.2026)
                  (ZIP Stability - Production Ready!)
+                 → EMPFOHLEN FÜR ALLE!
 
 v5.0 BETA:       🧪 JETZT VERFÜGBAR ZUM TESTEN!
                  (Stealth Mode & neue Features)
-                 → Link oben!
+                 ⚠️ BUGS: Bilder-Display, Sync-Probleme
+                 → NUR FÜR TESTER!
                
-v5.0 STABLE:     🚀 Bald (wenn Beta-Bugs behoben)
+v5.0 STABLE:     🚀 Kommt wenn Bilder-Bug behoben
 
 v5.1:            💫 Später (Performance-Boost)
 ```
@@ -239,7 +243,7 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 
 ## 🐛 Bekannte Bugs & Workarounds
 
-### 1. Zu schnell - Bilder fehlen
+### 1. Zu schnell - Bilder fehlen (v4.2.2)
 
 **Problem:** 1.5s Intervall zu schnell beim schnellen Scrollen
 
@@ -247,6 +251,16 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - Langsam scrollen!
 - Warten bis Bilder laden
 - Skeleton-Loader ignorieren
+
+### 2. Bilder werden nicht angezeigt (v5.0 BETA)
+
+**Problem:** Bilder werden auf Twitter gespeichert aber auf GitHub Site nicht angezeigt
+
+**Grund:** Cross-Origin Sync-Bug zwischen Twitter und GitHub Pages
+
+**Workaround:**
+- Nutze v4.2.2 STABLE stattdessen!
+- ODER: Nutze ZIP-Export und lade Bilder lokal
 
 ---
 
@@ -257,13 +271,18 @@ CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysie
 - 📦 **ZIP-Export:** Stabilisiert für viele Bilder (Fix für #Crash bei 600+ Bildern)
 - ⏳ **UI:** Neue Lade-Anzeige beim ZIP-Erstellen
 - 🐛 **Fehlerbehandlung:** Einzelne kaputte Bilder stoppen nicht mehr den ganzen Download
+- 🖼️ **Bilder-Display:** Funktioniert zuverlässig auf Dashboard
 
 ### v5.0 BETA (17.02.2026) - EXPERIMENTAL
 - 🧪 **STATUS:** Jetzt als Beta verfügbar zum Testen!
 - 🛡️ **Stealth Mode:** Zufällige Intervalle (2s-6s)
 - ⏸️ **Rate Limit:** Automatische Pause nach 50 Tweets
 - 🧵 **Thread-Erkennung:** Markiert zusammenhängende Posts
-- ⚠️ **BUGS:** Falsche Zähler, fehlende Logs
+- ⚠️ **BUGS:** 
+  - 🖼️ Bilder werden oft doppelt gespeichert
+  - 📺 Bilder auf GitHub Site nicht sichtbar
+  - 📊 Falsche Zähler beim Start
+  - 🔇 Fehlende Console Logs
 
 ### v4.2.1 BETA (16.02.2026)
 - ✨ **Multi-Image Support:** Speichert jetzt ALLE Bilder eines Posts!
@@ -305,7 +324,7 @@ Beiträge sind willkommen!
 ## 🔗 Links
 
 - **Live Demo (STABLE)**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-- **Beta v5.0**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
+- **Beta v5.0 (MIT BUGS!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
 - **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
 - **Issues**: [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
 
