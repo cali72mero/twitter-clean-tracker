@@ -49,7 +49,6 @@
 
 ### ⚠️ Bekannte Probleme in v5.0 BETA:
 - **🖼️ BILDER-BUG:** Bilder können noch doppelt angezeigt werden
-- **📊 FEHLENDE SLIDER:** Einstellungen noch nicht anpassbar (kommt später)
 - **⏳ SYNC-PROBLEME:** Import manchmal instabil
 - **🐞 BUGS ERWARTET:** Experimental - nicht für Produktion!
 
