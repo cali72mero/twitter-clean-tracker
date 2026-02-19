@@ -292,16 +292,15 @@
         
         function clearCache() {
             if(confirm('⚠️ Cache wirklich löschen?\n\nLöscht NUR Twitter-Daten (tw_clean_cache).\nKEINE anderen Website-Daten werden gelöscht!')) {
-                // FORCE COMPLETE RESET
+                // 1. Storage löschen
                 localStorage.removeItem(CACHE_KEY);
                 
-                // OPTIONAL: Auch Settings resetten, wenn gewünscht? 
-                // localStorage.removeItem('ct_settings_v5'); // Lieber behalten
+                // 2. Sync-Schutz setzen (für 15 Sekunden keine Importe annehmen)
+                // Damit alte Daten von offenen Twitter-Tabs nicht sofort wieder reingeschrieben werden
+                sessionStorage.setItem('ct_ignore_sync', Date.now());
                 
-                loadCache();
-                
-                // ERZWINGE RELOAD DAMIT ALLES SAUBER IST
-                alert('✅ Cache gelöscht!\n\nSeite wird neu geladen, um sicherzugehen...');
+                // 3. Reload erzwingen
+                alert('✅ Cache gelöscht!\n\nSeite wird neu geladen...\n\nHINWEIS: Offene Twitter-Tabs haben evtl. noch alte Daten im RAM.\nBitte Twitter-Seite auch neu laden!');
                 window.location.reload();
             }
         }
@@ -422,6 +421,13 @@
 
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'import_tweets') {
+                // NEU: Schutz gegen Zombie-Daten nach Cache-Clear
+                const ignoreTime = sessionStorage.getItem('ct_ignore_sync');
+                if(ignoreTime && (Date.now() - parseInt(ignoreTime) < 15000)) {
+                    console.warn('🛡️ Import blockiert (Cache wurde kürzlich geleert!)');
+                    return;
+                }
+
                 const newTweets = event.data.data;
                 const currentCache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
                 
