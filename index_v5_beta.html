@@ -76,16 +76,14 @@
         <div class="setting-group">
             <h4 style="color: #aaa; margin: 10px 0;">🔽 Auto-Scroller <span class="new-badge">v5.1</span></h4>
             <div class="setting-item">
-                <input type="checkbox" id="autoScroll" onchange="saveSettings()">
-                <label for="autoScroll"><strong>Auto-Scroll aktivieren:</strong> Scrollt automatisch langsam runter</label>
-            </div>
-            <div class="setting-item" style="margin-left: 30px;">
                 <label for="scrollSpeed">Scroll-Geschwindigkeit (px/s):</label>
-                <input type="number" id="scrollSpeed" value="50" min="20" max="200" onchange="saveSettings()">
+                <input type="number" id="scrollSpeed" value="30" min="10" max="200" onchange="saveSettings()">
+                <span style="color: #888; font-size: 0.85rem;">(Empfohlen: 20-50)</span>
             </div>
-            <div class="setting-item" style="margin-left: 30px;">
-                <label for="scrollPause">Pause alle (ms):</label>
-                <input type="number" id="scrollPause" value="3000" min="1000" max="10000" onchange="saveSettings()">
+            <div class="setting-item">
+                <label for="scrollPause">Pause nach Aktivität (ms):</label>
+                <input type="number" id="scrollPause" value="2000" min="500" max="10000" onchange="saveSettings()">
+                <span style="color: #888; font-size: 0.85rem;">(Zeit bis Auto-Scroll wieder startet)</span>
             </div>
         </div>
 
@@ -163,9 +161,8 @@
             detectThreads: true,
             showDlButtons: true,
             greenBadge: true,
-            autoScroll: false,
-            scrollSpeed: 50,
-            scrollPause: 3000
+            scrollSpeed: 30,
+            scrollPause: 2000
         };
         
         function loadSettings() {
@@ -179,7 +176,6 @@
             document.getElementById('detectThreads').checked = settings.detectThreads;
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
             document.getElementById('greenBadge').checked = settings.greenBadge;
-            document.getElementById('autoScroll').checked = settings.autoScroll;
             document.getElementById('scrollSpeed').value = settings.scrollSpeed;
             document.getElementById('scrollPause').value = settings.scrollPause;
             
@@ -193,7 +189,6 @@
             settings.detectThreads = document.getElementById('detectThreads').checked;
             settings.showDlButtons = document.getElementById('showDlButtons').checked;
             settings.greenBadge = document.getElementById('greenBadge').checked;
-            settings.autoScroll = document.getElementById('autoScroll').checked;
             settings.scrollSpeed = parseInt(document.getElementById('scrollSpeed').value);
             settings.scrollPause = parseInt(document.getElementById('scrollPause').value);
             
@@ -205,14 +200,16 @@
         function updateBookmarklet() {
             const CONFIG = JSON.stringify(settings);
             
-            // BOOKMARKLET CODE v5.1 - AUTO-SCROLLER + FIX BUGS!
+            // BOOKMARKLET CODE v5.1 - AUTO-SCROLLER BUTTON AUF TWITTER!
             const code = `(function(){
                 console.log('[CT] v5.1 BETA START');
                 var CFG = ${CONFIG};
-                var P, B, seen = new Set();
+                var P, B, AS, seen = new Set();
                 var scanCount = 0;
                 var paused = false;
                 var scrollInterval = null;
+                var isScrolling = false;
+                var lastActivity = Date.now();
                 
                 var badgeColor = CFG.greenBadge ? '#0f8' : '#f44';
                 var badgeIcon = CFG.greenBadge ? '\u267e\ufe0f' : '\ud83d\udd34';
@@ -238,7 +235,6 @@
                         
                         scanCount = 0;
                         paused = false;
-                        console.log('[CT] \ud83d\udd04 Reset scanCount - continue scanning!');
                         
                         b.innerText = '\u23f3 Sync...';
                         var i = 0;
@@ -248,11 +244,83 @@
                         }, 500);
                     };
                     
+                    // 🔽 AUTO-SCROLLER TOGGLE BUTTON (v5.1)
+                    var as = document.createElement('button');
+                    as.id = 'ct-as';
+                    as.innerText = '\ud83d\udd3d Scroll';
+                    as.style.cssText = 'all:initial!important;background:#888!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important;transition:all 0.2s!important';
+                    
+                    as.onclick = function(){
+                        toggleScroll();
+                    };
+                    
                     p.appendChild(b);
                     p.appendChild(s);
-                    P=p; B=b;
+                    p.appendChild(as);
+                    P=p; B=b; AS=as;
                     return p;
                 }
+                
+                // 🔽 TOGGLE AUTO-SCROLLER
+                function toggleScroll(){
+                    if(isScrolling){
+                        stopScroll();
+                    } else {
+                        startScroll();
+                    }
+                }
+                
+                function startScroll(){
+                    if(scrollInterval) return;
+                    isScrolling = true;
+                    console.log('[CT] 🔽 Auto-Scroll GESTARTET! Speed:', CFG.scrollSpeed, 'px/s');
+                    
+                    if(AS){
+                        AS.style.background = badgeColor + '!important';
+                        AS.style.color = '#000!important';
+                        AS.innerText = '\u23f8\ufe0f Stop';
+                    }
+                    
+                    scrollInterval = setInterval(function(){
+                        if(!isScrolling || paused) return;
+                        
+                        // Nur scrollen wenn keine Aktivität
+                        if(Date.now() - lastActivity > CFG.scrollPause){
+                            window.scrollBy(0, CFG.scrollSpeed / 10);
+                        }
+                    }, 100);
+                }
+                
+                function stopScroll(){
+                    isScrolling = false;
+                    if(scrollInterval){
+                        clearInterval(scrollInterval);
+                        scrollInterval = null;
+                    }
+                    console.log('[CT] \u23f9\ufe0f Auto-Scroll GESTOPPT!');
+                    
+                    if(AS){
+                        AS.style.background = '#888!important';
+                        AS.style.color = '#fff!important';
+                        AS.innerText = '\ud83d\udd3d Scroll';
+                    }
+                }
+                
+                // Stoppe bei User-Aktivität
+                window.addEventListener('wheel', function(){
+                    lastActivity = Date.now();
+                    if(isScrolling) stopScroll();
+                });
+                
+                window.addEventListener('touchmove', function(){
+                    lastActivity = Date.now();
+                    if(isScrolling) stopScroll();
+                });
+                
+                window.addEventListener('keydown', function(){
+                    lastActivity = Date.now();
+                    if(isScrolling) stopScroll();
+                });
 
                 function upd(){
                     var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
@@ -290,22 +358,6 @@
                             t.appendChild(btn);
                         }
                     });
-                }
-                
-                // 🔽 AUTO-SCROLLER v5.1
-                function startAutoScroll(){
-                    if(!CFG.autoScroll || scrollInterval) return;
-                    console.log('[CT] \ud83d\udd3d Auto-Scroll aktiviert! Speed:', CFG.scrollSpeed, 'px/s');
-                    var lastScroll = Date.now();
-                    scrollInterval = setInterval(function(){
-                        if(paused) return;
-                        if(Date.now() - lastScroll > CFG.scrollPause){
-                            window.scrollBy(0, CFG.scrollSpeed / 10);
-                        }
-                    }, 100);
-                    
-                    window.addEventListener('wheel', function(){ lastScroll = Date.now(); });
-                    window.addEventListener('touchmove', function(){ lastScroll = Date.now(); });
                 }
 
                 function sc(){
@@ -382,10 +434,9 @@
                 
                 sc(); 
                 setInterval(addDL, 2000);
-                startAutoScroll();
                 
                 console.log('[CT] v5.1 BETA LOADED!');
-                alert('\u26a0\ufe0f CleanTwitter v5.1 BETA STARTED!\n\n\ud83d\udd3d Auto-Scroll: ' + (CFG.autoScroll ? 'AN' : 'AUS'));
+                alert('\u26a0\ufe0f CleanTwitter v5.1 BETA STARTED!\n\n\ud83d\udd3d Klicke auf "Scroll" Button um Auto-Scroller zu starten!');
             })();`;
             
             document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
