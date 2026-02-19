@@ -1,311 +1,211 @@
-# 🐦 CleanTwitter v4.2.2 STABLE
+# 🐦 CleanTwitter v5.2 BETA
 
-> **Twitter Media Tracker - Jetzt mit stabilerem ZIP-Download!**
+> **Twitter Media Tracker - Jetzt mit Auto-Scroller, Stealth Mode & echtem Cache-Clear!**
 
 [![License: Custom](https://img.shields.io/badge/License-Custom-blue.svg)](#-nutzungsbedingungen)
-[![Version](https://img.shields.io/badge/Version-4.2.2_STABLE-green.svg)](https://github.com/cali72mero/twitter-clean-tracker)
-[![Status](https://img.shields.io/badge/Status-Stable-brightgreen.svg)](https://cali72mero.github.io/twitter-clean-tracker/)
-[![Safe](https://img.shields.io/badge/Ban--Risk-NONE-green.svg)](#️-sicherheit)
+[![Version](https://img.shields.io/badge/Version-5.2_BETA-orange.svg)](https://github.com/cali72mero/twitter-clean-tracker)
+[![Stable](https://img.shields.io/badge/Stable-4.2.2-brightgreen.svg)](https://cali72mero.github.io/twitter-clean-tracker/)
+[![Beta](https://img.shields.io/badge/Beta-5.2-orange.svg)](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
 
 ---
 
 ## ⚠️ WICHTIG: NUR DESKTOP BROWSER!
 
-**📱 HANDY/MOBILE NICHT UNTERSTÜTZT:**
-- ❌ **iOS Safari:** Bookmarklets werden blockiert (Sicherheitsgründe)
-- ❌ **Android Chrome/Firefox:** Keine Lesezeichenleiste zum Ausführen
-- ❌ **Twitter App:** Erlaubt keine JavaScript-Injection
-- ✅ **Desktop Browser:** Chrome, Firefox, Edge, Safari (Mac)
+| Browser | Unterstützt? |
+|---|---|
+| ✅ Chrome (Desktop) | Ja |
+| ✅ Firefox (Desktop) | Ja |
+| ✅ Edge (Desktop) | Ja |
+| ✅ Safari (Mac) | Ja |
+| ❌ iOS Safari | Nein (Bookmarklets blockiert) |
+| ❌ Android Chrome/Firefox | Nein (keine Lesezeichenleiste) |
+| ❌ Twitter App | Nein (keine JS-Injection) |
 
 ---
 
-## ✅ STABLE VERSION
+## 🚀 VERSIONEN
 
-**v4.2.2 ist jetzt STABLE:**
-- ✅ Stabil genug für täglichen Gebrauch
-- ✅ ZIP-Export funktioniert zuverlässig
-- ✅ Alle Features getestet
-- ✅ Bilder werden korrekt angezeigt (KEINE Duplikate)
-- 🔄 Updates wenn nötig
+| Version | Status | Link |
+|---|---|---|
+| v4.2.2 | ✅ **STABLE** (empfohlen für tägliche Nutzung) | [Dashboard](https://cali72mero.github.io/twitter-clean-tracker/) |
+| v5.2 | ⚠️ **BETA** (mehr Features, könnte Bugs haben) | [Beta Dashboard](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html) |
 
 ---
 
-## ✨ BETA: v5.1 EXPERIMENTAL VERFÜGBAR!
+## ✨ NEU IN v5.2 BETA
 
-**🧘 v5.1 BETA - EXPERIMENTAL - NUR ZUM TESTEN!**
+### 🗑️ Echter Cache-Clear (größter Fix!)
 
-👉 **[ZUR BETA v5.1 WECHSELN](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
+**Das Problem mit älteren Versionen:**
+Das Dashboard (GitHub Pages) und das Bookmarklet (Twitter/x.com) haben **getrennten Browser-Speicher**. Ein "Cache leeren" im Dashboard löschte früher nur die Dashboard-Daten — die Daten auf Twitter blieben erhalten und wurden sofort wieder importiert.
 
-### 🆕 Neu in v5.1 BETA:
-- 🔽 **Auto-Scroller** (scrollt automatisch langsam runter)
-- 🛡️ **Stealth Mode** (zufällige Scan-Intervalle 2-6s)
-- ⏸️ **Rate Limit Protection** (automatische Pause nach 50 Tweets)
-- 🧵 **Thread-Erkennung** (markiert Threads)
-- ✂️ **Retweet-Filter** (nur Original-Posts)
-- ♾️ **Grünes Infinity-Badge**
-- 💾 **Download-Buttons** auf Tweets
-- 👀 **View-Button** (Dashboard öffnen)
-- 🐞 **Bug-Fixes** (Cache-Clear, Bild-Download)
+**Die Lösung in v5.2:**
+- **Neuer 🗑️ Clear-Button** direkt im Bookmarklet-Panel auf Twitter
+- Klick → löscht Twitter-Speicher direkt, Badge springt auf 0
+- Kein Zombie-Daten-Problem mehr!
 
-### ⚠️ Bekannte Probleme in v5.1 BETA:
-- **⏳ SYNC-PROBLEME:** Import manchmal instabil
-- **🐞 BUGS ERWARTET:** Experimental - nicht für Produktion!
+```
+Bookmarklet-Panel auf Twitter (v5.2):
+┌─────────────────────┐
+| ♾️ 1752          |
+| 👀 View           |
+| 🗑️ Clear  ← NEU!|
+| 🔽 Scroll         |
+└─────────────────────┘
+```
 
-**→ Für beste Stabilität: v4.2.2 STABLE nutzen!**
+### 🔽 Auto-Scroller
+Scrollt automatisch langsam durch den Twitter-Feed, damit alle Bilder laden können.
+- Einstellbare Geschwindigkeit (10–200 px/s, empfohlen: 30)
+- Pausiert automatisch bei manueller Aktivität (Maus/Tastatur)
+- Startet mit dem **🔽 Scroll**-Button im Panel
+
+### 🛡️ Stealth Mode (Anti-Ban)
+Statt fixer 1,5s-Intervalle nutzt v5.2 zufällige Scan-Pausen (2–6 Sekunden).
+- Kein erkennbares Bot-Muster
+- Aktivierbar/deaktivierbar im Dashboard
+
+### ⏸️ Rate Limit Protection
+Nach 50 gescannten Tweets automatische 30-Sekunden-Pause. Verhindert "Too Many Requests"-Fehler.
+
+### 🧥 Smart Filter
+- **Retweet-Filter:** Nur Original-Posts speichern
+- **Thread-Erkennung:** Threads werden markiert
 
 ---
 
-## ⚡ Version 4.2.2 STABLE - Aktuell
-
-### ✅ WAS FUNKTIONIERT:
+## ✅ WAS KANN v5.2?
 
 ```diff
-+ ♾️ Unbegrenzter Cache - Keine Auto-Löschung!
-+ 📦 ZIP-Download FIX (stabil auch bei 600+ Bildern!)
-+ ⏳ Lade-Anzeige beim ZIP-Erstellen
-+ 🖼️ Multi-Image Support (alle Bilder eines Posts gespeichert!)
-+ 💾 Download-Buttons (laden alle Bilder auf einmal)
-+ 🎥 Videos & GIFs speichern (MP4)
-+ 📥 HTML-Export (Archiv mit Bilder-Grid)
-+ 📊 Storage-Warnung bei >5MB
-+ ⚙️ Download-Buttons on/off
-+ 👀 Dashboard View-Button (manueller Import - Feature!)
++ 📷 Tweets, Bilder, Videos automatisch speichern
++ 🖼️ Multi-Image Support (alle 4 Bilder eines Posts)
++ 🎥 Video-Download (MP4)
++ 💾 Download-Buttons direkt auf Twitter
++ 👀 View-Button: Dashboard in neuem Tab öffnen
++ 🗑️ Clear-Button: Twitter-Cache direkt löschen
++ 🔽 Auto-Scroller: Automatisch durch Feed scrollen
++ 🛡️ Stealth Mode: Zufällige Scan-Intervalle
++ ⏸️ Rate Limit Protection: Pause nach 50 Tweets
++ ♾️ Unbegrenzter Cache
++ 🗂️ ZIP-Export aller Medien
++ 📥 HTML-Archiv-Export
++ ⚙️ Alle Features einstellbar im Dashboard
 ```
 
----
-
-## 🔮 VERSION 5.1 BETA - EXPERIMENTAL!
-
-### 🎯 NEUE FEATURES:
-
-**1. Auto-Scroller (v5.1):**
-```javascript
-// v5.1 BETA NEU:
-- 🔽 Scrollt automatisch langsam runter
-- ⏸️ Pausiert bei manueller Scroll-Aktivität
-- ⚙️ Geschwindigkeit einstellbar (20-200 px/s)
-- 🔄 Pause-Intervall einstellbar (1-10 Sekunden)
-```
-
-**2. Stealth Mode:**
-```javascript
-// v5.1 BETA:
-- 🎲 Zufällige Scan-Intervalle (2-6 Sekunden)
-- 👻 Kein erkennbares Bot-Muster
-- 🛡️ Rate Limit Protection (Pause nach 50 Tweets)
-```
-
-**3. Smart Filter:**
-```javascript
-// v5.1 BETA:
-- ✂️ Retweets ignorieren (nur Originals)
-- 🧵 Thread-Erkennung (markiert zusammenhängende Posts)
-- 🔍 Bessere Tweet-Erkennung (TID-basiert)
-```
-
-**4. UI Verbesserungen:**
-```javascript
-// Neue Elemente:
-- ♾️ Grünes Infinity-Badge (statt rot)
-- 👀 View-Button (Dashboard öffnen)
-- 💾 Download-Buttons direkt auf Tweets
-```
-
-### 🐞 BUG-FIXES in v5.1:
-
-**1. Cache-Clear Bug gefixt:**
-- ❌ **Vorher:** Löschte GANZEN Browser-Storage (alle Websites!)
-- ✅ **Jetzt:** Löscht NUR `tw_clean_cache` (nur Twitter-Daten)
-
-**2. Bild-Download Bug gefixt:**
-- ❌ **Vorher:** Lud 1667+ alte Bilder aus Cache runter (auch von anderen Seiten)
-- ✅ **Jetzt:** Lädt NUR Bilder die wirklich auf Twitter sichtbar sind
-
-### 🚨 WARNUNG:
-
-**v5.1 BETA ist EXPERIMENTAL!**
-- 🐞 **Bugs erwartet** - nicht production-ready
-- 🔧 **In Entwicklung:** Features unvollständig
-- ⚠️ **Nutze v4.2.2** für tägliche Nutzung!
-
-### 📅 RELEASE-PLAN:
-
-```
-v4.2.2 STABLE:   ✅ JETZT (17.02.2026)
-                 (ZIP Stability - Production Ready!)
-                 → EMPFOHLEN FÜR ALLE!
-
-v5.1 BETA:       🧘 EXPERIMENTAL (19.02.2026)
-                 (Auto-Scroller + Bug-Fixes!)
-                 ⚠️ NUR FÜR TESTER!
-               
-v5.2 STABLE:     🚀 Kommt später (wenn Bugs behoben)
-```
-
----
-
-## 📖 WAS MACHT CleanTwitter?
-
-CleanTwitter ist ein **Browser-Bookmarklet**, das deinen Twitter/X Feed analysiert und automatisch:
-- ✅ **Tweets speichert** (Text, User, Datum)
-- ✅ **ALLE Bilder downloadet** (auch bei 4 Bildern pro Post!)
-- ✅ **Videos & GIFs speichert** (MP4)
-- ✅ **Exportiert als HTML/ZIP**
-- ✅ **100% lokal** - keine Server!
-- ♾️ **Unbegrenzt** - kein Cache-Limit!
-
----
-
-## 🛡️ SICHERHEIT & BAN-RISIKO
-
-### ✅ WARUM KEIN BAN-RISIKO?
-
-**CleanTwitter ist 100% sicher vor Bans weil:**
+## ❌ WAS KANN v5.2 NICHT?
 
 ```diff
-+ 🏠 Alles läuft LOKAL in deinem Browser
-+ 🚫 KEINE API-Calls an Twitter/X
-+ 👁️ Wir lesen nur HTML wie ein normaler Browser
-+ 👻 Kein Bot-Verhalten - nur DOM-Scraping
-+ 🔒 Keine Server-Kommunikation
-+ ✍️ Keine Schreib-Operationen (nur Lesen!)
+- 📱 Mobile / Handy (kein Bookmarklet-Support)
+- 🔒 Private Tweets (kein Zugriff ohne Follow)
+- 🔄 Rückwirkend laden (nur was beim Scrollen sichtbar ist)
+- ☁️ Cloud-Sync (alles lokal)
+- 🤖 Vollautomatisch im Hintergrund laufen
+- 🌍 Andere Browser-Tabs analysieren
 ```
-
-**Du bist sicher! 💚**
 
 ---
 
-## ⚠️ DISCLAIMER & HAFTUNGSAUSSCHLUSS
+## 🔄 CHANGELOG
 
-### 📜 WICHTIGE HINWEISE:
+### v5.2 BETA (19.02.2026)
 
-**🚨 KEINE HAFTUNG:**
-```diff
-- Der Entwickler übernimmt KEINE Haftung für:
-  • Konto-Sperrungen durch Twitter/X
-  • Datenverlust oder Fehlfunktionen
-  • Schäden jeglicher Art
-  • Verstöße gegen Twitter-Nutzungsbedingungen
+**🚨 Hauptfix: Echter Cache-Clear (Cross-Origin Problem gelöst)**
+- ❌ **Problem vorher:** Dashboard und Bookmarklet haben getrennten Speicher (github.io vs x.com). "Cache leeren" im Dashboard löschte nur github.io — Twitter hatte die Daten noch und importierte sie sofort wieder.
+- ✅ **Fix:** Neuer **🗑️ Clear**-Button direkt im Bookmarklet-Panel auf Twitter löscht den x.com Speicher direkt.
+- ✅ **Bonus:** `CMD_CLEAR_CACHE` Remote-Befehl: Dashboard sendet Löschbefehl an Twitter-Tab (wenn via View-Button geöffnet).
+
+**Weitere Änderungen:**
+- `clearCache()` vereinfacht (wie v4.2.2: `removeItem` + `loadCache`, kein Reload)
+- Kein unnötiger Page-Reload beim Cache-Clear mehr
+- Bookmarklet-Version von v5.1 auf v5.2 aktualisiert
+- Dashboard zeigt Erklärung zum 2-Schritt Cache-Clear
+
+**Bekannte Bugs:** *Derzeit keine bekannt*
+
+---
+
+### v5.1 BETA (19.02.2026)
+- 🔽 **Auto-Scroller** hinzugefügt (einstellbare Geschwindigkeit & Pause)
+- 🛡️ **Stealth Mode** (zufällige 2–6s Intervalle)
+- ⏸️ **Rate Limit Protection** (Pause nach 50 Tweets, 30s)
+- 🧥 **Smart Filter** (Retweet-Filter, Thread-Erkennung)
+- ♾️ **Grünes Infinity-Badge** (statt rot)
+- ⚠️ Cache-Clear hatte noch Zombie-Daten Bug (in v5.2 gelöst)
+
+---
+
+### v4.2.2 STABLE (17.02.2026)
+- ✅ ZIP-Export stabilisiert für 600+ Bilder
+- ✅ Multi-Image Support (alle Bilder eines Posts)
+- ✅ Lade-Anzeige beim ZIP-Erstellen
+- ✅ Download-Buttons auf Twitter
+- ✅ `twitter_clean_cache` Key (stabiles Format)
+
+---
+
+## 🗑️ Cache richtig leeren (v5.2)
+
 ```
+SCHRITT 1: Auf Twitter
+  → Klicke 🗑️ Clear im Bookmarklet-Panel
+  → Bild-Zähler wird 0
 
-**🔴 KONTO-SPERRUNG MÖGLICH (wenn auch unwahrscheinlich):**
+SCHRITT 2: Im Dashboard
+  → Klicke "Cache leeren"
+  → Anzeige wird 0
 
-```yaml
-STABLE v4.2.2:
-  Risiko: SEHR GERING
-  Grund: Alles lokal, kein API-Zugriff
-  Status: ✅ Sicher für tägliche Nutzung
-  
-BETA v5.1:
-  Risiko: ERWARTET HÖHER (experimentell!)
-  Grund: Neue Features könnten auffällig sein
-  Status: ⚠️ NUR ZUM TESTEN!
-  Warnung: Beta ist instabil und hat Fehler
-  Möglichkeit: Twitter könnte Verhalten erkennen
-```
-
-**❗ WICHTIG:**
-- 🎯 Dieses Tool ist **NUR für private Zwecke**
-- 🚫 **NICHT nutzen um Twitter X zu schaden**
-- 👨‍💻 Wurde als **Hobby-Projekt entwickelt**
-- ❤️ **NICHT entwickelt um Twitter X zu schaden**
-- 🎮 Es ist nur ein **Hobby-Programm**
-- ⛔ **NICHT für illegale Zwecke nutzen**
-
-### 📜 NUTZUNG AUF EIGENE VERANTWORTUNG:
-
-```
-MIT DER NUTZUNG VON CleanTwitter BESTÄTIGST DU:
-
-1. Du nutzt das Tool auf eigene Gefahr
-2. Du verstehst das Risiko von Konto-Sperrungen (besonders bei Beta)
-3. Du nutzt es nur für private, legale Zwecke
-4. Du wirst es nicht nutzen um Twitter/X zu schaden
-5. Der Entwickler haftet nicht für Schäden
-6. Du hast die Nutzungsbedingungen von Twitter/X gelesen
-7. Du akzeptierst die Experimental-Natur der Beta-Version
+Beide Schritte nötig! Twitter & Dashboard haben getrennten Speicher.
 ```
 
 ---
 
 ## 🚀 Installation
 
-### Option 1: Drag & Drop (Desktop)
+### Erstmalig installieren:
+1. Gehe zu [Beta Dashboard](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
+2. Ziehe den Button **"CleanTwitter v5.2 BETA"** in die Lesezeichenleiste
+3. Auf Twitter klicken → Panel erscheint unten rechts
 
-1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-2. **Ziehe** den Button "💾 CleanTwitter v4.2.2" in deine Lesezeichenleiste
-3. **Fertig!** Auf Twitter/X klicken um zu starten
-
-### Option 2: Manuell (Desktop)
-
-1. **Öffne:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-2. **Klick:** "📋 Code kopieren"
-3. **Erstelle** ein neues Lesezeichen
-4. **Füge** den Code als URL ein
-5. **Fertig!** Auf Twitter/X nutzen
+### Update von v5.1 auf v5.2:
+1. Hard Reload Dashboard (Strg+Shift+R)
+2. Altes Bookmarklet löschen
+3. Neues Bookmarklet **v5.2** reinziehen
+4. Fertig— 🗑️ Clear-Button ist jetzt verfügbar!
 
 ---
 
-## 🔄 Changelog
+## 🛡️ Sicherheit & Ban-Risiko
 
-### v5.1 BETA (19.02.2026) - AUTO-SCROLLER + BUG-FIXES
-- 🔽 **Auto-Scroller:** Scrollt automatisch langsam runter (einstellbar!)
-- 🐞 **Cache-Clear Bug FIX:** Löscht jetzt NUR Twitter-Daten (nicht ganzen Browser)
-- 🐞 **Bild-Download Bug FIX:** Lädt nur Bilder die wirklich auf Twitter sichtbar sind
-- ⚙️ **Einstellbar:** Scroll-Geschwindigkeit (20-200 px/s)
-- ⚙️ **Einstellbar:** Pause-Intervall (1-10 Sekunden)
-- ⚠️ **STATUS:** EXPERIMENTAL - Bugs erwartet!
+```diff
++ Alles läuft LOKAL im Browser — kein Server
++ Keine API-Calls an Twitter/X
++ Nur DOM lesen (wie normales Browsen)
++ Keine Schreib-Operationen auf Twitter
++ Keine Daten werden nach außen übertragen
+```
 
-### loader.js v4.2.2 (19.02.2026) - UPDATE
-- ♾️ **200er Limit ENTFERNT** - war kritischer Bug in v3.4!
-- 🖼️ **Multi-Image Support** - alle Bilder eines Tweets werden gespeichert
-- 💾 **Download-Buttons** direkt auf Tweets (Bilder, Videos, GIFs)
-- 🗑️ **User-Agent Spoofing entfernt** - verursachte Probleme
-- ✅ **Stabilerer Code** - besser strukturiert und kommentiert
-- 📝 Vollständige Änderungshistorie: [LOADER_CHANGELOG.md](LOADER_CHANGELOG.md)
-
-### v4.2.2 STABLE (17.02.2026) - PRODUCTION READY
-- ✅ **STATUS:** Aus Beta in Stable überführt
-- 📦 **ZIP-Export:** Stabilisiert für viele Bilder
-- ⏳ **UI:** Neue Lade-Anzeige
-- 🖼️ **Bilder-Display:** Zuverlässig ohne Duplikate
+**v5.2 Stealth Mode** reduziert Ban-Risiko zusätzlich durch zufällige Scan-Intervalle.
 
 ---
 
-## 🤝 Contributing
+## ⚠️ Disclaimer
 
-Beiträge sind willkommen!
-
-1. **Fork** das Repository
-2. **Feature Branch** erstellen
-3. **Pull Request** öffnen
-
----
-
-## 📄 Nutzungsbedingungen
-
-### ✅ ERLAUBT:
-- Nutzung über GitHub Pages & Lokal
-- Eigener Server (nur für dich)
-- Code ändern (für Fixes/Features)
-- Mit Freunden teilen (Link)
-
-### ❌ NICHT ERLAUBT:
-- Verkaufen
-- Für andere hosten
-- Als eigenes ausgeben
-- Credit entfernen
+- Nutzung auf **eigene Verantwortung**
+- Keine Haftung für Konto-Sperrungen oder Datenverlust
+- Nur für **private, legale Zwecke**
+- Nicht gegen Twitter/X-Nutzungsbedingungen nutzen
+- Beta-Version kann Fehler enthalten
 
 ---
 
 ## 🔗 Links
 
-- **Live Demo (STABLE)**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-- **Beta v5.1 (EXPERIMENTAL!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
-- **loader.js Changelog**: [LOADER_CHANGELOG.md](LOADER_CHANGELOG.md)
-- **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
-- **Issues**: [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
+- **Stable v4.2.2:** [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
+- **Beta v5.2:** [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
+- **v5.2 Details:** [v5.2-beta-details.md](v5.2-beta-details.md)
+- **GitHub:** [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
+- **Issues / Bugs:** [github.com/cali72mero/twitter-clean-tracker/issues](https://github.com/cali72mero/twitter-clean-tracker/issues)
 
 ---
 
-**Made with ❤️ by cali72mero | v4.2.2 STABLE | 2026**
+**Made with ❤️ by cali72mero | v5.2 BETA | 2026**
