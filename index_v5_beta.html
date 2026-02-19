@@ -276,15 +276,13 @@
                     console.log('[CT] 🔽 Auto-Scroll GESTARTET! Speed:', CFG.scrollSpeed, 'px/s');
                     
                     if(AS){
-                        AS.style.background = badgeColor + '!important';
-                        AS.style.color = '#000!important';
+                        AS.style.background = badgeColor;
+                        AS.style.color = '#000';
                         AS.innerText = '\u23f8\ufe0f Stop';
                     }
                     
                     scrollInterval = setInterval(function(){
                         if(!isScrolling || paused) return;
-                        
-                        // Nur scrollen wenn keine Aktivität
                         if(Date.now() - lastActivity > CFG.scrollPause){
                             window.scrollBy(0, CFG.scrollSpeed / 10);
                         }
@@ -300,27 +298,15 @@
                     console.log('[CT] \u23f9\ufe0f Auto-Scroll GESTOPPT!');
                     
                     if(AS){
-                        AS.style.background = '#888!important';
-                        AS.style.color = '#fff!important';
+                        AS.style.background = '#888';
+                        AS.style.color = '#fff';
                         AS.innerText = '\ud83d\udd3d Scroll';
                     }
                 }
                 
-                // Stoppe bei User-Aktivität
-                window.addEventListener('wheel', function(){
-                    lastActivity = Date.now();
-                    if(isScrolling) stopScroll();
-                });
-                
-                window.addEventListener('touchmove', function(){
-                    lastActivity = Date.now();
-                    if(isScrolling) stopScroll();
-                });
-                
-                window.addEventListener('keydown', function(){
-                    lastActivity = Date.now();
-                    if(isScrolling) stopScroll();
-                });
+                window.addEventListener('wheel', function(){ lastActivity = Date.now(); if(isScrolling) stopScroll(); });
+                window.addEventListener('touchmove', function(){ lastActivity = Date.now(); if(isScrolling) stopScroll(); });
+                window.addEventListener('keydown', function(){ lastActivity = Date.now(); if(isScrolling) stopScroll(); });
 
                 function upd(){
                     var c = JSON.parse(localStorage.getItem('tw_clean_cache')||'[]');
@@ -362,7 +348,6 @@
 
                 function sc(){
                     if(paused) return;
-                    
                     document.querySelectorAll('[data-testid="skeleton"]').forEach(e => e.remove());
 
                     var ts = document.querySelectorAll('article[data-testid="tweet"]');
@@ -374,8 +359,7 @@
 
                         var txt = t.querySelector('[data-testid="tweetText"]');
                         var u = t.querySelector('[data-testid="User-Name"]');
-                        
-                        // 🐞 BUG FIX: NUR Bilder die WIRKLICH SICHTBAR auf Twitter sind!
+
                         var imgs = Array.from(t.querySelectorAll('img[src*="media"]')).filter(function(img){
                             var rect = img.getBoundingClientRect();
                             return rect.top >= 0 && rect.bottom <= window.innerHeight * 2;
@@ -432,14 +416,15 @@
                 var e = document.getElementById('ct-p');
                 if(!e) document.body.appendChild(mk());
                 
-                sc(); 
+                sc();
                 setInterval(addDL, 2000);
                 
                 console.log('[CT] v5.1 BETA LOADED!');
                 alert('\u26a0\ufe0f CleanTwitter v5.1 BETA STARTED!\n\n\ud83d\udd3d Klicke auf "Scroll" Button um Auto-Scroller zu starten!');
             })();`;
-            
-            document.getElementById('bookmarkletBtn').href = 'javascript:' + encodeURIComponent(code);
+
+            // FIX: NICHT url-encoden (sonst %xx Tokens => SyntaxError). Zusätzlich 1-line für Bookmarklet.
+            document.getElementById('bookmarkletBtn').href = 'javascript:' + code.replace(/[\n\r\t]+/g, ' ');
         }
         
         function copyCode() {
@@ -531,7 +516,6 @@
         
         function clearCache() {
             if(confirm('⚠️ Cache wirklich löschen?\n\nLöscht NUR Twitter-Daten (tw_clean_cache).\nKEINE anderen Website-Daten werden gelöscht!')) {
-                // 🐞 BUG FIX: Lösche NUR den Twitter-Cache, nicht ganzen Browser-Storage!
                 localStorage.removeItem(CACHE_KEY);
                 loadCache();
                 alert('✅ Cache gelöscht!\n\nNur Twitter-Daten wurden entfernt.');
