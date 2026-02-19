@@ -17,8 +17,6 @@
 - ❌ **Twitter App:** Erlaubt keine JavaScript-Injection
 - ✅ **Desktop Browser:** Chrome, Firefox, Edge, Safari (Mac)
 
-**Technische Limitation:** Bookmarklets funktionieren nur auf Desktop-Browsern. Mobile Browser und Apps unterstützen diese Technologie nicht.
-
 ---
 
 ## ✅ STABLE VERSION
@@ -187,39 +185,6 @@ BETA v5.0:
   Möglichkeit: Twitter könnte Verhalten erkennen
 ```
 
-**WARUM SOLLTE ES NICHT PASSIEREN:**
-- ✅ Alles läuft **lokal** in deinem Browser
-- ✅ **Keine API-Calls** an Twitter/X Server
-- ✅ Liest nur **sichtbares HTML** (wie normales Scrollen)
-- ✅ **Keine automatischen Actions** (Likes, Retweets, etc.)
-- ✅ STABLE v4.2.2 ist **sehr unauffällig**
-
-**ABER TROTZDEM:**
-- ⚠️ **Beta v5.0** könnte instabil sein
-- ⚠️ Beta hat **Fehler die erkannt werden könnten**
-- ⚠️ Twitter **könnte Patterns erkennen**
-- ⚠️ **Nutzung auf eigene Gefahr!**
-
----
-
-### 🎯 NUR FÜR PRIVATE NUTZUNG:
-
-```diff
-+ ✅ ERLAUBT:
-  • Für eigene Zwecke nutzen
-  • Eigene Tweets/Medien archivieren
-  • Persönliche Sammlung erstellen
-  • Code für Lernzwecke studieren
-  
-- ❌ VERBOTEN:
-  • Twitter/X schaden oder beeinträchtigen
-  • Massen-Scraping von fremden Accounts
-  • Daten verkaufen oder weitergeben
-  • Für illegale Zwecke nutzen
-  • Gegen Twitter-Nutzungsbedingungen verstoßen
-  • Spam oder Missbrauch
-```
-
 **❗ WICHTIG:**
 - 🎯 Dieses Tool ist **NUR für private Zwecke**
 - 🚫 **NICHT nutzen um Twitter X zu schaden**
@@ -227,8 +192,6 @@ BETA v5.0:
 - ❤️ **NICHT entwickelt um Twitter X zu schaden**
 - 🎮 Es ist nur ein **Hobby-Programm**
 - ⛔ **NICHT für illegale Zwecke nutzen**
-
----
 
 ### 📜 NUTZUNG AUF EIGENE VERANTWORTUNG:
 
@@ -243,13 +206,6 @@ MIT DER NUTZUNG VON CleanTwitter BESTÄTIGST DU:
 6. Du hast die Nutzungsbedingungen von Twitter/X gelesen
 7. Du akzeptierst die Experimental-Natur der Beta-Version
 ```
-
-**👨‍⚖️ RECHTLICHER HINWEIS:**
-- Dieses Projekt ist ein **Hobby-Projekt**
-- Es wurde **NICHT entwickelt um Twitter/X zu schaden**
-- Es dient **NUR privaten Archivierungszwecken**
-- Der Entwickler trägt **KEINE Verantwortung** für Missbrauch
-- **Nutze es verantwortungsvoll und legal!**
 
 ---
 
@@ -272,6 +228,14 @@ MIT DER NUTZUNG VON CleanTwitter BESTÄTIGST DU:
 ---
 
 ## 🔄 Changelog
+
+### loader.js v4.2.2 (19.02.2026) - UPDATE
+- ♾️ **200er Limit ENTFERNT** - war kritischer Bug in v3.4!
+- 🖼️ **Multi-Image Support** - alle Bilder eines Tweets werden gespeichert
+- 💾 **Download-Buttons** direkt auf Tweets (Bilder, Videos, GIFs)
+- 🗑️ **User-Agent Spoofing entfernt** - verursachte Probleme
+- ✅ **Stabilerer Code** - besser strukturiert und kommentiert
+- 📝 Vollständige Änderungshistorie: [LOADER_CHANGELOG.md](LOADER_CHANGELOG.md)
 
 ### v5.0 BETA (17.02.2026) - EXPERIMENTAL
 - 🛡️ **Stealth Mode:** Zufällige Intervalle (2s-6s)
@@ -320,7 +284,7 @@ Beiträge sind willkommen!
 
 - **Live Demo (STABLE)**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
 - **Beta v5.0 (EXPERIMENTAL!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
-- **Backup v5.0**: [index_v5_beta_backup.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta_backup.html)
+- **loader.js Changelog**: [LOADER_CHANGELOG.md](LOADER_CHANGELOG.md)
 - **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
 - **Issues**: [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
 
