@@ -30,13 +30,14 @@
 
 ---
 
-## ✨ BETA: v5.0 EXPERIMENTAL VERFÜGBAR!
+## ✨ BETA: v5.1 EXPERIMENTAL VERFÜGBAR!
 
-**🧘 v5.0 BETA - EXPERIMENTAL - NUR ZUM TESTEN!**
+**🧘 v5.1 BETA - EXPERIMENTAL - NUR ZUM TESTEN!**
 
-👉 **[ZUR BETA v5.0 WECHSELN](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
+👉 **[ZUR BETA v5.1 WECHSELN](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)**
 
-### 🆕 Neu in v5.0 BETA:
+### 🆕 Neu in v5.1 BETA:
+- 🔽 **Auto-Scroller** (scrollt automatisch langsam runter)
 - 🛡️ **Stealth Mode** (zufällige Scan-Intervalle 2-6s)
 - ⏸️ **Rate Limit Protection** (automatische Pause nach 50 Tweets)
 - 🧵 **Thread-Erkennung** (markiert Threads)
@@ -44,9 +45,9 @@
 - ♾️ **Grünes Infinity-Badge**
 - 💾 **Download-Buttons** auf Tweets
 - 👀 **View-Button** (Dashboard öffnen)
+- 🐞 **Bug-Fixes** (Cache-Clear, Bild-Download)
 
-### ⚠️ Bekannte Probleme in v5.0 BETA:
-- **🖼️ BILDER-BUG:** Bilder können noch doppelt angezeigt werden
+### ⚠️ Bekannte Probleme in v5.1 BETA:
 - **⏳ SYNC-PROBLEME:** Import manchmal instabil
 - **🐞 BUGS ERWARTET:** Experimental - nicht für Produktion!
 
@@ -73,27 +74,36 @@
 
 ---
 
-## 🔮 VERSION 5.0 BETA - EXPERIMENTAL!
+## 🔮 VERSION 5.1 BETA - EXPERIMENTAL!
 
 ### 🎯 NEUE FEATURES:
 
-**1. Stealth Mode:**
+**1. Auto-Scroller (v5.1):**
 ```javascript
-// v5.0 BETA:
+// v5.1 BETA NEU:
+- 🔽 Scrollt automatisch langsam runter
+- ⏸️ Pausiert bei manueller Scroll-Aktivität
+- ⚙️ Geschwindigkeit einstellbar (20-200 px/s)
+- 🔄 Pause-Intervall einstellbar (1-10 Sekunden)
+```
+
+**2. Stealth Mode:**
+```javascript
+// v5.1 BETA:
 - 🎲 Zufällige Scan-Intervalle (2-6 Sekunden)
 - 👻 Kein erkennbares Bot-Muster
 - 🛡️ Rate Limit Protection (Pause nach 50 Tweets)
 ```
 
-**2. Smart Filter:**
+**3. Smart Filter:**
 ```javascript
-// v5.0 BETA:
+// v5.1 BETA:
 - ✂️ Retweets ignorieren (nur Originals)
 - 🧵 Thread-Erkennung (markiert zusammenhängende Posts)
 - 🔍 Bessere Tweet-Erkennung (TID-basiert)
 ```
 
-**3. UI Verbesserungen:**
+**4. UI Verbesserungen:**
 ```javascript
 // Neue Elemente:
 - ♾️ Grünes Infinity-Badge (statt rot)
@@ -101,11 +111,20 @@
 - 💾 Download-Buttons direkt auf Tweets
 ```
 
+### 🐞 BUG-FIXES in v5.1:
+
+**1. Cache-Clear Bug gefixt:**
+- ❌ **Vorher:** Löschte GANZEN Browser-Storage (alle Websites!)
+- ✅ **Jetzt:** Löscht NUR `tw_clean_cache` (nur Twitter-Daten)
+
+**2. Bild-Download Bug gefixt:**
+- ❌ **Vorher:** Lud 1667+ alte Bilder aus Cache runter (auch von anderen Seiten)
+- ✅ **Jetzt:** Lädt NUR Bilder die wirklich auf Twitter sichtbar sind
+
 ### 🚨 WARNUNG:
 
-**v5.0 BETA ist EXPERIMENTAL!**
+**v5.1 BETA ist EXPERIMENTAL!**
 - 🐞 **Bugs erwartet** - nicht production-ready
-- 🖼️ **Bilder-Bug:** Duplikate möglich
 - 🔧 **In Entwicklung:** Features unvollständig
 - ⚠️ **Nutze v4.2.2** für tägliche Nutzung!
 
@@ -116,11 +135,11 @@ v4.2.2 STABLE:   ✅ JETZT (17.02.2026)
                  (ZIP Stability - Production Ready!)
                  → EMPFOHLEN FÜR ALLE!
 
-v5.0 BETA:       🧘 EXPERIMENTAL (17.02.2026)
-                 (Neue Features, aber instabil!)
+v5.1 BETA:       🧘 EXPERIMENTAL (19.02.2026)
+                 (Auto-Scroller + Bug-Fixes!)
                  ⚠️ NUR FÜR TESTER!
                
-v5.1 STABLE:     🚀 Kommt später (wenn Bugs behoben)
+v5.2 STABLE:     🚀 Kommt später (wenn Bugs behoben)
 ```
 
 ---
@@ -177,7 +196,7 @@ STABLE v4.2.2:
   Grund: Alles lokal, kein API-Zugriff
   Status: ✅ Sicher für tägliche Nutzung
   
-BETA v5.0:
+BETA v5.1:
   Risiko: ERWARTET HÖHER (experimentell!)
   Grund: Neue Features könnten auffällig sein
   Status: ⚠️ NUR ZUM TESTEN!
@@ -229,6 +248,14 @@ MIT DER NUTZUNG VON CleanTwitter BESTÄTIGST DU:
 
 ## 🔄 Changelog
 
+### v5.1 BETA (19.02.2026) - AUTO-SCROLLER + BUG-FIXES
+- 🔽 **Auto-Scroller:** Scrollt automatisch langsam runter (einstellbar!)
+- 🐞 **Cache-Clear Bug FIX:** Löscht jetzt NUR Twitter-Daten (nicht ganzen Browser)
+- 🐞 **Bild-Download Bug FIX:** Lädt nur Bilder die wirklich auf Twitter sichtbar sind
+- ⚙️ **Einstellbar:** Scroll-Geschwindigkeit (20-200 px/s)
+- ⚙️ **Einstellbar:** Pause-Intervall (1-10 Sekunden)
+- ⚠️ **STATUS:** EXPERIMENTAL - Bugs erwartet!
+
 ### loader.js v4.2.2 (19.02.2026) - UPDATE
 - ♾️ **200er Limit ENTFERNT** - war kritischer Bug in v3.4!
 - 🖼️ **Multi-Image Support** - alle Bilder eines Tweets werden gespeichert
@@ -236,15 +263,6 @@ MIT DER NUTZUNG VON CleanTwitter BESTÄTIGST DU:
 - 🗑️ **User-Agent Spoofing entfernt** - verursachte Probleme
 - ✅ **Stabilerer Code** - besser strukturiert und kommentiert
 - 📝 Vollständige Änderungshistorie: [LOADER_CHANGELOG.md](LOADER_CHANGELOG.md)
-
-### v5.0 BETA (17.02.2026) - EXPERIMENTAL
-- 🛡️ **Stealth Mode:** Zufällige Intervalle (2s-6s)
-- ⏸️ **Rate Limit:** Automatische Pause nach 50 Tweets
-- 🧵 **Thread-Erkennung:** Markiert zusammenhängende Posts
-- ✂️ **Retweet-Filter:** Nur Original-Posts speichern
-- ♾️ **Grünes Badge:** Statt rotem Badge
-- 💾 **Download-Buttons:** Direkt auf Tweets
-- ⚠️ **STATUS:** EXPERIMENTAL - Bugs erwartet!
 
 ### v4.2.2 STABLE (17.02.2026) - PRODUCTION READY
 - ✅ **STATUS:** Aus Beta in Stable überführt
@@ -283,7 +301,7 @@ Beiträge sind willkommen!
 ## 🔗 Links
 
 - **Live Demo (STABLE)**: [cali72mero.github.io/twitter-clean-tracker](https://cali72mero.github.io/twitter-clean-tracker/)
-- **Beta v5.0 (EXPERIMENTAL!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
+- **Beta v5.1 (EXPERIMENTAL!)**: [index_v5_beta.html](https://cali72mero.github.io/twitter-clean-tracker/index_v5_beta.html)
 - **loader.js Changelog**: [LOADER_CHANGELOG.md](LOADER_CHANGELOG.md)
 - **GitHub**: [github.com/cali72mero/twitter-clean-tracker](https://github.com/cali72mero/twitter-clean-tracker)
 - **Issues**: [Bug Reports](https://github.com/cali72mero/twitter-clean-tracker/issues)
