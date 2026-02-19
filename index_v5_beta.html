@@ -292,9 +292,17 @@
         
         function clearCache() {
             if(confirm('⚠️ Cache wirklich löschen?\n\nLöscht NUR Twitter-Daten (tw_clean_cache).\nKEINE anderen Website-Daten werden gelöscht!')) {
+                // FORCE COMPLETE RESET
                 localStorage.removeItem(CACHE_KEY);
+                
+                // OPTIONAL: Auch Settings resetten, wenn gewünscht? 
+                // localStorage.removeItem('ct_settings_v5'); // Lieber behalten
+                
                 loadCache();
-                alert('✅ Cache gelöscht!\n\nNur Twitter-Daten wurden entfernt.');
+                
+                // ERZWINGE RELOAD DAMIT ALLES SAUBER IST
+                alert('✅ Cache gelöscht!\n\nSeite wird neu geladen, um sicherzugehen...');
+                window.location.reload();
             }
         }
         
