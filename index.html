@@ -1073,18 +1073,81 @@
                 function getVideoSrc(t){
                     var v=t.querySelector('video');
                     if(!v) return null;
+                    if(v.currentSrc) return v.currentSrc;
                     if(v.src) return v.src;
                     var s=v.querySelector('source');
                     if(s && s.src) return s.src;
                     return null;
                 }
+                function getTweetId(t){
+                    var links=t.querySelectorAll('a[href*="/status/"]');
+                    for(var i=0;i<links.length;i++){
+                        var href=links[i].getAttribute('href')||links[i].href||'';
+                        var m=String(href).match(/\\/status\\/(\\d+)/);
+                        if(m && m[1]) return m[1];
+                    }
+                    return '';
+                }
+                function isLikelyMp4Url(url){
+                    if(!url) return false;
+                    var u=String(url);
+                    if(u.indexOf('blob:')===0) return false;
+                    if(!/^https?:/i.test(u)) return false;
+                    if(/\\.m3u8(\\?|$)/i.test(u)) return false;
+                    return /\\.mp4(\\?|$)/i.test(u) || u.indexOf('video.twimg.com')>=0;
+                }
+                function pickBestMp4(variants){
+                    if(!Array.isArray(variants)) return '';
+                    var mp4=variants.filter(function(v){
+                        return v && typeof v.url==='string' && v.url && String(v.content_type||'').indexOf('mp4')>=0;
+                    });
+                    if(!mp4.length) return '';
+                    mp4.sort(function(a,b){ return (Number(b.bitrate)||0)-(Number(a.bitrate)||0); });
+                    return mp4[0].url||'';
+                }
+                function readBestFromMediaObj(m){
+                    if(!m) return '';
+                    var list=(m.video_info&&m.video_info.variants)||m.variants||[];
+                    return pickBestMp4(list);
+                }
+                function resolveVideoByTweetId(tweetId){
+                    if(!tweetId) return Promise.resolve('');
+                    var token=Math.floor(Math.random()*1e9);
+                    var url='https://cdn.syndication.twimg.com/tweet-result?id='+encodeURIComponent(tweetId)+'&lang='+(L==='en'?'en':'de')+'&token='+token;
+                    return fetch(url,{method:'GET',credentials:'omit',cache:'no-store'})
+                        .then(function(r){ if(!r.ok) throw new Error('http_'+r.status); return r.json(); })
+                        .then(function(p){
+                            var best='';
+                            if(p && Array.isArray(p.mediaDetails)){
+                                for(var i=0;i<p.mediaDetails.length;i++){
+                                    best = readBestFromMediaObj(p.mediaDetails[i]) || best;
+                                    if(best) return best;
+                                }
+                            }
+                            if(p && p.video && Array.isArray(p.video.variants)){
+                                best = pickBestMp4(p.video.variants) || best;
+                                if(best) return best;
+                            }
+                            if(p && p.entities && Array.isArray(p.entities.media)){
+                                for(var j=0;j<p.entities.media.length;j++){
+                                    best = readBestFromMediaObj(p.entities.media[j]) || best;
+                                    if(best) return best;
+                                }
+                            }
+                            return best||'';
+                        })
+                        .catch(function(){ return ''; });
+                }
                 function dlMedia(url,name){
-                    fetch(url).then(function(r){return r.blob()}).then(function(blob){
+                    return fetch(url).then(function(r){
+                        if(!r.ok) throw new Error('http_'+r.status);
+                        return r.blob();
+                    }).then(function(blob){
                         var a=document.createElement('a');
                         a.href=URL.createObjectURL(blob);
                         a.download=name;
                         a.click();
-                    }).catch(function(){});
+                    });
                 }
                 function addDL(){
                     if(!C.showDlButtons) return;
@@ -1100,8 +1163,32 @@
                         btn.style.cssText='position:absolute!important;top:6px!important;left:6px!important;z-index:9999!important;background:rgba(0,0,0,0.65)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important';
                         btn.onclick=function(e){
                             e.preventDefault();e.stopPropagation();
-                            if(vidSrc) dlMedia(vidSrc,'video_'+Date.now()+'.mp4');
-                            else imgs.forEach(function(img,i){dlMedia(img.src,'img_'+Date.now()+'_'+i+'.jpg')});
+                            var currentVid=getVideoSrc(t) || vidSrc;
+                            var tweetId=getTweetId(t);
+                            var saveImages=function(){
+                                imgs.forEach(function(img,i){ dlMedia(img.src,'img_'+Date.now()+'_'+i+'.jpg').catch(function(){}); });
+                            };
+                            var saveVideo=function(url){
+                                if(!url){ saveImages(); return; }
+                                dlMedia(url,'video_'+Date.now()+'.mp4').catch(function(){
+                                    try{ window.open(url,'_blank','noopener,noreferrer'); }catch(e){}
+                                    saveImages();
+                                });
+                            };
+                            if(currentVid && isLikelyMp4Url(currentVid)){
+                                saveVideo(currentVid);
+                                return;
+                            }
+                            if(tweetId){
+                                resolveVideoByTweetId(tweetId).then(function(resolved){
+                                    if(resolved) { saveVideo(resolved); return; }
+                                    if(currentVid && /^https?:/i.test(currentVid) && !/\\.m3u8(\\?|$)/i.test(currentVid)) { saveVideo(currentVid); return; }
+                                    saveImages();
+                                });
+                                return;
+                            }
+                            if(currentVid && /^https?:/i.test(currentVid) && !/\\.m3u8(\\?|$)/i.test(currentVid)) { saveVideo(currentVid); return; }
+                            saveImages();
                         };
                         t.style.position='relative';
                         t.appendChild(btn);
