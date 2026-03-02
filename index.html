@@ -11,6 +11,7 @@
         h4 { margin: 8px 0; }
         .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
         .btn:hover { opacity: 0.9; transform: scale(1.03); transition: 0.2s; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-drag { cursor: move; }
         .btn-danger { background: #ff4444; color: #fff; }
         .btn-soft { background: transparent; color: #bbb; border: 1px solid #555; }
@@ -31,6 +32,8 @@
         .setting-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
         .setting-item label { cursor: pointer; color: #ddd; }
         .setting-item input[type="number"] { width: 108px; padding: 6px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; }
+        .setting-item input[type="url"], .setting-item input[type="text"] { min-width: min(640px, 95vw); flex: 1; padding: 9px 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; }
+        .setting-item select { padding: 8px 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; }
         .badge-preview { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(0,0,0,0.9); padding: 5px 10px; border-radius: 5px; border: 1px solid #333; color: var(--accent); display: inline-block; margin-left: 10px; }
         .generator-box { background: #111; padding: 28px; border-radius: 20px; margin-bottom: 36px; text-align: center; border: 2px solid var(--primary); }
         .stats { display: flex; justify-content: center; gap: 14px; margin-bottom: 18px; font-size: 1.04rem; flex-wrap: wrap; }
@@ -273,6 +276,24 @@
         <h1 id="installTitle">⚠️ CleanTwitter v5.3 BETA</h1>
         <p id="installHeadline" style="color: #aaa; margin-bottom: 14px;"><strong style="font-size: 1.1em; color: var(--primary);">Anti-Ban Controls + Performance Tuning + Stabilerer Sync</strong></p>
         <p id="installSubline" class="subtle">Neu: Live Monitor, Smart Auto-Tuning, Dedupe 2.0, Export Pro, Quick Navigation UI</p>
+        <div style="max-width: 980px; margin: 12px auto 14px; background:#0f0f0f; border:1px solid #303030; border-radius:12px; padding:12px;">
+            <h4 id="installTargetTitle" style="margin:0 0 8px 0; color:#f0d778;">🌐 Dashboard Ziel (GitHub oder eigener Server)</h4>
+            <div class="setting-item" style="justify-content:center;">
+                <label id="installTargetModeLabel" for="dashboardTargetMode">Ziel-Modus:</label>
+                <select id="dashboardTargetMode" onchange="saveSettings()">
+                    <option id="dashModeAutoOpt" value="auto">Auto (empfohlen)</option>
+                    <option id="dashModeGithubOpt" value="github">GitHub Pages</option>
+                    <option id="dashModeCurrentOpt" value="current">Aktuelle Seite (lokaler Server)</option>
+                    <option id="dashModeCustomOpt" value="custom">Custom URL</option>
+                </select>
+            </div>
+            <div class="setting-item" style="justify-content:center;">
+                <label id="installTargetCustomLabel" for="customDashboardUrl">Custom URL:</label>
+                <input type="url" id="customDashboardUrl" value="" placeholder="http://localhost:8080/index.html" onchange="saveSettings()">
+            </div>
+            <p id="installTargetHint" class="subtle" style="margin:6px 0 0 0;">Lokal empfohlen über Server (z.B. python3 -m http.server). file:// ist unzuverlässig für Bookmarklets.</p>
+            <p id="activeDashboardUrl" class="subtle" style="margin:4px 0 0 0;"></p>
+        </div>
         <a id="bookmarkletBtn" class="btn btn-drag" href="javascript:void(0);" draggable="true">⚠️ CleanTwitter v5.3 BETA</a>
         <br><br>
         <button id="btnCopyCode" class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
@@ -437,7 +458,7 @@
     <script>
         const CACHE_KEY = 'tw_clean_cache';
         const SETTINGS_KEY = 'ct_settings_v53';
-        const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index_v5.3-beta.html';
+        const GITHUB_DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index_v5.3-beta.html';
         const I18N = {
             de: {
                 langLabel: 'Sprache',
@@ -449,6 +470,15 @@
                 proBtn: 'v5.3 Pro-Modus',
                 modeBasic: 'Aktiv: Anfänger-Modus (v5.2-Stil)',
                 modePro: 'Aktiv: Pro-Modus (v5.3)',
+                installTargetTitle: '🌐 Dashboard Ziel (GitHub oder eigener Server)',
+                installTargetModeLabel: 'Ziel-Modus:',
+                installTargetCustomLabel: 'Custom URL:',
+                dashModeAuto: 'Auto (empfohlen)',
+                dashModeGithub: 'GitHub Pages',
+                dashModeCurrent: 'Aktuelle Seite (lokaler Server)',
+                dashModeCustom: 'Custom URL',
+                installTargetHint: 'Lokal empfohlen über Server (z.B. python3 -m http.server). file:// ist unzuverlässig für Bookmarklets.',
+                installTargetActivePrefix: 'Aktive Ziel-URL:',
                 monitorOn: 'Monitor AN',
                 monitorOff: 'Monitor AUS',
                 monitorStatusIdle: 'Leerlauf',
@@ -488,6 +518,15 @@
                 proBtn: 'v5.3 Pro mode',
                 modeBasic: 'Active: Beginner mode (v5.2 style)',
                 modePro: 'Active: Pro mode (v5.3)',
+                installTargetTitle: '🌐 Dashboard target (GitHub or your own server)',
+                installTargetModeLabel: 'Target mode:',
+                installTargetCustomLabel: 'Custom URL:',
+                dashModeAuto: 'Auto (recommended)',
+                dashModeGithub: 'GitHub Pages',
+                dashModeCurrent: 'Current page (local server)',
+                dashModeCustom: 'Custom URL',
+                installTargetHint: 'Local use is recommended via server (e.g. python3 -m http.server). file:// is unreliable for bookmarklets.',
+                installTargetActivePrefix: 'Active target URL:',
                 monitorOn: 'Monitor ON',
                 monitorOff: 'Monitor OFF',
                 monitorStatusIdle: 'Idle',
@@ -551,7 +590,9 @@
             enableExportPro: false,
             exportFolderByUserDate: true,
             exportMetaJSON: true,
-            exportMetaCSV: false
+            exportMetaCSV: false,
+            dashboardTargetMode: 'auto',
+            customDashboardUrl: ''
         };
 
         let settings = { ...defaultSettings };
@@ -573,10 +614,46 @@
             return Math.min(max, Math.max(min, x));
         }
 
+        function normalizeDashboardUrl(url) {
+            const raw = String(url || '').trim();
+            if (!raw) return '';
+            try {
+                const u = new URL(raw, window.location.href);
+                if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+                u.hash = '';
+                return u.href;
+            } catch {
+                return '';
+            }
+        }
+
+        function getCurrentHttpDashboardUrl() {
+            try {
+                if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return '';
+                const u = new URL(window.location.href);
+                u.hash = '';
+                return u.href;
+            } catch {
+                return '';
+            }
+        }
+
+        function getEffectiveDashboardUrl() {
+            const mode = settings.dashboardTargetMode || 'auto';
+            const current = getCurrentHttpDashboardUrl();
+            const custom = normalizeDashboardUrl(settings.customDashboardUrl);
+            if (mode === 'github') return GITHUB_DASHBOARD_URL;
+            if (mode === 'current') return current || GITHUB_DASHBOARD_URL;
+            if (mode === 'custom') return custom || current || GITHUB_DASHBOARD_URL;
+            return current || GITHUB_DASHBOARD_URL;
+        }
+
         function sanitizeSettings(raw) {
             const s = { ...defaultSettings, ...(raw || {}) };
             s.language = s.language === 'en' ? 'en' : 'de';
             s.uiMode = s.uiMode === 'basic' ? 'basic' : 'pro';
+            s.dashboardTargetMode = ['auto', 'github', 'current', 'custom'].includes(s.dashboardTargetMode) ? s.dashboardTargetMode : defaultSettings.dashboardTargetMode;
+            s.customDashboardUrl = normalizeDashboardUrl(s.customDashboardUrl);
             s.stealthMode = !!s.stealthMode;
             s.rateLimit = !!s.rateLimit;
             s.humanBreak = !!s.humanBreak;
@@ -616,6 +693,13 @@
         function applySettingsToUI() {
             const langSelect = document.getElementById('languageSelect');
             if (langSelect) langSelect.value = settings.language;
+            const dashboardMode = document.getElementById('dashboardTargetMode');
+            const customDashboardUrl = document.getElementById('customDashboardUrl');
+            if (dashboardMode) dashboardMode.value = settings.dashboardTargetMode;
+            if (customDashboardUrl) {
+                customDashboardUrl.value = settings.customDashboardUrl || '';
+                customDashboardUrl.disabled = settings.dashboardTargetMode !== 'custom';
+            }
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('minScanDelay').value = settings.minScanDelay;
             document.getElementById('maxScanDelay').value = settings.maxScanDelay;
@@ -661,6 +745,20 @@
             updateMonitorView();
         }
 
+        function updateDashboardTargetUI() {
+            const modeEl = document.getElementById('dashboardTargetMode');
+            const customEl = document.getElementById('customDashboardUrl');
+            const activeEl = document.getElementById('activeDashboardUrl');
+            if (modeEl) modeEl.value = settings.dashboardTargetMode;
+            if (customEl) {
+                customEl.disabled = settings.dashboardTargetMode !== 'custom';
+                customEl.value = settings.customDashboardUrl || '';
+            }
+            if (activeEl) {
+                activeEl.textContent = `${tr('installTargetActivePrefix')} ${getEffectiveDashboardUrl()}`;
+            }
+        }
+
         function tr(key) {
             const dict = I18N[settings.language] || I18N.de;
             return dict[key] ?? I18N.de[key] ?? key;
@@ -670,6 +768,7 @@
             settings.language = lang === 'en' ? 'en' : 'de';
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applyLanguage();
+            renderCompatibility();
             updateMonitorView();
             loadCache();
         }
@@ -731,6 +830,15 @@
             setTxt('btnImportSettings', settings.language === 'en' ? '📥 Import settings' : '📥 Settings importieren');
             setTxt('btnDedupe', settings.language === 'en' ? '🧹 Remove duplicates' : '🧹 Duplikate entfernen');
             setTxt('btnGuideMenu', settings.language === 'en' ? '📘 Guide / menu' : '📘 Anleitung / Menü');
+            setTxt('installTargetTitle', tr('installTargetTitle'));
+            setTxt('installTargetModeLabel', tr('installTargetModeLabel'));
+            setTxt('installTargetCustomLabel', tr('installTargetCustomLabel'));
+            setTxt('dashModeAutoOpt', tr('dashModeAuto'));
+            setTxt('dashModeGithubOpt', tr('dashModeGithub'));
+            setTxt('dashModeCurrentOpt', tr('dashModeCurrent'));
+            setTxt('dashModeCustomOpt', tr('dashModeCustom'));
+            setTxt('installTargetHint', tr('installTargetHint'));
+            updateDashboardTargetUI();
 
             setTxt('monitorTitle', settings.language === 'en' ? '🛰️ Live monitor' : '🛰️ Live Monitor');
             setTxt('monLblSession', settings.language === 'en' ? 'Session' : 'Session');
@@ -857,12 +965,15 @@
             settings = sanitizeSettings(saved ? JSON.parse(saved) : defaultSettings);
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
+            renderCompatibility();
             updateBookmarklet();
         }
 
         function saveSettings() {
             settings = sanitizeSettings({
                 language: document.getElementById('languageSelect').value,
+                dashboardTargetMode: document.getElementById('dashboardTargetMode').value,
+                customDashboardUrl: document.getElementById('customDashboardUrl').value,
                 stealthMode: document.getElementById('stealthMode').checked,
                 minScanDelay: document.getElementById('minScanDelay').value,
                 maxScanDelay: document.getElementById('maxScanDelay').value,
@@ -919,14 +1030,20 @@
             const unsupported = Object.entries(compat.features).filter(([, ok]) => !ok).map(([name]) => name);
             const target = document.getElementById('compatStatus');
             if (unsupported.length > 0) {
-                target.innerHTML = `<strong class="compat-bad">Kompatibilität:</strong> Fehlende Features: ${unsupported.join(', ')}`;
+                target.innerHTML = settings.language === 'en'
+                    ? `<strong class="compat-bad">Compatibility:</strong> Missing features: ${unsupported.join(', ')}`
+                    : `<strong class="compat-bad">Kompatibilität:</strong> Fehlende Features: ${unsupported.join(', ')}`;
                 return;
             }
             if (compat.isMobileUA) {
-                target.innerHTML = '<strong class="compat-bad">Hinweis:</strong> Mobile Browser sind für Bookmarklets meist eingeschränkt. Desktop empfohlen.';
+                target.innerHTML = settings.language === 'en'
+                    ? '<strong class="compat-bad">Note:</strong> Mobile browsers are limited for bookmarklets. Desktop recommended.'
+                    : '<strong class="compat-bad">Hinweis:</strong> Mobile Browser sind für Bookmarklets meist eingeschränkt. Desktop empfohlen.';
                 return;
             }
-            target.innerHTML = '<strong class="compat-ok">Kompatibilität:</strong> Browser erfüllt alle Kernanforderungen für Windows, macOS und Linux Desktop.';
+            target.innerHTML = settings.language === 'en'
+                ? '<strong class="compat-ok">Compatibility:</strong> Browser meets core requirements for Windows, macOS and Linux desktop.'
+                : '<strong class="compat-ok">Kompatibilität:</strong> Browser erfüllt alle Kernanforderungen für Windows, macOS und Linux Desktop.';
         }
 
         function escapeHtml(text) {
@@ -997,13 +1114,18 @@
 
         function updateBookmarklet() {
             const CFG = JSON.stringify(settings);
+            const DASH = JSON.stringify(getEffectiveDashboardUrl());
             const source = `(function(){
                 var C=${CFG};
-                var DASH='${DASHBOARD_URL}';
+                var DASH=${DASH};
                 var KEY='tw_clean_cache';
                 var P,B,AS,CL,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
                 var badgeColor=C.greenBadge?'#0f8':'#f44';
                 var badgeIcon=C.greenBadge?'♾️':'🔴';
+                var L=C.language==='en'?'en':'de';
+                var TT=L==='en'
+                    ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started'}
+                    : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet'};
                 var syncWin=null;
                 var dynDelayMul=1;
                 var dynMaxTweets=Math.max(5, C.maxTweetsPerScan||35);
@@ -1056,14 +1178,14 @@
                         totalDupes:totalDupes,
                         cacheWrites:totalWrites,
                         lastScanMs:lastScanMs,
-                        status:(pausedUntil>now()?'Pause':'Aktiv'),
+                        status:(pausedUntil>now()?TT.paused:TT.active),
                         ts:Date.now()
                     }};
                     try{syncWin.postMessage(payload,'*')}catch(e){}
                 }
                 function upd(txt){
                     var c=getCache();
-                    if(B) B.innerText = txt || (pausedUntil>now() ? '⏸️ Pause' : badgeIcon + ' ' + c.length);
+                    if(B) B.innerText = txt || (pausedUntil>now() ? TT.pause : badgeIcon + ' ' + c.length);
                 }
                 function getVideoSrc(t){
                     var v=t.querySelector('video');
@@ -1115,12 +1237,12 @@
                     b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:'+badgeColor+'!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:80px!important;';
 
                     var view=document.createElement('button');
-                    view.innerText='👀 View';
+                    view.innerText=TT.view;
                     view.style.cssText='all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     view.onclick=function(){
                         var cache=getCache();
                         syncWin=window.open(DASH,'ct_dashboard');
-                        upd('⏳ Sync');
+                        upd(TT.sync);
                         var tries=0;
                         var timer=setInterval(function(){
                             if(syncWin) syncWin.postMessage({type:'import_tweets',data:cache},'*');
@@ -1131,10 +1253,10 @@
                     };
 
                     var clear=document.createElement('button');
-                    clear.innerText='🗑️ Clear';
+                    clear.innerText=TT.clear;
                     clear.style.cssText='all:initial!important;background:#ff4444!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     clear.onclick=function(){
-                        if(confirm('Twitter/X Cache löschen?')){
+                        if(confirm(TT.clearConfirm)){
                             localStorage.removeItem(KEY);
                             seen.clear();
                             scanCount=0;
@@ -1147,7 +1269,7 @@
 
                     var sc=document.createElement('button');
                     sc.id='ct-as';
-                    sc.innerText='🔽 Scroll';
+                    sc.innerText=TT.scroll;
                     sc.style.cssText='all:initial!important;background:#888!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     sc.onclick=function(){if(isScrolling) stopScroll(); else startScroll();};
 
@@ -1159,7 +1281,7 @@
                 function startScroll(){
                     if(scrollTimer) return;
                     isScrolling=true;
-                    if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText='⏸️ Stop';}
+                    if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText=TT.stop;}
                     scrollTimer=setInterval(function(){
                         if(!isScrolling) return;
                         if(pausedUntil>now()) return;
@@ -1169,7 +1291,7 @@
                 function stopScroll(){
                     isScrolling=false;
                     if(scrollTimer){clearInterval(scrollTimer);scrollTimer=null;}
-                    if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText='🔽 Scroll';}
+                    if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText=TT.scroll;}
                 }
                 function markActivity(){lastActivity=now();if(isScrolling) stopScroll();}
 
@@ -1285,11 +1407,11 @@
                     if(C.rateLimit && scanCount >= C.maxTweetsBeforePause){
                         pausedUntil = now() + C.pauseDurationMs;
                         scanCount = 0;
-                        upd('⏸️ Limit');
+                        upd(TT.limit);
                     } else if(C.humanBreak && Math.random()*100 < C.humanBreakChance){
                         var extra = 30000 + Math.floor(Math.random() * 70000);
                         pausedUntil = now() + extra;
-                        upd('☕ Break');
+                        upd(TT.break);
                     }
 
                     emitStatus(false);
@@ -1310,7 +1432,7 @@
                 setInterval(ensurePanel, 2200);
                 setInterval(addDL, 2100);
                 setInterval(function(){emitStatus(false);}, 5000);
-                alert(C.language==='en' ? '⚠️ CleanTwitter v5.3 BETA BIG started' : '⚠️ CleanTwitter v5.3 BETA BIG gestartet');
+                alert(TT.started);
             })();`;
 
             document.getElementById('bookmarkletBtn').href = `javascript:${source.replace(/\n\s+/g, ' ')}`;
@@ -1335,6 +1457,36 @@
         }
 
         function getSafetyGuideText() {
+            if (settings.language === 'en') {
+                return [
+                    'CleanTwitter v5.3 - Anti-ban quick guide',
+                    '',
+                    'Mode at the top:',
+                    '- Use v5.2 = Beginner mode (simple)',
+                    '- v5.3 Pro mode = all settings',
+                    '',
+                    'Safe start:',
+                    '- Stealth: ON',
+                    '- Min/Max scan: 2200/6500 ms',
+                    '- Rate limit: ON, 45 tweets, 30000 ms pause',
+                    '- Human break: ON, 8%',
+                    '- Pause on hidden tab: ON',
+                    '- Max tweets/scan: 35',
+                    '',
+                    'Optional to disable:',
+                    '- Render limit: OFF = show all tweets',
+                    '- ZIP throttle: OFF = no throttling, faster but higher load',
+                    '- Live monitor: OFF = no runtime panel',
+                    '- Export Pro: OFF = standard ZIP export',
+                    '- Auto-tuning: OFF = only fixed values from settings',
+                    '',
+                    'Do not be too aggressive:',
+                    '- Min scan not below 1500 ms',
+                    '- Max tweets/scan not above 80',
+                    '- Scroll speed not above 120',
+                    '- Do not disable rate limit for long sessions'
+                ].join('\n');
+            }
             return [
                 'CleanTwitter v5.3 - Anti-Ban Kurzguide',
                 '',
@@ -1362,7 +1514,7 @@
                 '- Max Tweets/Scan nicht über 80',
                 '- ScrollSpeed nicht über 120',
                 '- RateLimit nicht ausschalten bei Dauerlauf'
-            ].join('\\n');
+            ].join('\n');
         }
 
         function copySafetyGuide() {
@@ -1733,8 +1885,12 @@
             document.getElementById('renderedCount').innerText = visible.length;
             const hidden = cache.length - visible.length;
             renderHint.innerText = settings.enableRenderLimit
-                ? (hidden > 0 ? `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).` : '')
-                : 'Render-Limit ist AUS: alle Tweets werden angezeigt.';
+                ? (hidden > 0
+                    ? (settings.language === 'en'
+                        ? `Performance mode: ${hidden} older tweets not rendered (still in cache).`
+                        : `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).`)
+                    : '')
+                : tr('renderHintOff');
 
             const frag = document.createDocumentFragment();
             visible.forEach((t, idx) => {
@@ -1768,7 +1924,7 @@
 
             grid.appendChild(frag);
             if (settings.enableLiveMonitor) {
-                if (!monitorState.status || monitorState.status === 'Idle') monitorState.status = 'Cache geladen';
+                if (!monitorState.status || monitorState.status === 'Idle') monitorState.status = tr('cacheLoaded');
                 updateMonitorView();
             }
         }
@@ -1813,17 +1969,17 @@
                 setCache(normalized);
                 monitorState.writes++;
                 monitorState.added += added;
-                monitorState.status = `Import +${added}`;
+                monitorState.status = tr('importPlus')(added);
                 updateMonitorView();
                 loadCache();
 
                 const info = document.createElement('div');
-                info.innerText = `✅ ${added} neue Tweets importiert`;
+                info.innerText = tr('importAdded')(added);
                 info.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
                 document.body.appendChild(info);
                 setTimeout(() => info.remove(), 2600);
             } else {
-                monitorState.status = 'Import ohne neue Tweets';
+                monitorState.status = tr('monitorStatusImportNone');
                 updateMonitorView();
             }
         });
@@ -1834,9 +1990,8 @@
             try { window.opener.postMessage({ type: 'CMD_PING_STATUS' }, '*'); } catch {}
         }
 
-        renderCompatibility();
         loadSettings();
-        monitorState.status = 'Bereit';
+        monitorState.status = tr('monitorStatusReady');
         loadCache();
         updateMonitorView();
         setInterval(() => {
