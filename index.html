@@ -274,26 +274,6 @@
 
     <div id="installSection" class="generator-box">
         <h1 id="installTitle">⚠️ CleanTwitter v5.3 BETA</h1>
-        <p id="installHeadline" style="color: #aaa; margin-bottom: 14px;"><strong style="font-size: 1.1em; color: var(--primary);">Anti-Ban Controls + Performance Tuning + Stabilerer Sync</strong></p>
-        <p id="installSubline" class="subtle">Neu: Live Monitor, Smart Auto-Tuning, Dedupe 2.0, Export Pro, Quick Navigation UI</p>
-        <div style="max-width: 980px; margin: 12px auto 14px; background:#0f0f0f; border:1px solid #303030; border-radius:12px; padding:12px;">
-            <h4 id="installTargetTitle" style="margin:0 0 8px 0; color:#f0d778;">🌐 Dashboard Ziel (GitHub oder eigener Server)</h4>
-            <div class="setting-item" style="justify-content:center;">
-                <label id="installTargetModeLabel" for="dashboardTargetMode">Ziel-Modus:</label>
-                <select id="dashboardTargetMode" onchange="saveSettings()">
-                    <option id="dashModeAutoOpt" value="auto">Auto (empfohlen)</option>
-                    <option id="dashModeGithubOpt" value="github">GitHub Pages</option>
-                    <option id="dashModeCurrentOpt" value="current">Aktuelle Seite (lokaler Server)</option>
-                    <option id="dashModeCustomOpt" value="custom">Custom URL</option>
-                </select>
-            </div>
-            <div class="setting-item" style="justify-content:center;">
-                <label id="installTargetCustomLabel" for="customDashboardUrl">Custom URL:</label>
-                <input type="url" id="customDashboardUrl" value="" placeholder="http://localhost:8080/index.html" onchange="saveSettings()">
-            </div>
-            <p id="installTargetHint" class="subtle" style="margin:6px 0 0 0;">Lokal empfohlen über Server (z.B. python3 -m http.server). file:// ist unzuverlässig für Bookmarklets.</p>
-            <p id="activeDashboardUrl" class="subtle" style="margin:4px 0 0 0;"></p>
-        </div>
         <a id="bookmarkletBtn" class="btn btn-drag" href="javascript:void(0);" draggable="true">⚠️ CleanTwitter v5.3 BETA</a>
         <br><br>
         <button id="btnCopyCode" class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
@@ -458,7 +438,7 @@
     <script>
         const CACHE_KEY = 'tw_clean_cache';
         const SETTINGS_KEY = 'ct_settings_v53';
-        const GITHUB_DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index_v5.3-beta.html';
+        const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index.html';
         const I18N = {
             de: {
                 langLabel: 'Sprache',
@@ -470,15 +450,6 @@
                 proBtn: 'v5.3 Pro-Modus',
                 modeBasic: 'Aktiv: Anfänger-Modus (v5.2-Stil)',
                 modePro: 'Aktiv: Pro-Modus (v5.3)',
-                installTargetTitle: '🌐 Dashboard Ziel (GitHub oder eigener Server)',
-                installTargetModeLabel: 'Ziel-Modus:',
-                installTargetCustomLabel: 'Custom URL:',
-                dashModeAuto: 'Auto (empfohlen)',
-                dashModeGithub: 'GitHub Pages',
-                dashModeCurrent: 'Aktuelle Seite (lokaler Server)',
-                dashModeCustom: 'Custom URL',
-                installTargetHint: 'Lokal empfohlen über Server (z.B. python3 -m http.server). file:// ist unzuverlässig für Bookmarklets.',
-                installTargetActivePrefix: 'Aktive Ziel-URL:',
                 monitorOn: 'Monitor AN',
                 monitorOff: 'Monitor AUS',
                 monitorStatusIdle: 'Leerlauf',
@@ -518,15 +489,6 @@
                 proBtn: 'v5.3 Pro mode',
                 modeBasic: 'Active: Beginner mode (v5.2 style)',
                 modePro: 'Active: Pro mode (v5.3)',
-                installTargetTitle: '🌐 Dashboard target (GitHub or your own server)',
-                installTargetModeLabel: 'Target mode:',
-                installTargetCustomLabel: 'Custom URL:',
-                dashModeAuto: 'Auto (recommended)',
-                dashModeGithub: 'GitHub Pages',
-                dashModeCurrent: 'Current page (local server)',
-                dashModeCustom: 'Custom URL',
-                installTargetHint: 'Local use is recommended via server (e.g. python3 -m http.server). file:// is unreliable for bookmarklets.',
-                installTargetActivePrefix: 'Active target URL:',
                 monitorOn: 'Monitor ON',
                 monitorOff: 'Monitor OFF',
                 monitorStatusIdle: 'Idle',
@@ -590,9 +552,7 @@
             enableExportPro: false,
             exportFolderByUserDate: true,
             exportMetaJSON: true,
-            exportMetaCSV: false,
-            dashboardTargetMode: 'auto',
-            customDashboardUrl: ''
+            exportMetaCSV: false
         };
 
         let settings = { ...defaultSettings };
@@ -614,46 +574,10 @@
             return Math.min(max, Math.max(min, x));
         }
 
-        function normalizeDashboardUrl(url) {
-            const raw = String(url || '').trim();
-            if (!raw) return '';
-            try {
-                const u = new URL(raw, window.location.href);
-                if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
-                u.hash = '';
-                return u.href;
-            } catch {
-                return '';
-            }
-        }
-
-        function getCurrentHttpDashboardUrl() {
-            try {
-                if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return '';
-                const u = new URL(window.location.href);
-                u.hash = '';
-                return u.href;
-            } catch {
-                return '';
-            }
-        }
-
-        function getEffectiveDashboardUrl() {
-            const mode = settings.dashboardTargetMode || 'auto';
-            const current = getCurrentHttpDashboardUrl();
-            const custom = normalizeDashboardUrl(settings.customDashboardUrl);
-            if (mode === 'github') return GITHUB_DASHBOARD_URL;
-            if (mode === 'current') return current || GITHUB_DASHBOARD_URL;
-            if (mode === 'custom') return custom || current || GITHUB_DASHBOARD_URL;
-            return current || GITHUB_DASHBOARD_URL;
-        }
-
         function sanitizeSettings(raw) {
             const s = { ...defaultSettings, ...(raw || {}) };
             s.language = s.language === 'en' ? 'en' : 'de';
             s.uiMode = s.uiMode === 'basic' ? 'basic' : 'pro';
-            s.dashboardTargetMode = ['auto', 'github', 'current', 'custom'].includes(s.dashboardTargetMode) ? s.dashboardTargetMode : defaultSettings.dashboardTargetMode;
-            s.customDashboardUrl = normalizeDashboardUrl(s.customDashboardUrl);
             s.stealthMode = !!s.stealthMode;
             s.rateLimit = !!s.rateLimit;
             s.humanBreak = !!s.humanBreak;
@@ -693,13 +617,6 @@
         function applySettingsToUI() {
             const langSelect = document.getElementById('languageSelect');
             if (langSelect) langSelect.value = settings.language;
-            const dashboardMode = document.getElementById('dashboardTargetMode');
-            const customDashboardUrl = document.getElementById('customDashboardUrl');
-            if (dashboardMode) dashboardMode.value = settings.dashboardTargetMode;
-            if (customDashboardUrl) {
-                customDashboardUrl.value = settings.customDashboardUrl || '';
-                customDashboardUrl.disabled = settings.dashboardTargetMode !== 'custom';
-            }
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('minScanDelay').value = settings.minScanDelay;
             document.getElementById('maxScanDelay').value = settings.maxScanDelay;
@@ -743,20 +660,6 @@
             applyModeVisibility();
             applyLanguage();
             updateMonitorView();
-        }
-
-        function updateDashboardTargetUI() {
-            const modeEl = document.getElementById('dashboardTargetMode');
-            const customEl = document.getElementById('customDashboardUrl');
-            const activeEl = document.getElementById('activeDashboardUrl');
-            if (modeEl) modeEl.value = settings.dashboardTargetMode;
-            if (customEl) {
-                customEl.disabled = settings.dashboardTargetMode !== 'custom';
-                customEl.value = settings.customDashboardUrl || '';
-            }
-            if (activeEl) {
-                activeEl.textContent = `${tr('installTargetActivePrefix')} ${getEffectiveDashboardUrl()}`;
-            }
         }
 
         function tr(key) {
@@ -815,30 +718,12 @@
             setTxt('settingsReloadNote', settings.language === 'en' ? 'After changes, re-drag the bookmarklet into the toolbar.' : 'Nach Änderungen das Bookmarklet neu in die Leiste ziehen.');
 
             setTxt('installTitle', '⚠️ CleanTwitter v5.3 BETA');
-            const installHeadline = document.getElementById('installHeadline');
-            if (installHeadline) {
-                installHeadline.innerHTML = settings.language === 'en'
-                    ? '<strong style="font-size: 1.1em; color: var(--primary);">Anti-ban controls + performance tuning + more stable sync</strong>'
-                    : '<strong style="font-size: 1.1em; color: var(--primary);">Anti-Ban Controls + Performance Tuning + Stabilerer Sync</strong>';
-            }
-            setTxt('installSubline', settings.language === 'en'
-                ? 'New: Live monitor, smart auto-tuning, dedupe 2.0, export pro, quick navigation UI'
-                : 'Neu: Live Monitor, Smart Auto-Tuning, Dedupe 2.0, Export Pro, Quick Navigation UI');
             setTxt('bookmarkletBtn', '⚠️ CleanTwitter v5.3 BETA');
             setTxt('btnCopyCode', settings.language === 'en' ? '📋 Copy code' : '📋 Code kopieren');
             setTxt('btnExportSettings', settings.language === 'en' ? '💾 Export settings' : '💾 Settings exportieren');
             setTxt('btnImportSettings', settings.language === 'en' ? '📥 Import settings' : '📥 Settings importieren');
             setTxt('btnDedupe', settings.language === 'en' ? '🧹 Remove duplicates' : '🧹 Duplikate entfernen');
             setTxt('btnGuideMenu', settings.language === 'en' ? '📘 Guide / menu' : '📘 Anleitung / Menü');
-            setTxt('installTargetTitle', tr('installTargetTitle'));
-            setTxt('installTargetModeLabel', tr('installTargetModeLabel'));
-            setTxt('installTargetCustomLabel', tr('installTargetCustomLabel'));
-            setTxt('dashModeAutoOpt', tr('dashModeAuto'));
-            setTxt('dashModeGithubOpt', tr('dashModeGithub'));
-            setTxt('dashModeCurrentOpt', tr('dashModeCurrent'));
-            setTxt('dashModeCustomOpt', tr('dashModeCustom'));
-            setTxt('installTargetHint', tr('installTargetHint'));
-            updateDashboardTargetUI();
 
             setTxt('monitorTitle', settings.language === 'en' ? '🛰️ Live monitor' : '🛰️ Live Monitor');
             setTxt('monLblSession', settings.language === 'en' ? 'Session' : 'Session');
@@ -972,8 +857,6 @@
         function saveSettings() {
             settings = sanitizeSettings({
                 language: document.getElementById('languageSelect').value,
-                dashboardTargetMode: document.getElementById('dashboardTargetMode').value,
-                customDashboardUrl: document.getElementById('customDashboardUrl').value,
                 stealthMode: document.getElementById('stealthMode').checked,
                 minScanDelay: document.getElementById('minScanDelay').value,
                 maxScanDelay: document.getElementById('maxScanDelay').value,
@@ -1114,7 +997,7 @@
 
         function updateBookmarklet() {
             const CFG = JSON.stringify(settings);
-            const DASH = JSON.stringify(getEffectiveDashboardUrl());
+            const DASH = JSON.stringify(DASHBOARD_URL);
             const source = `(function(){
                 var C=${CFG};
                 var DASH=${DASH};
