@@ -11,18 +11,21 @@
         h4 { margin: 8px 0; }
         .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
         .btn:hover { opacity: 0.9; transform: scale(1.03); transition: 0.2s; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-disabled-link { opacity: 0.5; cursor: not-allowed; transform: none; pointer-events: none; }
         .btn-drag { cursor: move; }
         .btn-danger { background: #ff4444; color: #fff; }
         .btn-soft { background: transparent; color: #bbb; border: 1px solid #555; }
-        .tweet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-top: 20px; }
-        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 14px; border-radius: 12px; overflow: hidden; transition: transform 0.18s; position: relative; }
+        .tweet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-top: 20px; align-items: start; }
+        .tweet-card { background: var(--surface); border: 1px solid #333; padding: 14px; border-radius: 12px; overflow: hidden; transition: transform 0.18s; position: relative; align-self: start; }
         .tweet-card:hover { transform: translateY(-3px); border-color: var(--primary); }
         .tweet-user { font-weight: 700; color: #ccc; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .tweet-text { margin-bottom: 10px; line-height: 1.45; font-size: 0.94rem; white-space: pre-wrap; word-break: break-word; }
         .tweet-img { width: 100%; border-radius: 8px; display: block; margin-top: 10px; background: #222; min-height: 50px; object-fit: cover; }
-        .tweet-video { width: 100%; border-radius: 8px; margin-top: 10px; }
+        .tweet-video { width: 100%; border-radius: 8px; margin-top: 10px; display: block; max-height: min(62vh, 560px); object-fit: contain; background: #060606; }
         .media-badge { position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.82); color: var(--accent); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; z-index: 10; }
         .tweet-dl-btn { background: #3846ff; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 10px; font-weight: 700; width: 100%; }
+        .tweet-del-btn { background: #b2293e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 8px; font-weight: 700; width: 100%; }
         .empty-state { text-align: center; color: #666; margin-top: 45px; padding: 32px; border: 2px dashed #333; border-radius: 16px; }
         .settings-box { background: #1a1a1a; padding: 24px; border-radius: 15px; margin-bottom: 28px; border: 2px solid var(--primary); }
         .settings-box h3 { color: var(--primary); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
@@ -31,6 +34,8 @@
         .setting-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
         .setting-item label { cursor: pointer; color: #ddd; }
         .setting-item input[type="number"] { width: 108px; padding: 6px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; }
+        .setting-item input[type="url"], .setting-item input[type="text"] { min-width: min(640px, 95vw); flex: 1; padding: 9px 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; }
+        .setting-item select { padding: 8px 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; }
         .badge-preview { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(0,0,0,0.9); padding: 5px 10px; border-radius: 5px; border: 1px solid #333; color: var(--accent); display: inline-block; margin-left: 10px; }
         .generator-box { background: #111; padding: 28px; border-radius: 20px; margin-bottom: 36px; text-align: center; border: 2px solid var(--primary); }
         .stats { display: flex; justify-content: center; gap: 14px; margin-bottom: 18px; font-size: 1.04rem; flex-wrap: wrap; }
@@ -61,81 +66,139 @@
         .help-table th { background: #1f1f1f; color: #eee; text-align: left; }
         .risk { color: #ff8f8f; font-weight: 700; }
         .safe { color: #8fffb0; font-weight: 700; }
+        .quick-nav { position: sticky; top: 10px; z-index: 60; display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 14px; }
+        .quick-nav a { text-decoration: none; background: #181818; color: #ddd; border: 1px solid #333; border-radius: 999px; padding: 8px 12px; font-size: 0.86rem; }
+        .quick-nav a:hover { border-color: var(--primary); color: var(--primary); }
+        .monitor-panel { background: #101820; border: 1px solid #274766; border-radius: 12px; padding: 14px; margin-bottom: 20px; }
+        .monitor-title { margin: 0 0 8px 0; color: #7fcfff; }
+        .monitor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+        .monitor-item { background: #152636; border: 1px solid #284861; border-radius: 8px; padding: 8px; }
+        .monitor-label { color: #97b4cb; font-size: 0.8rem; }
+        .monitor-value { color: #e9f5ff; font-weight: 700; font-size: 0.95rem; }
+        .pill { border-radius: 999px; padding: 3px 8px; font-size: 0.75rem; border: 1px solid #39566d; color: #abd4ef; display: inline-block; }
+        .pill-ok { border-color: #1f6f4a; color: #9bf3c8; }
+        .pill-warn { border-color: #8a6930; color: #ffd48a; }
+        .section-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .mode-switch { background: #141414; border: 1px solid #333; border-radius: 12px; padding: 10px; margin: 6px 0 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .mode-btn { border-radius: 999px; padding: 8px 12px; border: 1px solid #555; background: #1b1b1b; color: #ddd; cursor: pointer; font-weight: 700; }
+        .mode-btn.active { border-color: var(--primary); color: #111; background: var(--primary); }
+        .mode-label { margin-left: auto; font-size: 0.85rem; color: #aaa; }
+        .lang-wrap { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+        .lang-wrap label { font-size: 0.85rem; color: #aaa; }
+        .lang-wrap select { background: #1b1b1b; color: #ddd; border: 1px solid #555; border-radius: 999px; padding: 6px 10px; }
+        .pro-only { }
+        .basic-hide { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="loadingOverlay">
         <div class="loader"></div>
-        <h2 style="margin-top: 20px;">📦 ZIP wird erstellt...</h2>
+        <h2 id="loadingTitle" style="margin-top: 20px;">📦 ZIP wird erstellt...</h2>
         <p id="loadingStatus" style="color: #aaa;">Bitte warten...</p>
     </div>
 
-    <div class="settings-box">
-        <h3>⚙️ Einstellungen & Sicherheit (v5.3 BETA) <span class="new-badge">NEW</span></h3>
+    <div class="quick-nav">
+        <a id="navSettings" href="#settingsSection">⚙️ Einstellungen</a>
+        <a id="navInstall" href="#installSection">🔖 Bookmarklet</a>
+        <a id="monitorNavLink" href="#monitorSection">🛰️ Monitor</a>
+        <a id="navViewer" href="#viewerSection">📦 Viewer</a>
+    </div>
+
+    <div class="mode-switch">
+        <button id="basicModeBtn" class="mode-btn" onclick="setUIMode('basic')">v5.2 benutzen (Anfänger-Modus)</button>
+        <button id="proModeBtn" class="mode-btn active" onclick="setUIMode('pro')">v5.3 Pro-Modus</button>
+        <span id="modeLabel" class="mode-label">Aktiv: Pro-Modus</span>
+        <div class="lang-wrap">
+            <label id="langLabel" for="languageSelect">Sprache</label>
+            <select id="languageSelect" onchange="setLanguage(this.value)">
+                <option value="de">DE</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="settingsSection" class="settings-box">
+        <h3 id="settingsTitle">⚙️ Einstellungen & Sicherheit (v5.3 BETA) <span class="new-badge">NEW</span></h3>
 
         <div class="info-box">
-            <h4>🗑️ Cache korrekt leeren</h4>
-            <p>1) Auf Twitter/X im Panel auf <strong>🗑️ Clear</strong> klicken</p>
-            <p>2) Danach hier im Dashboard auf <strong>"Cache leeren"</strong> klicken</p>
-            <p style="color: #ff9d5c;">Twitter/X und Dashboard nutzen getrennten Storage (Cross-Origin).</p>
+            <h4 id="infoCacheTitle">🗑️ Cache korrekt leeren</h4>
+            <p id="infoCacheStep1">1) Auf Twitter/X im Panel auf <strong>🗑️ Clear</strong> klicken</p>
+            <p id="infoCacheStep2">2) Danach hier im Dashboard auf <strong>"Cache leeren"</strong> klicken</p>
+            <p id="infoCacheStep3" style="color: #ff9d5c;">Twitter/X und Dashboard nutzen getrennten Storage (Cross-Origin).</p>
         </div>
 
         <div id="compatStatus" class="compat-box"></div>
         <div class="setting-item">
-            <button class="btn btn-soft" onclick="openHelpMenu()">📘 Hilfe-Menü öffnen</button>
-            <button class="btn btn-soft" onclick="copySafetyGuide()">📋 Anti-Ban Anleitung kopieren</button>
+            <button id="openHelpBtn" class="btn btn-soft" onclick="openHelpMenu()">📘 Hilfe-Menü öffnen</button>
+            <button id="copyGuideBtn" class="btn btn-soft" onclick="copySafetyGuide()">📋 Anti-Ban Anleitung kopieren</button>
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🛡️ Anti-Ban & Scan-Verhalten</h4>
+            <h4 id="groupStorage" style="color: #aaa;">💽 Speicher-Backend</h4>
+            <div class="setting-item">
+                <label id="storageModeLabel" for="storageMode">Speicher-Modus:</label>
+                <select id="storageMode" onchange="saveSettings()">
+                    <option value="auto">Auto (Desktop: IndexedDB, Fallback: localStorage)</option>
+                    <option value="idb">IndexedDB bevorzugen</option>
+                    <option value="local">Nur localStorage (legacy)</option>
+                </select>
+            </div>
+            <p id="storageStatusText" class="subtle">Storage-Status wird geladen...</p>
+            <p id="riskWarningText" class="warning-inline" style="display:none;"></p>
+        </div>
+
+        <div class="setting-group">
+            <h4 id="groupAntiBan" style="color: #aaa;">🛡️ Anti-Ban & Scan-Verhalten</h4>
             <div class="setting-item">
                 <input type="checkbox" id="stealthMode" onchange="saveSettings()" checked>
                 <label for="stealthMode"><strong>Stealth Mode:</strong> Zufällige Scan-Intervalle statt fixer Taktung</label>
             </div>
-            <div class="setting-item">
+            <div class="setting-item pro-only">
                 <label for="minScanDelay">Min Scan (ms):</label>
-                <input type="number" id="minScanDelay" min="1000" max="30000" value="2200" onchange="saveSettings()">
+                <input type="number" id="minScanDelay" min="100" max="300000" value="2200" onchange="saveSettings()">
                 <label for="maxScanDelay">Max Scan (ms):</label>
-                <input type="number" id="maxScanDelay" min="1000" max="45000" value="6500" onchange="saveSettings()">
+                <input type="number" id="maxScanDelay" min="100" max="300000" value="6500" onchange="saveSettings()">
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="rateLimit" onchange="saveSettings()" checked>
                 <label for="rateLimit">Rate Limit Schutz aktiv</label>
-                <label for="maxTweetsBeforePause">Pause nach Tweets:</label>
-                <input type="number" id="maxTweetsBeforePause" min="5" max="250" value="45" onchange="saveSettings()">
-                <label for="pauseDurationMs">Pause (ms):</label>
-                <input type="number" id="pauseDurationMs" min="5000" max="240000" value="30000" onchange="saveSettings()">
             </div>
-            <div class="setting-item">
+            <div class="setting-item pro-only">
+                <label for="maxTweetsBeforePause">Pause nach Tweets:</label>
+                <input type="number" id="maxTweetsBeforePause" min="1" max="100000" value="45" onchange="saveSettings()">
+                <label for="pauseDurationMs">Pause (ms):</label>
+                <input type="number" id="pauseDurationMs" min="0" max="86400000" value="30000" onchange="saveSettings()">
+            </div>
+            <div class="setting-item pro-only">
                 <input type="checkbox" id="humanBreak" onchange="saveSettings()" checked>
                 <label for="humanBreak">Menschliche Zufallspausen aktiv</label>
                 <label for="humanBreakChance">Chance %:</label>
-                <input type="number" id="humanBreakChance" min="0" max="50" value="8" onchange="saveSettings()">
+                <input type="number" id="humanBreakChance" min="0" max="100" value="8" onchange="saveSettings()">
             </div>
-            <div class="setting-item">
+            <div class="setting-item pro-only">
                 <input type="checkbox" id="pauseOnHiddenTab" onchange="saveSettings()" checked>
                 <label for="pauseOnHiddenTab">Scans pausieren, wenn Tab im Hintergrund ist</label>
             </div>
-            <div class="setting-item">
+            <div class="setting-item pro-only">
                 <label for="maxTweetsPerScan">Max Tweets pro Scan:</label>
-                <input type="number" id="maxTweetsPerScan" min="5" max="200" value="35" onchange="saveSettings()">
+                <input type="number" id="maxTweetsPerScan" min="1" max="5000" value="35" onchange="saveSettings()">
                 <span class="subtle">Niedriger = unauffälliger + weniger CPU</span>
             </div>
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🔽 Auto-Scroller</h4>
+            <h4 id="groupAutoScroller" style="color: #aaa;">🔽 Auto-Scroller</h4>
             <div class="setting-item">
                 <label for="scrollSpeed">Scroll-Geschwindigkeit (px/s):</label>
-                <input type="number" id="scrollSpeed" value="30" min="10" max="220" onchange="saveSettings()">
+                <input type="number" id="scrollSpeed" value="30" min="1" max="5000" onchange="saveSettings()">
                 <label for="scrollPause">Pause nach Aktivität (ms):</label>
-                <input type="number" id="scrollPause" value="2000" min="500" max="12000" onchange="saveSettings()">
+                <input type="number" id="scrollPause" value="2000" min="0" max="120000" onchange="saveSettings()">
             </div>
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🧠 Smart Filter</h4>
+            <h4 id="groupSmartFilter" style="color: #aaa;">🧠 Smart Filter</h4>
             <div class="setting-item">
                 <input type="checkbox" id="skipRetweets" onchange="saveSettings()">
                 <label for="skipRetweets">Retweets/Reposts ignorieren</label>
@@ -146,32 +209,72 @@
             </div>
         </div>
 
-        <div class="setting-group">
-            <h4 style="color: #aaa;">⚡ Performance & Cache</h4>
+        <div class="setting-group pro-only">
+            <h4 id="groupMonitorTune" style="color: #aaa;">🛰️ Monitor, Auto-Tuning & Dedupe 2.0</h4>
+            <div class="setting-item">
+                <input type="checkbox" id="enableLiveMonitor" onchange="saveSettings()" checked>
+                <label for="enableLiveMonitor">Live Monitor aktiv</label>
+                <span class="subtle">zeigt Scan- und Sync-Status live im Dashboard</span>
+            </div>
+            <div class="setting-item">
+                <input type="checkbox" id="autoTune" onchange="saveSettings()">
+                <label for="autoTune">Smart Auto-Tuning aktiv</label>
+                <label for="autoTuneStrength">Stärke:</label>
+                <input type="number" id="autoTuneStrength" min="1" max="5" value="2" onchange="saveSettings()">
+                <span class="subtle">regelt Scan-Speed dynamisch</span>
+            </div>
+            <div class="setting-item">
+                <input type="checkbox" id="enableDedupePro" onchange="saveSettings()" checked>
+                <label for="enableDedupePro">Duplicate-Engine 2.0 aktiv</label>
+                <span class="subtle">erkennt Duplikate mit Text + Media Fingerprint</span>
+            </div>
+        </div>
+
+        <div class="setting-group pro-only">
+            <h4 id="groupPerformance" style="color: #aaa;">⚡ Performance & Cache</h4>
             <div class="setting-item">
                 <input type="checkbox" id="trimCache" onchange="saveSettings()" checked>
                 <label for="trimCache">Cache automatisch begrenzen</label>
                 <label for="maxCacheTweets">Max Tweets im Cache:</label>
-                <input type="number" id="maxCacheTweets" min="500" max="50000" value="8000" onchange="saveSettings()">
+                <input type="number" id="maxCacheTweets" min="1" max="2000000" value="8000" onchange="saveSettings()">
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="enableRenderLimit" onchange="saveSettings()" checked>
                 <label for="enableRenderLimit">Render-Limit aktiv</label>
                 <label for="renderLimit">Dashboard Render-Limit:</label>
-                <input type="number" id="renderLimit" min="50" max="5000" value="350" onchange="saveSettings()">
+                <input type="number" id="renderLimit" min="1" max="100000" value="350" onchange="saveSettings()">
                 <span class="subtle">Nur letzte N Tweets werden gezeichnet (für flüssige UI)</span>
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="enableZipThrottle" onchange="saveSettings()" checked>
                 <label for="enableZipThrottle">ZIP Throttle aktiv</label>
                 <label for="zipThrottleMs">ZIP Throttle (ms):</label>
-                <input type="number" id="zipThrottleMs" min="0" max="300" value="60" onchange="saveSettings()">
+                <input type="number" id="zipThrottleMs" min="0" max="5000" value="60" onchange="saveSettings()">
                 <span class="subtle">höher = weniger Last, langsamer Export</span>
             </div>
         </div>
 
+        <div class="setting-group pro-only">
+            <h4 id="groupExportPro" style="color: #aaa;">📦 Export Pro (optional)</h4>
+            <div class="setting-item">
+                <input type="checkbox" id="enableExportPro" onchange="saveSettings()">
+                <label for="enableExportPro">Export Pro aktiv</label>
+                <span class="subtle">nur wenn du es einschaltest</span>
+            </div>
+            <div class="setting-item">
+                <input type="checkbox" id="exportFolderByUserDate" onchange="saveSettings()" checked>
+                <label for="exportFolderByUserDate">ZIP-Ordner nach User/Datum strukturieren</label>
+            </div>
+            <div class="setting-item">
+                <input type="checkbox" id="exportMetaJSON" onchange="saveSettings()" checked>
+                <label for="exportMetaJSON">Metadaten als JSON in ZIP</label>
+                <input type="checkbox" id="exportMetaCSV" onchange="saveSettings()">
+                <label for="exportMetaCSV">Metadaten als CSV in ZIP</label>
+            </div>
+        </div>
+
         <div class="setting-group">
-            <h4 style="color: #aaa;">🎨 UI & Bedienung</h4>
+            <h4 id="groupUI" style="color: #aaa;">🎨 UI & Bedienung</h4>
             <div class="setting-item">
                 <input type="checkbox" id="showDlButtons" onchange="saveSettings()" checked>
                 <label for="showDlButtons">Download-Buttons auf Twitter und im Dashboard anzeigen</label>
@@ -182,40 +285,56 @@
             </div>
         </div>
 
-        <p class="warning-inline">Nach Änderungen das Bookmarklet neu in die Leiste ziehen.</p>
+        <p id="settingsReloadNote" class="warning-inline">Nach Änderungen das Bookmarklet neu in die Leiste ziehen.</p>
     </div>
 
-    <div class="generator-box">
-        <h1>⚠️ CleanTwitter v5.3 BETA</h1>
-        <p style="color: #aaa; margin-bottom: 14px;"><strong style="font-size: 1.1em; color: var(--primary);">Anti-Ban Controls + Performance Tuning + Stabilerer Sync</strong></p>
+    <div id="installSection" class="generator-box">
+        <h1 id="installTitle">⚠️ CleanTwitter v5.3 BETA</h1>
         <a id="bookmarkletBtn" class="btn btn-drag" href="javascript:void(0);" draggable="true">⚠️ CleanTwitter v5.3 BETA</a>
         <br><br>
-        <button class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
-        <button class="btn btn-soft" onclick="exportSettings()">💾 Settings exportieren</button>
-        <button class="btn btn-soft" onclick="importSettings()">📥 Settings importieren</button>
-        <button class="btn btn-soft" onclick="dedupeCache()">🧹 Duplikate entfernen</button>
-        <button class="btn btn-soft" onclick="openHelpMenu()">📘 Anleitung / Menü</button>
+        <button id="btnCopyCode" class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
+        <button id="btnExportSettings" class="btn btn-soft" onclick="exportSettings()">💾 Settings exportieren</button>
+        <button id="btnImportSettings" class="btn btn-soft" onclick="importSettings()">📥 Settings importieren</button>
+        <button id="btnDedupe" class="btn btn-soft" onclick="dedupeCache()">🧹 Duplikate entfernen</button>
+        <button id="btnGuideMenu" class="btn btn-soft" onclick="openHelpMenu()">📘 Anleitung / Menü</button>
     </div>
 
-    <div id="viewer">
-        <h2>📦 Gespeicherte Tweets</h2>
+    <div id="monitorSection" class="monitor-panel pro-only">
+        <div class="section-title">
+            <h3 id="monitorTitle" class="monitor-title">🛰️ Live Monitor</h3>
+            <span id="monitorModePill" class="pill pill-ok">Monitor AN</span>
+        </div>
+        <div class="monitor-grid">
+            <div class="monitor-item"><div id="monLblSession" class="monitor-label">Session</div><div id="monSession" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblLastScan" class="monitor-label">Letzter Scan</div><div id="monLastScan" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblNextDelay" class="monitor-label">Next Delay</div><div id="monNextDelay" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblAutoTune" class="monitor-label">Auto-Tune</div><div id="monTune" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblAdded" class="monitor-label">Neue Tweets</div><div id="monAdded" class="monitor-value">0</div></div>
+            <div class="monitor-item"><div id="monLblDupes" class="monitor-label">Duplikate entfernt</div><div id="monDupes" class="monitor-value">0</div></div>
+            <div class="monitor-item"><div id="monLblWrites" class="monitor-label">Cache Writes</div><div id="monWrites" class="monitor-value">0</div></div>
+            <div class="monitor-item"><div id="monLblStatus" class="monitor-label">Status</div><div id="monStatus" class="monitor-value">Idle</div></div>
+        </div>
+    </div>
+
+    <div id="viewerSection">
+        <h2 id="viewerTitle">📦 Gespeicherte Tweets</h2>
         <div class="stats">
-            <div class="stat-item">📦 <span id="countDisplay">0</span> Tweets</div>
-            <div class="stat-item">👁️ <span id="renderedCount">0</span> angezeigt</div>
-            <div class="stat-item">🖼️ <span id="imgCount">0</span> Bilder</div>
-            <div class="stat-item">🎥 <span id="vidCount">0</span> Videos</div>
+            <div class="stat-item">📦 <span id="countDisplay">0</span> <span id="statTweetsLabel">Tweets</span></div>
+            <div class="stat-item">👁️ <span id="renderedCount">0</span> <span id="statShownLabel">angezeigt</span></div>
+            <div class="stat-item">🖼️ <span id="imgCount">0</span> <span id="statImagesLabel">Bilder</span></div>
+            <div class="stat-item">🎥 <span id="vidCount">0</span> <span id="statVideosLabel">Videos</span></div>
             <div class="stat-item" id="sizeInfo" style="background: #333;">💾 <span id="sizeDisplay">0</span> KB</div>
         </div>
         <div style="text-align: center;">
-            <button class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
-            <button class="btn" onclick="downloadZIP()" style="background: #4444ff; color:#fff;">🗂️ ZIP-Export</button>
-            <button class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
+            <button id="btnHtmlArchive" class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
+            <button id="btnZipExport" class="btn" onclick="downloadZIP()" style="background: #4444ff; color:#fff;">🗂️ ZIP-Export</button>
+            <button id="btnClearCache" class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
         </div>
         <p id="renderHint" class="subtle" style="text-align:center;"></p>
         <div id="grid" class="tweet-grid"></div>
         <div id="empty" class="empty-state">
-            <h3>Noch leer hier</h3>
-            <p>Bookmarklet auf Twitter/X starten und Feed laden lassen.</p>
+            <h3 id="emptyTitle">Noch leer hier</h3>
+            <p id="emptyText">Bookmarklet auf Twitter/X starten und Feed laden lassen.</p>
         </div>
     </div>
 
@@ -266,13 +385,79 @@
                     <tr><td>Rate Limit + Pause</td><td>Zwangspause nach X Tweets</td><td class="safe">35-60 / 20000-45000</td><td class="risk">ausgeschaltet</td></tr>
                     <tr><td>Human Break</td><td>Zufällige Zusatzpause</td><td class="safe">AN, 5-12%</td><td class="risk">&gt;25% (zu langsam)</td></tr>
                     <tr><td>Pause on Hidden Tab</td><td>Stoppt Scans im Hintergrund-Tab</td><td class="safe">AN</td><td class="risk">AUS im Dauerbetrieb</td></tr>
+                    <tr><td>Smart Auto-Tuning</td><td>Passt Scan-Tempo dynamisch an</td><td class="safe">Optional AN (Stärke 2-3)</td><td class="risk">Stärke 5 bei schwachen PCs</td></tr>
+                    <tr><td>Dedupe Engine 2.0</td><td>Erkennt Duplikate mit Text+Media Fingerprint</td><td class="safe">AN</td><td class="risk">AUS bei großen Caches</td></tr>
                     <tr><td>Max Tweets per Scan</td><td>Wie viele Tweets pro Scan geprüft werden</td><td class="safe">20-45</td><td class="risk">&gt;80</td></tr>
                     <tr><td>Scroll Speed</td><td>Auto-Scroll Geschwindigkeit</td><td class="safe">20-60</td><td class="risk">&gt;120</td></tr>
                     <tr><td>Trim Cache + Max Cache</td><td>Begrenzt Speicherwachstum</td><td class="safe">AN, 5000-10000</td><td class="risk">AUS bei langen Sessions</td></tr>
                     <tr><td>Render Limit</td><td>Wieviele Karten im Dashboard gezeichnet werden</td><td class="safe">AN + 200-600 oder AUS für alle</td><td class="risk">&gt;1500 auf schwachen PCs</td></tr>
                     <tr><td>ZIP Throttle</td><td>Entlastung beim ZIP Export</td><td class="safe">AN + 40-120 oder AUS für max Speed</td><td class="risk">AUS auf schwachen PCs</td></tr>
+                    <tr><td>Export Pro</td><td>Ordnerstruktur + Meta JSON/CSV im ZIP</td><td class="safe">Optional AN</td><td class="risk">Nicht nötig für kleine Exports</td></tr>
                 </tbody>
             </table>
+
+            <h4 style="margin-top: 14px; color: #f0d778;">Alle Ein/Aus-Schalter (komplett erklärt)</h4>
+            <table class="help-table">
+                <thead>
+                    <tr>
+                        <th>Schalter</th>
+                        <th>Empfehlung</th>
+                        <th>Wann besser AUS?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Stealth Mode</td><td class="safe">AN (Standard)</td><td>Nur für kurze Tests, wenn du feste Intervalle brauchst</td></tr>
+                    <tr><td>Rate Limit Schutz</td><td class="safe">AN</td><td>Nie bei langen Sessions; nur für sehr kurze manuelle Scans</td></tr>
+                    <tr><td>Menschliche Zufallspausen (Human Break)</td><td class="safe">AN</td><td>Wenn dir Geschwindigkeit wichtiger ist als Vorsicht</td></tr>
+                    <tr><td>Pause bei Hidden Tab</td><td class="safe">AN</td><td>Nur wenn du bewusst im Hintergrund sammeln willst</td></tr>
+                    <tr><td>Retweets/Reposts ignorieren</td><td>Optional</td><td>AUS, wenn du wirklich alles speichern willst</td></tr>
+                    <tr><td>Thread-Erkennung</td><td class="safe">AN</td><td>AUS nur wenn du diese Markierung nicht brauchst</td></tr>
+                    <tr><td>Live Monitor</td><td class="safe">AN im Pro-Modus</td><td>AUS im Anfänger-Modus oder wenn du ein cleanes UI willst</td></tr>
+                    <tr><td>Smart Auto-Tuning</td><td>Optional AN</td><td>AUS, wenn du feste manuelle Werte bevorzugst</td></tr>
+                    <tr><td>Duplicate-Engine 2.0</td><td class="safe">AN</td><td>AUS nur bei speziellen Debug-Fällen</td></tr>
+                    <tr><td>Cache automatisch begrenzen</td><td class="safe">AN</td><td>AUS nur wenn du absichtlich unbegrenzt sammeln willst</td></tr>
+                    <tr><td>Render-Limit aktiv</td><td class="safe">AN auf schwachen PCs</td><td>AUS wenn du alle Tweets gleichzeitig sehen willst</td></tr>
+                    <tr><td>ZIP Throttle aktiv</td><td class="safe">AN auf schwachen PCs</td><td>AUS wenn du maximal schnell exportieren willst</td></tr>
+                    <tr><td>Export Pro aktiv</td><td>Optional</td><td>AUS für einfachen Standard-ZIP</td></tr>
+                    <tr><td>Export nach User/Datum strukturieren</td><td class="safe">AN (wenn Export Pro AN)</td><td>AUS wenn du nur einen flachen Ordner willst</td></tr>
+                    <tr><td>Metadaten JSON</td><td class="safe">AN (wenn Export Pro AN)</td><td>AUS nur wenn du keine Metadaten willst</td></tr>
+                    <tr><td>Metadaten CSV</td><td>Optional</td><td>AUS wenn JSON für dich reicht</td></tr>
+                    <tr><td>Speicher-Modus</td><td class="safe">Auto (Desktop nutzt IndexedDB)</td><td>localStorage nur für Legacy/Debug; Mobile ist blockiert</td></tr>
+                    <tr><td>Download-Buttons anzeigen</td><td class="safe">AN</td><td>AUS wenn dich Buttons im Tweet stören</td></tr>
+                    <tr><td>Grünes Infinity-Badge</td><td>Optional</td><td>AUS wenn du den roten Stil bevorzugst</td></tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin-top: 14px; color: #f0d778;">💽 Speicher-Guide: Auto, IndexedDB, localStorage</h4>
+            <table class="help-table">
+                <thead>
+                    <tr>
+                        <th>Modus</th>
+                        <th>Wann nutzen?</th>
+                        <th>Stärken</th>
+                        <th>Nachteile / Hinweis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Auto (empfohlen)</td><td>Für fast alle Desktop-Nutzer</td><td>Wählt automatisch IndexedDB (wenn verfügbar), sonst localStorage</td><td>Beste Standard-Wahl für normale und große Sessions</td></tr>
+                    <tr><td>IndexedDB bevorzugen</td><td>Wenn du sehr große Caches / lange Läufe machst</td><td>Stabiler bei viel Daten, weniger Speicher-Probleme als localStorage</td><td>Auf Mobile blockiert; nur Desktop sinnvoll</td></tr>
+                    <tr><td>Nur localStorage</td><td>Legacy-Browser, Debug, Notfall-Fallback</td><td>Einfach, kompatibel</td><td>Bei sehr großen Caches langsamer/limitiert</td></tr>
+                </tbody>
+            </table>
+            <div class="help-grid" style="margin-top: 8px;">
+                <div class="help-box">
+                    <h4>Welche Auswahl für welchen Anwendungsfall?</h4>
+                    <p>1. Normaler Gebrauch (1k bis 20k Tweets): <strong>Auto</strong></p>
+                    <p>2. Sehr große Archive / Dauerlauf: <strong>IndexedDB bevorzugen</strong></p>
+                    <p>3. Alter Browser / Kompatibilitäts-Test: <strong>Nur localStorage</strong></p>
+                </div>
+                <div class="help-box">
+                    <h4>Wichtig</h4>
+                    <p>Dashboard und Twitter/X laufen auf unterschiedlichen Seiten (Origins).</p>
+                    <p>Darum immer beide Caches korrekt leeren (Twitter Panel + Dashboard).</p>
+                    <p>Mobile Browser sind nur Ansicht: produktiv bitte Desktop nutzen.</p>
+                </div>
+            </div>
 
             <div class="help-grid" style="margin-top: 10px;">
                 <div class="help-box">
@@ -283,10 +468,10 @@
                 </div>
                 <div class="help-box">
                     <h4>Wichtiger Ablauf</h4>
-                    <p>1. Werte ändern</p>
-                    <p>2. Bookmarklet neu in Leiste ziehen</p>
-                    <p>3. Twitter Tab neu laden</p>
-                    <p>4. Dann erst sammeln</p>
+                    <p>1. Oben Modus wählen (v5.2 Anfänger oder v5.3 Pro)</p>
+                    <p>2. Werte ändern</p>
+                    <p>3. Bookmarklet neu in Leiste ziehen</p>
+                    <p>4. Twitter Tab neu laden</p>
                 </div>
             </div>
 
@@ -300,10 +485,100 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         const CACHE_KEY = 'tw_clean_cache';
+        const DELETED_POSTS_KEY = 'ct_deleted_posts_v53';
         const SETTINGS_KEY = 'ct_settings_v53';
-        const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index_v5.3-beta.html';
+        const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index.html';
+        const IDB_DB_NAME = 'ct_v53_cache_db';
+        const IDB_STORE_NAME = 'kv';
+        const IDB_VALUE_KEY = CACHE_KEY;
+        const I18N = {
+            de: {
+                langLabel: 'Sprache',
+                navSettings: '⚙️ Einstellungen',
+                navInstall: '🔖 Bookmarklet',
+                navMonitor: '🛰️ Monitor',
+                navViewer: '📦 Viewer',
+                basicBtn: 'v5.2 benutzen (Anfänger-Modus)',
+                proBtn: 'v5.3 Pro-Modus',
+                modeBasic: 'Aktiv: Anfänger-Modus (v5.2-Stil)',
+                modePro: 'Aktiv: Pro-Modus (v5.3)',
+                monitorOn: 'Monitor AN',
+                monitorOff: 'Monitor AUS',
+                monitorStatusIdle: 'Leerlauf',
+                monitorStatusReady: 'Bereit',
+                monitorStatusLoading: 'Cache geladen',
+                monitorStatusDedupe: 'Cache dedupliziert',
+                monitorStatusImportNone: 'Import ohne neue Tweets',
+                renderHintOff: 'Render-Limit ist AUS: alle Tweets werden angezeigt.',
+                importAdded: (n) => `✅ ${n} neue Tweets importiert`,
+                alertCodeCopied: '✅ Code kopiert!',
+                alertSettingsImported: '✅ Settings importiert',
+                alertInvalidJson: '❌ Ungültige JSON-Datei',
+                alertPresetApplied: '✅ Preset angewendet. Jetzt Bookmarklet neu in die Leiste ziehen.',
+                alertDedupeDone: (n) => `✅ Dedupe fertig: ${n} Duplikate entfernt`,
+                alertCacheEmpty: 'Cache ist leer!',
+                alertZipSuccess: '✅ ZIP-Download erfolgreich!',
+                confirmClearCache: 'Wirklich alle gespeicherten Tweets löschen?\n\nTipp: Vorher ZIP exportieren.',
+                manualCopyCode: 'Code manuell kopieren:',
+                guideCopied: '✅ Anleitung kopiert!',
+                manualCopyGuide: 'Anleitung manuell kopieren:',
+                zipWorking: 'ZIP Export läuft',
+                zipDone: 'ZIP Export fertig',
+                cacheDeleted: 'Cache gelöscht',
+                processingLabel: (a, b) => `Verarbeite... (${a}/${b})`,
+                creatingZip: 'Erstelle ZIP...',
+                bookmarkletStarted: '⚠️ CleanTwitter v5.3 BETA BIG gestartet',
+                cacheLoaded: 'Cache geladen',
+                importPlus: (n) => `Import +${n}`,
+                confirmDeletePost: 'Diesen Post wirklich löschen und vom ZIP-Export ausschließen?',
+                postDeleted: 'Post gelöscht und vom Export ausgeschlossen.'
+            },
+            en: {
+                langLabel: 'Language',
+                navSettings: '⚙️ Settings',
+                navInstall: '🔖 Bookmarklet',
+                navMonitor: '🛰️ Monitor',
+                navViewer: '📦 Viewer',
+                basicBtn: 'Use v5.2 (Beginner mode)',
+                proBtn: 'v5.3 Pro mode',
+                modeBasic: 'Active: Beginner mode (v5.2 style)',
+                modePro: 'Active: Pro mode (v5.3)',
+                monitorOn: 'Monitor ON',
+                monitorOff: 'Monitor OFF',
+                monitorStatusIdle: 'Idle',
+                monitorStatusReady: 'Ready',
+                monitorStatusLoading: 'Cache loaded',
+                monitorStatusDedupe: 'Cache deduped',
+                monitorStatusImportNone: 'Import: no new tweets',
+                renderHintOff: 'Render limit is OFF: all tweets are shown.',
+                importAdded: (n) => `✅ ${n} new tweets imported`,
+                alertCodeCopied: '✅ Code copied!',
+                alertSettingsImported: '✅ Settings imported',
+                alertInvalidJson: '❌ Invalid JSON file',
+                alertPresetApplied: '✅ Preset applied. Re-drag the bookmarklet into your toolbar now.',
+                alertDedupeDone: (n) => `✅ Dedupe done: ${n} duplicates removed`,
+                alertCacheEmpty: 'Cache is empty!',
+                alertZipSuccess: '✅ ZIP download complete!',
+                confirmClearCache: 'Delete all saved tweets?\n\nTip: export ZIP first.',
+                manualCopyCode: 'Copy the code manually:',
+                guideCopied: '✅ Guide copied!',
+                manualCopyGuide: 'Copy the guide manually:',
+                zipWorking: 'ZIP export running',
+                zipDone: 'ZIP export complete',
+                cacheDeleted: 'Cache deleted',
+                processingLabel: (a, b) => `Processing... (${a}/${b})`,
+                creatingZip: 'Creating ZIP...',
+                bookmarkletStarted: '⚠️ CleanTwitter v5.3 BETA BIG started',
+                cacheLoaded: 'Cache loaded',
+                importPlus: (n) => `Import +${n}`,
+                confirmDeletePost: 'Delete this post and exclude it from ZIP export?',
+                postDeleted: 'Post deleted and excluded from export.'
+            }
+        };
 
         const defaultSettings = {
+            language: 'de',
+            uiMode: 'pro',
             stealthMode: true,
             minScanDelay: 2200,
             maxScanDelay: 6500,
@@ -316,19 +591,54 @@
             maxTweetsPerScan: 35,
             skipRetweets: false,
             detectThreads: true,
+            enableLiveMonitor: true,
+            autoTune: false,
+            autoTuneStrength: 2,
+            enableDedupePro: true,
             showDlButtons: true,
             greenBadge: true,
             scrollSpeed: 30,
             scrollPause: 2000,
             trimCache: true,
             maxCacheTweets: 8000,
+            storageMode: 'auto',
             enableRenderLimit: true,
             renderLimit: 350,
             enableZipThrottle: true,
-            zipThrottleMs: 60
+            zipThrottleMs: 60,
+            enableExportPro: false,
+            exportFolderByUserDate: true,
+            exportMetaJSON: true,
+            exportMetaCSV: false
         };
 
         let settings = { ...defaultSettings };
+        const monitorState = {
+            sessionStartedAt: Date.now(),
+            lastScanMs: 0,
+            nextDelayMs: 0,
+            tuneFactor: 1,
+            tuneTweets: 0,
+            added: 0,
+            dupes: 0,
+            writes: 0,
+            status: 'Idle'
+        };
+        const runtimeState = {
+            cache: [],
+            requestedStorage: 'auto',
+            effectiveStorage: 'local',
+            storageReason: 'auto_local',
+            storageMigration: '',
+            idbSupported: false,
+            isMobileUA: false,
+            mobileBlocked: false
+        };
+        let idbDbPromise = null;
+        let cachePersistTimer = null;
+        let cachePersistChain = Promise.resolve();
+        let cachePersistQueued = false;
+        let deletedPostKeys = new Set();
 
         function clamp(n, min, max, fallback) {
             const x = Number(n);
@@ -338,35 +648,47 @@
 
         function sanitizeSettings(raw) {
             const s = { ...defaultSettings, ...(raw || {}) };
+            s.language = s.language === 'en' ? 'en' : 'de';
+            s.uiMode = s.uiMode === 'basic' ? 'basic' : 'pro';
+            s.storageMode = ['auto', 'idb', 'local'].includes(s.storageMode) ? s.storageMode : defaultSettings.storageMode;
             s.stealthMode = !!s.stealthMode;
             s.rateLimit = !!s.rateLimit;
             s.humanBreak = !!s.humanBreak;
             s.pauseOnHiddenTab = !!s.pauseOnHiddenTab;
             s.skipRetweets = !!s.skipRetweets;
             s.detectThreads = !!s.detectThreads;
+            s.enableLiveMonitor = !!s.enableLiveMonitor;
+            s.autoTune = !!s.autoTune;
+            s.enableDedupePro = !!s.enableDedupePro;
             s.showDlButtons = !!s.showDlButtons;
             s.greenBadge = !!s.greenBadge;
             s.trimCache = !!s.trimCache;
             s.enableRenderLimit = !!s.enableRenderLimit;
             s.enableZipThrottle = !!s.enableZipThrottle;
+            s.enableExportPro = !!s.enableExportPro;
+            s.exportFolderByUserDate = !!s.exportFolderByUserDate;
+            s.exportMetaJSON = !!s.exportMetaJSON;
+            s.exportMetaCSV = !!s.exportMetaCSV;
 
-            s.minScanDelay = clamp(s.minScanDelay, 1000, 30000, defaultSettings.minScanDelay);
-            s.maxScanDelay = clamp(s.maxScanDelay, 1000, 45000, defaultSettings.maxScanDelay);
-            if (s.maxScanDelay < s.minScanDelay) s.maxScanDelay = s.minScanDelay;
+            s.minScanDelay = clamp(s.minScanDelay, 100, 300000, defaultSettings.minScanDelay);
+            s.maxScanDelay = clamp(s.maxScanDelay, 100, 300000, defaultSettings.maxScanDelay);
 
-            s.maxTweetsBeforePause = clamp(s.maxTweetsBeforePause, 5, 250, defaultSettings.maxTweetsBeforePause);
-            s.pauseDurationMs = clamp(s.pauseDurationMs, 5000, 240000, defaultSettings.pauseDurationMs);
-            s.humanBreakChance = clamp(s.humanBreakChance, 0, 50, defaultSettings.humanBreakChance);
-            s.maxTweetsPerScan = clamp(s.maxTweetsPerScan, 5, 200, defaultSettings.maxTweetsPerScan);
-            s.scrollSpeed = clamp(s.scrollSpeed, 10, 220, defaultSettings.scrollSpeed);
-            s.scrollPause = clamp(s.scrollPause, 500, 12000, defaultSettings.scrollPause);
-            s.maxCacheTweets = clamp(s.maxCacheTweets, 500, 50000, defaultSettings.maxCacheTweets);
-            s.renderLimit = clamp(s.renderLimit, 50, 5000, defaultSettings.renderLimit);
-            s.zipThrottleMs = clamp(s.zipThrottleMs, 0, 300, defaultSettings.zipThrottleMs);
+            s.maxTweetsBeforePause = clamp(s.maxTweetsBeforePause, 1, 100000, defaultSettings.maxTweetsBeforePause);
+            s.pauseDurationMs = clamp(s.pauseDurationMs, 0, 86400000, defaultSettings.pauseDurationMs);
+            s.humanBreakChance = clamp(s.humanBreakChance, 0, 100, defaultSettings.humanBreakChance);
+            s.maxTweetsPerScan = clamp(s.maxTweetsPerScan, 1, 5000, defaultSettings.maxTweetsPerScan);
+            s.autoTuneStrength = clamp(s.autoTuneStrength, 1, 10, defaultSettings.autoTuneStrength);
+            s.scrollSpeed = clamp(s.scrollSpeed, 1, 5000, defaultSettings.scrollSpeed);
+            s.scrollPause = clamp(s.scrollPause, 0, 120000, defaultSettings.scrollPause);
+            s.maxCacheTweets = clamp(s.maxCacheTweets, 1, 2000000, defaultSettings.maxCacheTweets);
+            s.renderLimit = clamp(s.renderLimit, 1, 100000, defaultSettings.renderLimit);
+            s.zipThrottleMs = clamp(s.zipThrottleMs, 0, 5000, defaultSettings.zipThrottleMs);
             return s;
         }
 
         function applySettingsToUI() {
+            const langSelect = document.getElementById('languageSelect');
+            if (langSelect) langSelect.value = settings.language;
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('minScanDelay').value = settings.minScanDelay;
             document.getElementById('maxScanDelay').value = settings.maxScanDelay;
@@ -383,30 +705,255 @@
 
             document.getElementById('skipRetweets').checked = settings.skipRetweets;
             document.getElementById('detectThreads').checked = settings.detectThreads;
+            document.getElementById('enableLiveMonitor').checked = settings.enableLiveMonitor;
+            document.getElementById('autoTune').checked = settings.autoTune;
+            document.getElementById('autoTuneStrength').value = settings.autoTuneStrength;
+            document.getElementById('enableDedupePro').checked = settings.enableDedupePro;
 
             document.getElementById('trimCache').checked = settings.trimCache;
             document.getElementById('maxCacheTweets').value = settings.maxCacheTweets;
+            document.getElementById('storageMode').value = settings.storageMode;
             document.getElementById('enableRenderLimit').checked = settings.enableRenderLimit;
             document.getElementById('renderLimit').value = settings.renderLimit;
             document.getElementById('enableZipThrottle').checked = settings.enableZipThrottle;
             document.getElementById('zipThrottleMs').value = settings.zipThrottleMs;
+            document.getElementById('enableExportPro').checked = settings.enableExportPro;
+            document.getElementById('exportFolderByUserDate').checked = settings.exportFolderByUserDate;
+            document.getElementById('exportMetaJSON').checked = settings.exportMetaJSON;
+            document.getElementById('exportMetaCSV').checked = settings.exportMetaCSV;
             document.getElementById('renderLimit').disabled = !settings.enableRenderLimit;
             document.getElementById('zipThrottleMs').disabled = !settings.enableZipThrottle;
+            document.getElementById('autoTuneStrength').disabled = !settings.autoTune;
+            document.getElementById('exportFolderByUserDate').disabled = !settings.enableExportPro;
+            document.getElementById('exportMetaJSON').disabled = !settings.enableExportPro;
+            document.getElementById('exportMetaCSV').disabled = !settings.enableExportPro;
 
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
             document.getElementById('greenBadge').checked = settings.greenBadge;
+            applyModeVisibility();
+            applyLanguage();
+            renderStorageStatusText();
+            updateRiskWarningText();
+            updateMonitorView();
         }
 
-        function loadSettings() {
-            const saved = localStorage.getItem(SETTINGS_KEY);
-            settings = sanitizeSettings(saved ? JSON.parse(saved) : defaultSettings);
+        function tr(key) {
+            const dict = I18N[settings.language] || I18N.de;
+            return dict[key] ?? I18N.de[key] ?? key;
+        }
+
+        function setLanguage(lang) {
+            settings.language = lang === 'en' ? 'en' : 'de';
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            applyLanguage();
+            renderStorageStatusText();
+            updateRiskWarningText();
+            renderCompatibility();
+            applyMobileAccessState();
+            updateMonitorView();
+            loadCache();
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = settings.language;
+            const setTxt = (id, value) => {
+                const el = document.getElementById(id);
+                if (el && typeof value === 'string') el.textContent = value;
+            };
+            setTxt('langLabel', tr('langLabel'));
+            setTxt('navSettings', tr('navSettings'));
+            setTxt('navInstall', tr('navInstall'));
+            setTxt('monitorNavLink', tr('navMonitor'));
+            setTxt('navViewer', tr('navViewer'));
+            setTxt('basicModeBtn', tr('basicBtn'));
+            setTxt('proModeBtn', tr('proBtn'));
+
+            setTxt('settingsTitle', settings.language === 'en' ? '⚙️ Settings & Security (v5.3 BETA)' : '⚙️ Einstellungen & Sicherheit (v5.3 BETA)');
+            setTxt('infoCacheTitle', settings.language === 'en' ? '🗑️ How to clear cache correctly' : '🗑️ Cache korrekt leeren');
+            const step1 = document.getElementById('infoCacheStep1');
+            const step2 = document.getElementById('infoCacheStep2');
+            const step3 = document.getElementById('infoCacheStep3');
+            if (step1) step1.innerHTML = settings.language === 'en'
+                ? '1) In the Twitter/X panel click <strong>🗑️ Clear</strong>'
+                : '1) Auf Twitter/X im Panel auf <strong>🗑️ Clear</strong> klicken';
+            if (step2) step2.innerHTML = settings.language === 'en'
+                ? '2) Then in this dashboard click <strong>"Clear cache"</strong>'
+                : '2) Danach hier im Dashboard auf <strong>"Cache leeren"</strong> klicken';
+            if (step3) step3.textContent = settings.language === 'en'
+                ? 'Twitter/X and dashboard use separate storage (cross-origin).'
+                : 'Twitter/X und Dashboard nutzen getrennten Storage (Cross-Origin).';
+
+            setTxt('openHelpBtn', settings.language === 'en' ? '📘 Open Help Menu' : '📘 Hilfe-Menü öffnen');
+            setTxt('copyGuideBtn', settings.language === 'en' ? '📋 Copy Anti-Ban Guide' : '📋 Anti-Ban Anleitung kopieren');
+
+            setTxt('groupAntiBan', settings.language === 'en' ? '🛡️ Anti-ban & scan behavior' : '🛡️ Anti-Ban & Scan-Verhalten');
+            setTxt('groupAutoScroller', settings.language === 'en' ? '🔽 Auto scroller' : '🔽 Auto-Scroller');
+            setTxt('groupSmartFilter', settings.language === 'en' ? '🧠 Smart filter' : '🧠 Smart Filter');
+            setTxt('groupMonitorTune', settings.language === 'en' ? '🛰️ Monitor, auto-tuning & dedupe 2.0' : '🛰️ Monitor, Auto-Tuning & Dedupe 2.0');
+            setTxt('groupPerformance', settings.language === 'en' ? '⚡ Performance & cache' : '⚡ Performance & Cache');
+            setTxt('groupExportPro', settings.language === 'en' ? '📦 Export Pro (optional)' : '📦 Export Pro (optional)');
+            setTxt('groupUI', settings.language === 'en' ? '🎨 UI & controls' : '🎨 UI & Bedienung');
+            setTxt('groupStorage', settings.language === 'en' ? '💽 Storage backend' : '💽 Speicher-Backend');
+            setTxt('storageModeLabel', settings.language === 'en' ? 'Storage mode:' : 'Speicher-Modus:');
+            setTxt('settingsReloadNote', settings.language === 'en' ? 'After changes, re-drag the bookmarklet into the toolbar.' : 'Nach Änderungen das Bookmarklet neu in die Leiste ziehen.');
+            const storageMode = document.getElementById('storageMode');
+            if (storageMode && storageMode.options.length >= 3) {
+                storageMode.options[0].text = settings.language === 'en'
+                    ? 'Auto (Desktop: IndexedDB, fallback: localStorage)'
+                    : 'Auto (Desktop: IndexedDB, Fallback: localStorage)';
+                storageMode.options[1].text = settings.language === 'en'
+                    ? 'Prefer IndexedDB'
+                    : 'IndexedDB bevorzugen';
+                storageMode.options[2].text = settings.language === 'en'
+                    ? 'LocalStorage only (legacy)'
+                    : 'Nur localStorage (legacy)';
+            }
+
+            setTxt('installTitle', '⚠️ CleanTwitter v5.3 BETA');
+            setTxt('bookmarkletBtn', '⚠️ CleanTwitter v5.3 BETA');
+            setTxt('btnCopyCode', settings.language === 'en' ? '📋 Copy code' : '📋 Code kopieren');
+            setTxt('btnExportSettings', settings.language === 'en' ? '💾 Export settings' : '💾 Settings exportieren');
+            setTxt('btnImportSettings', settings.language === 'en' ? '📥 Import settings' : '📥 Settings importieren');
+            setTxt('btnDedupe', settings.language === 'en' ? '🧹 Remove duplicates' : '🧹 Duplikate entfernen');
+            setTxt('btnGuideMenu', settings.language === 'en' ? '📘 Guide / menu' : '📘 Anleitung / Menü');
+
+            setTxt('monitorTitle', settings.language === 'en' ? '🛰️ Live monitor' : '🛰️ Live Monitor');
+            setTxt('monLblSession', settings.language === 'en' ? 'Session' : 'Session');
+            setTxt('monLblLastScan', settings.language === 'en' ? 'Last scan' : 'Letzter Scan');
+            setTxt('monLblNextDelay', settings.language === 'en' ? 'Next delay' : 'Next Delay');
+            setTxt('monLblAutoTune', 'Auto-Tune');
+            setTxt('monLblAdded', settings.language === 'en' ? 'New tweets' : 'Neue Tweets');
+            setTxt('monLblDupes', settings.language === 'en' ? 'Duplicates removed' : 'Duplikate entfernt');
+            setTxt('monLblWrites', settings.language === 'en' ? 'Cache writes' : 'Cache Writes');
+            setTxt('monLblStatus', settings.language === 'en' ? 'Status' : 'Status');
+
+            setTxt('viewerTitle', settings.language === 'en' ? '📦 Saved tweets' : '📦 Gespeicherte Tweets');
+            setTxt('statTweetsLabel', settings.language === 'en' ? 'tweets' : 'Tweets');
+            setTxt('statShownLabel', settings.language === 'en' ? 'shown' : 'angezeigt');
+            setTxt('statImagesLabel', settings.language === 'en' ? 'images' : 'Bilder');
+            setTxt('statVideosLabel', settings.language === 'en' ? 'videos' : 'Videos');
+            setTxt('btnHtmlArchive', settings.language === 'en' ? '📥 HTML archive' : '📥 HTML-Archiv');
+            setTxt('btnZipExport', settings.language === 'en' ? '🗂️ ZIP export' : '🗂️ ZIP-Export');
+            setTxt('btnClearCache', settings.language === 'en' ? '🗑️ Clear cache' : '🗑️ Cache leeren');
+            setTxt('emptyTitle', settings.language === 'en' ? 'No data yet' : 'Noch leer hier');
+            setTxt('emptyText', settings.language === 'en' ? 'Start the bookmarklet on Twitter/X and let the feed load.' : 'Bookmarklet auf Twitter/X starten und Feed laden lassen.');
+
+            const setLabel = (forId, text, html = false) => {
+                const el = document.querySelector(`label[for="${forId}"]`);
+                if (!el) return;
+                if (html) el.innerHTML = text; else el.textContent = text;
+            };
+            setLabel('stealthMode', settings.language === 'en' ? '<strong>Stealth mode:</strong> random scan intervals instead of fixed timing' : '<strong>Stealth Mode:</strong> Zufällige Scan-Intervalle statt fixer Taktung', true);
+            setLabel('rateLimit', settings.language === 'en' ? 'Rate-limit protection enabled' : 'Rate Limit Schutz aktiv');
+            setLabel('maxTweetsBeforePause', settings.language === 'en' ? 'Pause after tweets:' : 'Pause nach Tweets:');
+            setLabel('pauseDurationMs', settings.language === 'en' ? 'Pause (ms):' : 'Pause (ms):');
+            setLabel('humanBreak', settings.language === 'en' ? 'Human-like random breaks enabled' : 'Menschliche Zufallspausen aktiv');
+            setLabel('humanBreakChance', settings.language === 'en' ? 'Chance %:' : 'Chance %:');
+            setLabel('pauseOnHiddenTab', settings.language === 'en' ? 'Pause scans when tab is in background' : 'Scans pausieren, wenn Tab im Hintergrund ist');
+            setLabel('maxTweetsPerScan', settings.language === 'en' ? 'Max tweets per scan:' : 'Max Tweets pro Scan:');
+            setLabel('scrollSpeed', settings.language === 'en' ? 'Scroll speed (px/s):' : 'Scroll-Geschwindigkeit (px/s):');
+            setLabel('scrollPause', settings.language === 'en' ? 'Pause after activity (ms):' : 'Pause nach Aktivität (ms):');
+            setLabel('skipRetweets', settings.language === 'en' ? 'Ignore retweets/reposts' : 'Retweets/Reposts ignorieren');
+            setLabel('detectThreads', settings.language === 'en' ? 'Mark thread detection' : 'Thread-Erkennung markieren');
+            setLabel('enableLiveMonitor', settings.language === 'en' ? 'Live monitor enabled' : 'Live Monitor aktiv');
+            setLabel('autoTune', settings.language === 'en' ? 'Smart auto-tuning enabled' : 'Smart Auto-Tuning aktiv');
+            setLabel('autoTuneStrength', settings.language === 'en' ? 'Strength:' : 'Stärke:');
+            setLabel('enableDedupePro', settings.language === 'en' ? 'Duplicate engine 2.0 enabled' : 'Duplicate-Engine 2.0 aktiv');
+            setLabel('trimCache', settings.language === 'en' ? 'Auto-limit cache size' : 'Cache automatisch begrenzen');
+            setLabel('maxCacheTweets', settings.language === 'en' ? 'Max tweets in cache:' : 'Max Tweets im Cache:');
+            setLabel('enableRenderLimit', settings.language === 'en' ? 'Render limit enabled' : 'Render-Limit aktiv');
+            setLabel('renderLimit', settings.language === 'en' ? 'Dashboard render limit:' : 'Dashboard Render-Limit:');
+            setLabel('enableZipThrottle', settings.language === 'en' ? 'ZIP throttle enabled' : 'ZIP Throttle aktiv');
+            setLabel('zipThrottleMs', settings.language === 'en' ? 'ZIP throttle (ms):' : 'ZIP Throttle (ms):');
+            setLabel('enableExportPro', settings.language === 'en' ? 'Export Pro enabled' : 'Export Pro aktiv');
+            setLabel('exportFolderByUserDate', settings.language === 'en' ? 'Structure ZIP folders by user/date' : 'ZIP-Ordner nach User/Datum strukturieren');
+            setLabel('exportMetaJSON', settings.language === 'en' ? 'Include metadata JSON in ZIP' : 'Metadaten als JSON in ZIP');
+            setLabel('exportMetaCSV', settings.language === 'en' ? 'Include metadata CSV in ZIP' : 'Metadaten als CSV in ZIP');
+            setLabel('showDlButtons', settings.language === 'en' ? 'Show download buttons on Twitter and dashboard' : 'Download-Buttons auf Twitter und im Dashboard anzeigen');
+            setLabel('greenBadge', settings.language === 'en' ? 'Green infinity badge instead of red <span class="badge-preview">♾️ 42</span>' : 'Grünes Infinity-Badge statt rot <span class="badge-preview">♾️ 42</span>', true);
+        }
+
+        function applyModeVisibility() {
+            const isBasic = settings.uiMode === 'basic';
+            document.querySelectorAll('.pro-only').forEach((el) => {
+                el.classList.toggle('basic-hide', isBasic);
+            });
+            const basicBtn = document.getElementById('basicModeBtn');
+            const proBtn = document.getElementById('proModeBtn');
+            const modeLabel = document.getElementById('modeLabel');
+            const monitorNav = document.getElementById('monitorNavLink');
+            if (basicBtn) basicBtn.classList.toggle('active', isBasic);
+            if (proBtn) proBtn.classList.toggle('active', !isBasic);
+            if (modeLabel) modeLabel.innerText = isBasic
+                ? tr('modeBasic')
+                : tr('modePro');
+            if (monitorNav) monitorNav.style.display = isBasic ? 'none' : '';
+        }
+
+        function setUIMode(mode) {
+            if (mode === 'basic') {
+                settings = sanitizeSettings({
+                    ...settings,
+                    uiMode: 'basic',
+                    stealthMode: true,
+                    rateLimit: true,
+                    skipRetweets: false,
+                    detectThreads: true,
+                    showDlButtons: true,
+                    greenBadge: true,
+                    scrollSpeed: 30,
+                    scrollPause: 2000,
+                    minScanDelay: 2000,
+                    maxScanDelay: 6000,
+                    maxTweetsBeforePause: 50,
+                    pauseDurationMs: 30000,
+                    humanBreak: false,
+                    humanBreakChance: 0,
+                    pauseOnHiddenTab: true,
+                    maxTweetsPerScan: 50,
+                    enableLiveMonitor: false,
+                    autoTune: false,
+                    enableDedupePro: false,
+                    trimCache: false,
+                    enableRenderLimit: false,
+                    enableZipThrottle: false,
+                    enableExportPro: false,
+                    exportFolderByUserDate: true,
+                    exportMetaJSON: true,
+                    exportMetaCSV: false
+                });
+            } else {
+                settings = sanitizeSettings({
+                    ...settings,
+                    uiMode: 'pro',
+                    enableLiveMonitor: true,
+                    enableDedupePro: true
+                });
+            }
+
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
             updateBookmarklet();
+            applyMobileAccessState();
+            loadCache();
         }
 
-        function saveSettings() {
+        async function loadSettings() {
+            const saved = localStorage.getItem(SETTINGS_KEY);
+            settings = sanitizeSettings(saved ? JSON.parse(saved) : defaultSettings);
+            loadDeletedPostKeys();
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            applySettingsToUI();
+            await activateStorageBackend({ migrate: true });
+            renderCompatibility();
+            updateBookmarklet();
+            applyMobileAccessState();
+        }
+
+        async function saveSettings() {
+            const prevStorageMode = settings.storageMode;
             settings = sanitizeSettings({
+                language: document.getElementById('languageSelect').value,
                 stealthMode: document.getElementById('stealthMode').checked,
                 minScanDelay: document.getElementById('minScanDelay').value,
                 maxScanDelay: document.getElementById('maxScanDelay').value,
@@ -421,20 +968,431 @@
                 scrollPause: document.getElementById('scrollPause').value,
                 skipRetweets: document.getElementById('skipRetweets').checked,
                 detectThreads: document.getElementById('detectThreads').checked,
+                enableLiveMonitor: document.getElementById('enableLiveMonitor').checked,
+                autoTune: document.getElementById('autoTune').checked,
+                autoTuneStrength: document.getElementById('autoTuneStrength').value,
+                enableDedupePro: document.getElementById('enableDedupePro').checked,
                 trimCache: document.getElementById('trimCache').checked,
                 maxCacheTweets: document.getElementById('maxCacheTweets').value,
+                storageMode: document.getElementById('storageMode').value,
                 enableRenderLimit: document.getElementById('enableRenderLimit').checked,
                 renderLimit: document.getElementById('renderLimit').value,
                 enableZipThrottle: document.getElementById('enableZipThrottle').checked,
                 zipThrottleMs: document.getElementById('zipThrottleMs').value,
+                enableExportPro: document.getElementById('enableExportPro').checked,
+                exportFolderByUserDate: document.getElementById('exportFolderByUserDate').checked,
+                exportMetaJSON: document.getElementById('exportMetaJSON').checked,
+                exportMetaCSV: document.getElementById('exportMetaCSV').checked,
                 showDlButtons: document.getElementById('showDlButtons').checked,
-                greenBadge: document.getElementById('greenBadge').checked
+                greenBadge: document.getElementById('greenBadge').checked,
+                uiMode: settings.uiMode
             });
 
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            if (prevStorageMode !== settings.storageMode) {
+                await activateStorageBackend({ migrate: true });
+            }
             applySettingsToUI();
             updateBookmarklet();
+            applyMobileAccessState();
             loadCache();
+        }
+
+        function isMobileUserAgent() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+        }
+
+        function hasIndexedDBSupport() {
+            try { return typeof indexedDB !== 'undefined' && typeof indexedDB.open === 'function'; }
+            catch { return false; }
+        }
+
+        function safeParseCacheArray(raw) {
+            try {
+                const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function localReadCache() {
+            try { return safeParseCacheArray(localStorage.getItem(CACHE_KEY) || '[]'); }
+            catch { return []; }
+        }
+
+        function localWriteCache(data) {
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify(Array.isArray(data) ? data : [])); }
+            catch {}
+        }
+
+        function localClearCache() {
+            try { localStorage.removeItem(CACHE_KEY); }
+            catch {}
+        }
+
+        function safeParseStringArray(raw) {
+            try {
+                const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                if (!Array.isArray(parsed)) return [];
+                return parsed.map((v) => String(v || '')).filter(Boolean);
+            } catch {
+                return [];
+            }
+        }
+
+        function loadDeletedPostKeys() {
+            try {
+                deletedPostKeys = new Set(safeParseStringArray(localStorage.getItem(DELETED_POSTS_KEY) || '[]'));
+            } catch {
+                deletedPostKeys = new Set();
+            }
+        }
+
+        function persistDeletedPostKeys() {
+            try {
+                localStorage.setItem(DELETED_POSTS_KEY, JSON.stringify(Array.from(deletedPostKeys)));
+            } catch {}
+        }
+
+        function openIndexedDB() {
+            if (idbDbPromise) return idbDbPromise;
+            idbDbPromise = new Promise((resolve, reject) => {
+                try {
+                    const req = indexedDB.open(IDB_DB_NAME, 1);
+                    req.onupgradeneeded = () => {
+                        const db = req.result;
+                        if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+                            db.createObjectStore(IDB_STORE_NAME);
+                        }
+                    };
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error || new Error('idb_open_failed'));
+                } catch (err) {
+                    reject(err);
+                }
+            }).catch((err) => {
+                idbDbPromise = null;
+                throw err;
+            });
+            return idbDbPromise;
+        }
+
+        async function idbReadCache() {
+            const db = await openIndexedDB();
+            const raw = await new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE_NAME, 'readonly');
+                const store = tx.objectStore(IDB_STORE_NAME);
+                const req = store.get(IDB_VALUE_KEY);
+                req.onsuccess = () => resolve(req.result || '[]');
+                req.onerror = () => reject(req.error || new Error('idb_read_failed'));
+            });
+            return safeParseCacheArray(raw);
+        }
+
+        async function idbWriteCache(data) {
+            const db = await openIndexedDB();
+            const payload = JSON.stringify(Array.isArray(data) ? data : []);
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+                const store = tx.objectStore(IDB_STORE_NAME);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error || new Error('idb_write_failed'));
+                tx.onabort = () => reject(tx.error || new Error('idb_abort'));
+                store.put(payload, IDB_VALUE_KEY);
+            });
+        }
+
+        async function idbClearCache() {
+            const db = await openIndexedDB();
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+                const store = tx.objectStore(IDB_STORE_NAME);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error || new Error('idb_delete_failed'));
+                tx.onabort = () => reject(tx.error || new Error('idb_abort'));
+                store.delete(IDB_VALUE_KEY);
+            });
+        }
+
+        function resolveStorageRuntime(storageMode) {
+            const requestedStorage = ['auto', 'idb', 'local'].includes(storageMode) ? storageMode : 'auto';
+            const isMobileUA = isMobileUserAgent();
+            const idbSupported = hasIndexedDBSupport();
+            let effectiveStorage = 'local';
+            let storageReason = 'auto_local';
+
+            if (requestedStorage === 'local') {
+                effectiveStorage = 'local';
+                storageReason = 'forced_local';
+            } else if (isMobileUA) {
+                effectiveStorage = 'local';
+                storageReason = 'mobile_block';
+            } else if (idbSupported) {
+                effectiveStorage = 'idb';
+                storageReason = requestedStorage === 'idb' ? 'forced_idb' : 'auto_idb';
+            } else {
+                effectiveStorage = 'local';
+                storageReason = 'idb_missing';
+            }
+
+            return {
+                requestedStorage,
+                effectiveStorage,
+                storageReason,
+                storageMigration: '',
+                idbSupported,
+                isMobileUA,
+                mobileBlocked: isMobileUA
+            };
+        }
+
+        async function activateStorageBackend(options = {}) {
+            const opts = { migrate: true, ...options };
+            await queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+            Object.assign(runtimeState, resolveStorageRuntime(settings.storageMode));
+
+            let active = [];
+            if (runtimeState.effectiveStorage === 'idb') {
+                try {
+                    active = await idbReadCache();
+                } catch {
+                    runtimeState.effectiveStorage = 'local';
+                    runtimeState.storageReason = 'idb_error';
+                    active = localReadCache();
+                }
+            } else {
+                active = localReadCache();
+            }
+
+            runtimeState.storageMigration = '';
+            if (opts.migrate) {
+                if (runtimeState.effectiveStorage === 'idb') {
+                    const legacy = localReadCache();
+                    if (legacy.length > 0) {
+                        if (active.length === 0) {
+                            active = legacy;
+                            runtimeState.storageMigration = 'local_to_idb';
+                        } else {
+                            const merged = normalizeCache(active.concat(legacy), { trackDupes: false });
+                            if (merged.length !== active.length) {
+                                active = merged;
+                                runtimeState.storageMigration = 'merge_local_idb';
+                            }
+                        }
+                        try { await idbWriteCache(active); } catch {}
+                    }
+                } else if (runtimeState.effectiveStorage === 'local' && runtimeState.idbSupported && !runtimeState.isMobileUA) {
+                    try {
+                        const fromIdb = await idbReadCache();
+                        if (fromIdb.length > 0) {
+                            if (active.length === 0) {
+                                active = fromIdb;
+                                runtimeState.storageMigration = 'idb_to_local';
+                            } else {
+                                const merged = normalizeCache(active.concat(fromIdb), { trackDupes: false });
+                                if (merged.length !== active.length) {
+                                    active = merged;
+                                    runtimeState.storageMigration = 'merge_idb_local';
+                                }
+                            }
+                            localWriteCache(active);
+                        }
+                    } catch {}
+                }
+            }
+
+            runtimeState.cache = normalizeCache(Array.isArray(active) ? active : [], { trackDupes: false });
+            cachePersistQueued = true;
+            await queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+        }
+
+        function renderStorageStatusText() {
+            const el = document.getElementById('storageStatusText');
+            if (!el) return;
+            const req = settings.storageMode || 'auto';
+            const reqTxt = req === 'idb' ? 'IndexedDB' : (req === 'local' ? 'localStorage' : 'Auto');
+            const activeTxt = runtimeState.effectiveStorage === 'idb' ? 'IndexedDB' : 'localStorage';
+            const migrationTxt = runtimeState.storageMigration === 'local_to_idb'
+                ? (settings.language === 'en' ? ' Existing localStorage cache was migrated to IndexedDB.' : ' Vorhandener localStorage-Cache wurde nach IndexedDB migriert.')
+                : runtimeState.storageMigration === 'idb_to_local'
+                    ? (settings.language === 'en' ? ' Existing IndexedDB cache was migrated to localStorage.' : ' Vorhandener IndexedDB-Cache wurde nach localStorage migriert.')
+                    : runtimeState.storageMigration === 'merge_local_idb'
+                        ? (settings.language === 'en' ? ' localStorage + IndexedDB were merged into IndexedDB.' : ' localStorage + IndexedDB wurden in IndexedDB zusammengeführt.')
+                        : runtimeState.storageMigration === 'merge_idb_local'
+                            ? (settings.language === 'en' ? ' IndexedDB + localStorage were merged into localStorage.' : ' IndexedDB + localStorage wurden in localStorage zusammengeführt.')
+                    : '';
+
+            let detail = '';
+            if (runtimeState.storageReason === 'auto_idb') {
+                detail = settings.language === 'en'
+                    ? 'Desktop + IndexedDB support detected.'
+                    : 'Desktop + IndexedDB Unterstützung erkannt.';
+            } else if (runtimeState.storageReason === 'forced_idb') {
+                detail = settings.language === 'en'
+                    ? 'Manual IndexedDB mode active.'
+                    : 'Manueller IndexedDB-Modus aktiv.';
+            } else if (runtimeState.storageReason === 'forced_local') {
+                detail = settings.language === 'en'
+                    ? 'Manual localStorage mode active.'
+                    : 'Manueller localStorage-Modus aktiv.';
+            } else if (runtimeState.storageReason === 'idb_missing') {
+                detail = settings.language === 'en'
+                    ? 'IndexedDB unavailable, using legacy localStorage fallback.'
+                    : 'IndexedDB nicht verfügbar, nutze legacy localStorage Fallback.';
+            } else if (runtimeState.storageReason === 'idb_error') {
+                detail = settings.language === 'en'
+                    ? 'IndexedDB error detected, switched to localStorage fallback.'
+                    : 'IndexedDB-Fehler erkannt, auf localStorage Fallback gewechselt.';
+            } else if (runtimeState.storageReason === 'mobile_block') {
+                detail = settings.language === 'en'
+                    ? 'Mobile device detected: usage is blocked, switch to desktop browser.'
+                    : 'Mobiles Gerät erkannt: Nutzung ist blockiert, bitte Desktop-Browser verwenden.';
+            } else {
+                detail = settings.language === 'en'
+                    ? 'Using localStorage fallback.'
+                    : 'Nutze localStorage Fallback.';
+            }
+
+            el.textContent = settings.language === 'en'
+                ? `Requested: ${reqTxt} | Active: ${activeTxt}. ${detail}${migrationTxt}`
+                : `Gewählt: ${reqTxt} | Aktiv: ${activeTxt}. ${detail}${migrationTxt}`;
+        }
+
+        function updateRiskWarningText() {
+            const el = document.getElementById('riskWarningText');
+            if (!el) return;
+            const warn = [];
+            const en = settings.language === 'en';
+
+            if (settings.minScanDelay < 1500) warn.push(en ? 'Min scan under 1500ms can increase detection risk.' : 'Min Scan unter 1500ms kann das Erkennungsrisiko erhöhen.');
+            if (settings.maxTweetsPerScan > 80) warn.push(en ? 'Max tweets per scan over 80 is aggressive.' : 'Max Tweets pro Scan über 80 ist aggressiv.');
+            if (!settings.rateLimit) warn.push(en ? 'Rate limit is OFF (higher risk in long sessions).' : 'Rate Limit ist AUS (höheres Risiko bei langen Sessions).');
+            if (!settings.stealthMode) warn.push(en ? 'Stealth mode is OFF.' : 'Stealth Mode ist AUS.');
+            if (settings.scrollSpeed > 120) warn.push(en ? 'Scroll speed over 120 can reduce stability.' : 'ScrollSpeed über 120 kann die Stabilität verschlechtern.');
+            if (settings.maxCacheTweets < 500) warn.push(en ? 'Very low max cache can remove old tweets quickly.' : 'Sehr niedriger Max-Cache kann ältere Tweets schnell löschen.');
+            if (settings.maxScanDelay < settings.minScanDelay) warn.push(en ? 'Max scan is lower than min scan. Runtime will auto-use the lower/higher pair.' : 'Max Scan ist kleiner als Min Scan. Runtime nutzt automatisch das kleinere/größere Paar.');
+
+            if (!warn.length) {
+                el.style.display = 'none';
+                el.textContent = '';
+                return;
+            }
+            el.style.display = 'block';
+            el.textContent = (en ? 'Warning: ' : 'Warnung: ') + warn.join(' | ');
+        }
+
+        function applyMobileAccessState() {
+            const blocked = !!runtimeState.mobileBlocked;
+            const controls = document.querySelectorAll('#settingsSection input, #settingsSection select');
+            controls.forEach((el) => {
+                if (el.id === 'languageSelect') return;
+                el.disabled = blocked;
+            });
+
+            [
+                'basicModeBtn',
+                'proModeBtn',
+                'btnCopyCode',
+                'btnExportSettings',
+                'btnImportSettings',
+                'btnDedupe',
+                'btnGuideMenu',
+                'btnHtmlArchive',
+                'btnZipExport',
+                'btnClearCache',
+                'openHelpBtn',
+                'copyGuideBtn'
+            ].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = blocked;
+            });
+
+            const dragBtn = document.getElementById('bookmarkletBtn');
+            if (dragBtn) {
+                if (blocked) {
+                    dragBtn.classList.add('btn-disabled-link');
+                    dragBtn.setAttribute('aria-disabled', 'true');
+                    dragBtn.href = 'javascript:void(0);';
+                } else {
+                    dragBtn.classList.remove('btn-disabled-link');
+                    dragBtn.removeAttribute('aria-disabled');
+                    if (dragBtn.href === 'javascript:void(0);') updateBookmarklet();
+                }
+            }
+        }
+
+        function isUsageBlocked() {
+            return !!runtimeState.mobileBlocked;
+        }
+
+        function showMobileBlockedAlert() {
+            alert(settings.language === 'en'
+                ? 'Mobile mode is blocked and IndexedDB mode is disabled on this device. Please use a desktop PC (Windows 10/11, macOS or Linux) with a supported browser.'
+                : 'Mobile-Nutzung ist blockiert und IndexedDB ist auf diesem Gerät deaktiviert. Bitte nutze einen Desktop-PC (Windows 10/11, macOS oder Linux) mit unterstütztem Browser.');
+        }
+
+        async function persistRuntimeCache() {
+            const data = Array.isArray(runtimeState.cache) ? runtimeState.cache : [];
+            if (runtimeState.effectiveStorage === 'idb') {
+                try {
+                    await idbWriteCache(data);
+                    return;
+                } catch {
+                    runtimeState.effectiveStorage = 'local';
+                    runtimeState.storageReason = 'idb_error';
+                }
+            }
+            localWriteCache(data);
+        }
+
+        function queuePersistRuntimeCache(options = {}) {
+            const opts = { immediate: false, ...options };
+            if (!opts.immediate) {
+                cachePersistQueued = true;
+                if (cachePersistTimer) clearTimeout(cachePersistTimer);
+                cachePersistTimer = setTimeout(() => {
+                    cachePersistTimer = null;
+                    queuePersistRuntimeCache({ immediate: true });
+                }, 120);
+                return cachePersistChain;
+            }
+
+            if (cachePersistTimer) {
+                clearTimeout(cachePersistTimer);
+                cachePersistTimer = null;
+            }
+            if (!cachePersistQueued) return cachePersistChain;
+            cachePersistQueued = false;
+            cachePersistChain = cachePersistChain
+                .catch(() => {})
+                .then(() => persistRuntimeCache())
+                .then(() => {
+                    renderStorageStatusText();
+                    renderCompatibility();
+                });
+            return cachePersistChain;
+        }
+
+        async function clearRuntimeStorage() {
+            if (cachePersistTimer) {
+                clearTimeout(cachePersistTimer);
+                cachePersistTimer = null;
+            }
+            cachePersistQueued = false;
+            await cachePersistChain.catch(() => {});
+            runtimeState.cache = [];
+            localClearCache();
+            if (runtimeState.idbSupported && !runtimeState.isMobileUA) {
+                try {
+                    await idbClearCache();
+                } catch {
+                    if (runtimeState.effectiveStorage === 'idb') {
+                        runtimeState.effectiveStorage = 'local';
+                        runtimeState.storageReason = 'idb_error';
+                    }
+                }
+            }
         }
 
         function getCompatibilityInfo() {
@@ -445,7 +1403,7 @@
                 postMessage: typeof window.postMessage === 'function'
             };
 
-            const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+            const isMobileUA = runtimeState.isMobileUA || isMobileUserAgent();
             return { features, isMobileUA };
         }
 
@@ -453,68 +1411,516 @@
             const compat = getCompatibilityInfo();
             const unsupported = Object.entries(compat.features).filter(([, ok]) => !ok).map(([name]) => name);
             const target = document.getElementById('compatStatus');
-            if (unsupported.length > 0) {
-                target.innerHTML = `<strong class="compat-bad">Kompatibilität:</strong> Fehlende Features: ${unsupported.join(', ')}`;
+            if (!target) return;
+
+            if (unsupported.length > 0 && !runtimeState.mobileBlocked) {
+                target.innerHTML = settings.language === 'en'
+                    ? `<strong class="compat-bad">Compatibility:</strong> Missing features: ${unsupported.join(', ')}`
+                    : `<strong class="compat-bad">Kompatibilität:</strong> Fehlende Features: ${unsupported.join(', ')}`;
                 return;
             }
-            if (compat.isMobileUA) {
-                target.innerHTML = '<strong class="compat-bad">Hinweis:</strong> Mobile Browser sind für Bookmarklets meist eingeschränkt. Desktop empfohlen.';
+
+            if (runtimeState.mobileBlocked) {
+                target.innerHTML = settings.language === 'en'
+                    ? '<strong class="compat-bad">Mobile blocked:</strong> IndexedDB mode is disabled on iPhone Safari / Android browsers. This page is view-only here. Use desktop (Windows 10/11, macOS, Linux) with Chrome, Vivaldi, Edge, Firefox or Safari (macOS).'
+                    : '<strong class="compat-bad">Mobile blockiert:</strong> IndexedDB-Modus ist auf iPhone Safari / Android Browsern deaktiviert. Diese Seite ist hier nur Ansicht. Nutze Desktop (Windows 10/11, macOS, Linux) mit Chrome, Vivaldi, Edge, Firefox oder Safari (macOS).';
                 return;
             }
-            target.innerHTML = '<strong class="compat-ok">Kompatibilität:</strong> Browser erfüllt alle Kernanforderungen für Windows, macOS und Linux Desktop.';
+
+            const storageLine = settings.language === 'en'
+                ? `Storage: requested ${settings.storageMode}, active ${runtimeState.effectiveStorage}.`
+                : `Storage: gewählt ${settings.storageMode}, aktiv ${runtimeState.effectiveStorage}.`;
+            target.innerHTML = settings.language === 'en'
+                ? `<strong class="compat-ok">Compatibility:</strong> Browser meets core requirements for Windows, macOS and Linux desktop.<br><span class="subtle">${storageLine}</span>`
+                : `<strong class="compat-ok">Kompatibilität:</strong> Browser erfüllt alle Kernanforderungen für Windows, macOS und Linux Desktop.<br><span class="subtle">${storageLine}</span>`;
         }
 
         function escapeHtml(text) {
             return (text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
+        function normalizeText(text) {
+            return (text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        }
+
+        function normalizeMediaUrl(url) {
+            if (!url) return '';
+            const noQuery = String(url).split('?')[0];
+            return noQuery.replace(/:[a-z0-9_]+$/i, '');
+        }
+
+        function normalizeTwitterImageUrl(url) {
+            if (!url) return '';
+            const raw = String(url);
+            if (!raw.includes('pbs.twimg.com/media/')) return '';
+            if (/[?&]name=/i.test(raw)) return raw.replace(/([?&])name=[^&]*/i, '$1name=orig');
+            return raw.includes('?') ? `${raw}&name=orig` : `${raw}?name=orig`;
+        }
+
+        function buildTwitterImageCandidates(url) {
+            const raw = String(url || '');
+            if (!raw) return [];
+            if (!raw.includes('pbs.twimg.com/media/')) return [raw];
+            const clean = raw
+                .replace(/([?&])name=[^&]*/ig, '$1')
+                .replace(/[?&]$/, '');
+            const join = (name) => clean.includes('?') ? `${clean}&name=${name}` : `${clean}?name=${name}`;
+            const list = [join('orig'), join('4096x4096'), join('large'), join('medium'), clean];
+            return Array.from(new Set(list.filter(Boolean)));
+        }
+
+        function isLikelyMp4ForDownload(url) {
+            if (!url) return false;
+            const u = String(url);
+            if (u.startsWith('blob:')) return false;
+            if (!/^https?:/i.test(u)) return false;
+            if (/\.m3u8(\?|$)/i.test(u)) return false;
+            return /\.mp4(\?|$)/i.test(u) || u.includes('video.twimg.com');
+        }
+
+        function pickBestMp4Variant(variants) {
+            if (!Array.isArray(variants)) return '';
+            const mp4 = variants.filter(v => v && typeof v.url === 'string' && v.url && String(v.content_type || '').includes('mp4'));
+            if (!mp4.length) return '';
+            mp4.sort((a, b) => (Number(b.bitrate) || 0) - (Number(a.bitrate) || 0));
+            return mp4[0].url || '';
+        }
+
+        function readBestVideoFromMedia(media) {
+            if (!media || typeof media !== 'object') return '';
+            const variants = (media.video_info && media.video_info.variants) || media.variants || [];
+            return pickBestMp4Variant(variants);
+        }
+
+        async function resolveVideoByTweetIdForDashboard(tweetId) {
+            const id = String(tweetId || '').trim();
+            if (!id) return '';
+            try {
+                const token = Math.floor(Math.random() * 1e9);
+                const lang = settings.language === 'en' ? 'en' : 'de';
+                const url = `https://cdn.syndication.twimg.com/tweet-result?id=${encodeURIComponent(id)}&lang=${lang}&token=${token}`;
+                const res = await fetch(url, { method: 'GET', credentials: 'omit', cache: 'no-store' });
+                if (!res.ok) return '';
+                const payload = await res.json();
+
+                if (payload && Array.isArray(payload.mediaDetails)) {
+                    for (const media of payload.mediaDetails) {
+                        const best = readBestVideoFromMedia(media);
+                        if (best) return best;
+                    }
+                }
+                if (payload && payload.video && Array.isArray(payload.video.variants)) {
+                    const best = pickBestMp4Variant(payload.video.variants);
+                    if (best) return best;
+                }
+                if (payload && payload.entities && Array.isArray(payload.entities.media)) {
+                    for (const media of payload.entities.media) {
+                        const best = readBestVideoFromMedia(media);
+                        if (best) return best;
+                    }
+                }
+                return '';
+            } catch {
+                return '';
+            }
+        }
+
+        async function resolveBestVideoUrlForTweet(tweet) {
+            const t = tweet || {};
+            if (isLikelyMp4ForDownload(t.video)) return String(t.video);
+            if (t.tweetId) {
+                const resolved = await resolveVideoByTweetIdForDashboard(t.tweetId);
+                if (resolved) return resolved;
+            }
+            if (typeof t.video === 'string' && /^https?:/i.test(t.video) && !/\.m3u8(\?|$)/i.test(t.video)) {
+                return t.video;
+            }
+            return '';
+        }
+
+        function uniqueDownloadFilename(filename) {
+            const raw = String(filename || 'download.bin');
+            const idx = raw.lastIndexOf('.');
+            const base = (idx > 0 ? raw.slice(0, idx) : raw).replace(/[^\w.-]+/g, '_').slice(0, 96) || 'download';
+            const ext = idx > 0 ? raw.slice(idx) : '';
+            return `${base}_${Date.now()}_${Math.floor(Math.random() * 1000000)}${ext}`;
+        }
+
+        function buildTweetKey(t) {
+            const tid = String(t.tweetId || '').trim();
+            if (tid) return `id:${tid}`;
+            if (!settings.enableDedupePro) {
+                return `${(t.user || '').trim()}|${(t.text || '').trim()}`;
+            }
+            const user = normalizeText(t.user || '');
+            const text = normalizeText(t.text || '').slice(0, 280);
+            const video = normalizeMediaUrl(t.video || t.gif || '');
+            const imgs = Array.isArray(t.imgs) ? t.imgs.map(normalizeMediaUrl).sort().join('|') : normalizeMediaUrl(t.img || '');
+            return `${user}|${text}|${video}|${imgs}`;
+        }
+
+        function buildStableTweetKey(t) {
+            const item = t || {};
+            const tid = String(item.tweetId || '').trim();
+            if (tid) return `id:${tid}`;
+            const user = normalizeText(item.user || '');
+            const text = normalizeText(item.text || '').slice(0, 280);
+            const video = normalizeMediaUrl(item.video || item.gif || '');
+            const imgs = Array.isArray(item.imgs)
+                ? item.imgs.map(normalizeMediaUrl).sort().join('|')
+                : normalizeMediaUrl(item.img || '');
+            const date = Number(item.date) || '';
+            return `${user}|${text}|${video}|${imgs}|${date}`;
+        }
+
+        function isTweetMarkedDeleted(tweet) {
+            const key = buildStableTweetKey(tweet || {});
+            return !!key && deletedPostKeys.has(key);
+        }
+
+        function filterDeletedTweets(data) {
+            if (!Array.isArray(data) || !data.length) return [];
+            return data.filter((tweet) => !isTweetMarkedDeleted(tweet));
+        }
+
+        function sanitizeFileName(name) {
+            return String(name || 'unknown').replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, '_').slice(0, 64);
+        }
+
+        function formatDay(ts) {
+            const d = new Date(ts || Date.now());
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function formatSessionDuration(ms) {
+            const s = Math.max(0, Math.floor(ms / 1000));
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            if (h > 0) return `${h}h ${m}m ${sec}s`;
+            if (m > 0) return `${m}m ${sec}s`;
+            return `${sec}s`;
+        }
+
+        function updateMonitorView() {
+            const panel = document.getElementById('monitorSection');
+            const pill = document.getElementById('monitorModePill');
+            if (!panel || !pill) return;
+            panel.style.display = settings.enableLiveMonitor ? 'block' : 'none';
+            pill.className = `pill ${settings.enableLiveMonitor ? 'pill-ok' : 'pill-warn'}`;
+            pill.innerText = settings.enableLiveMonitor ? tr('monitorOn') : tr('monitorOff');
+            if (!settings.enableLiveMonitor) return;
+
+            document.getElementById('monSession').innerText = formatSessionDuration(Date.now() - monitorState.sessionStartedAt);
+            document.getElementById('monLastScan').innerText = monitorState.lastScanMs ? `${monitorState.lastScanMs} ms` : '-';
+            document.getElementById('monNextDelay').innerText = monitorState.nextDelayMs ? `${monitorState.nextDelayMs} ms` : '-';
+            document.getElementById('monTune').innerText = `x${monitorState.tuneFactor.toFixed(2)} / ${monitorState.tuneTweets}`;
+            document.getElementById('monAdded').innerText = String(monitorState.added);
+            document.getElementById('monDupes').innerText = String(monitorState.dupes);
+            document.getElementById('monWrites').innerText = String(monitorState.writes);
+            document.getElementById('monStatus').innerText = monitorState.status || tr('monitorStatusIdle');
+        }
+
         function updateBookmarklet() {
             const CFG = JSON.stringify(settings);
+            const DASH = JSON.stringify(DASHBOARD_URL);
             const source = `(function(){
                 var C=${CFG};
-                var DASH='${DASHBOARD_URL}';
+                var DASH=${DASH};
                 var KEY='tw_clean_cache';
+                var IDB_DB='ct_v53_cache_db';
+                var IDB_STORE='kv';
+                var MODE=(C.storageMode==='idb'||C.storageMode==='local'||C.storageMode==='auto')?C.storageMode:'auto';
+                var IS_MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+                var CAN_IDB=(typeof indexedDB!=='undefined' && typeof indexedDB.open==='function' && !IS_MOBILE);
+                var STORE=(MODE==='local')?'local':(CAN_IDB?'idb':'local');
+                var cacheMem=[];
+                var idbDbPromise=null;
+                var writeTimer=null;
                 var P,B,AS,CL,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
                 var badgeColor=C.greenBadge?'#0f8':'#f44';
                 var badgeIcon=C.greenBadge?'♾️':'🔴';
+                var L=C.language==='en'?'en':'de';
+                var TT=L==='en'
+                    ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started',mobileBlocked:'Mobile browser detected. Please use desktop (Windows/macOS/Linux).'}
+                    : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet',mobileBlocked:'Mobiler Browser erkannt. Bitte Desktop nutzen (Windows/macOS/Linux).'};
+                var syncWin=null;
+                var dynDelayMul=1;
+                var dynMaxTweets=Math.max(5, C.maxTweetsPerScan||35);
+                var totalAdded=0,totalDupes=0,totalWrites=0,lastScanMs=0,nextDelayMs=0,lastStatusAt=0;
+                var videoByTweetId={};
+                var videoResolveBusy={};
 
                 function now(){return Date.now();}
-                function getCache(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
-                function setCache(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}}
+                function parseCache(v){try{var x=typeof v==='string'?JSON.parse(v):v;return Array.isArray(x)?x:[]}catch(e){return[]}}
+                function lsGet(){try{return parseCache(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+                function lsSet(v){try{localStorage.setItem(KEY,JSON.stringify(Array.isArray(v)?v:[]))}catch(e){}}
+                function openDb(){
+                    if(!CAN_IDB) return Promise.reject(new Error('idb_disabled'));
+                    if(idbDbPromise) return idbDbPromise;
+                    idbDbPromise=new Promise(function(resolve,reject){
+                        try{
+                            var req=indexedDB.open(IDB_DB,1);
+                            req.onupgradeneeded=function(){
+                                var db=req.result;
+                                if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                            };
+                            req.onsuccess=function(){resolve(req.result);};
+                            req.onerror=function(){reject(req.error||new Error('idb_open_failed'));};
+                        }catch(err){reject(err);}
+                    }).catch(function(err){idbDbPromise=null;throw err;});
+                    return idbDbPromise;
+                }
+                function idbGet(){
+                    return openDb().then(function(db){
+                        return new Promise(function(resolve,reject){
+                            var tx=db.transaction(IDB_STORE,'readonly');
+                            var store=tx.objectStore(IDB_STORE);
+                            var req=store.get(KEY);
+                            req.onsuccess=function(){resolve(parseCache(req.result||'[]'));};
+                            req.onerror=function(){reject(req.error||new Error('idb_get_failed'));};
+                        });
+                    });
+                }
+                function idbSet(v){
+                    return openDb().then(function(db){
+                        return new Promise(function(resolve,reject){
+                            var tx=db.transaction(IDB_STORE,'readwrite');
+                            var store=tx.objectStore(IDB_STORE);
+                            tx.oncomplete=function(){resolve();};
+                            tx.onerror=function(){reject(tx.error||new Error('idb_set_failed'));};
+                            tx.onabort=function(){reject(tx.error||new Error('idb_abort'));};
+                            store.put(JSON.stringify(Array.isArray(v)?v:[]),KEY);
+                        });
+                    });
+                }
+                function idbDel(){
+                    return openDb().then(function(db){
+                        return new Promise(function(resolve,reject){
+                            var tx=db.transaction(IDB_STORE,'readwrite');
+                            var store=tx.objectStore(IDB_STORE);
+                            tx.oncomplete=function(){resolve();};
+                            tx.onerror=function(){reject(tx.error||new Error('idb_del_failed'));};
+                            tx.onabort=function(){reject(tx.error||new Error('idb_abort'));};
+                            store.delete(KEY);
+                        });
+                    });
+                }
+                function readCache(){
+                    if(STORE!=='idb') return Promise.resolve(lsGet());
+                    return idbGet().then(function(idbData){
+                        if(Array.isArray(idbData) && idbData.length>0) return idbData;
+                        var legacy=lsGet();
+                        if(legacy.length>0){
+                            return idbSet(legacy).then(function(){return legacy;}).catch(function(){return legacy;});
+                        }
+                        return Array.isArray(idbData)?idbData:[];
+                    }).catch(function(){STORE='local';return lsGet();});
+                }
+                function flushCache(){
+                    if(STORE==='idb'){
+                        return idbSet(cacheMem).catch(function(){STORE='local';lsSet(cacheMem);});
+                    }
+                    lsSet(cacheMem);
+                    return Promise.resolve();
+                }
+                function scheduleFlush(){
+                    if(writeTimer) clearTimeout(writeTimer);
+                    writeTimer=setTimeout(function(){
+                        writeTimer=null;
+                        flushCache();
+                    },80);
+                }
+                function getCache(){return cacheMem;}
+                function setCache(v){cacheMem=Array.isArray(v)?v:[];scheduleFlush();}
+                function clearCacheStore(){
+                    cacheMem=[];
+                    try{localStorage.removeItem(KEY)}catch(e){}
+                    if(CAN_IDB){
+                        return idbDel().catch(function(){STORE='local';});
+                    }
+                    return Promise.resolve();
+                }
+                function normalizeText(v){return (v||'').toLowerCase().replace(/\\s+/g,' ').trim();}
+                function normalizeUrl(u){if(!u)return '';var x=String(u).split('?')[0];return x.replace(/:[a-z0-9_]+$/i,'');}
+                function normalizeTwitterImageUrl(u){
+                    if(!u) return '';
+                    var raw=String(u);
+                    if(raw.indexOf('pbs.twimg.com/media/')<0) return '';
+                    if(raw.indexOf('name=')>=0) return raw.replace(/([?&])name=[^&]*/i,'$1name=orig');
+                    if(raw.indexOf('?')>=0) return raw+'&name=orig';
+                    return raw+'?name=orig';
+                }
+                function extractImageUrls(t){
+                    var nodes=t.querySelectorAll('a[href*="/photo/"] img, img[src*="pbs.twimg.com/media/"]');
+                    var found=[];
+                    for(var i=0;i<nodes.length;i++){
+                        var src=(nodes[i]&&nodes[i].src)?nodes[i].src:'';
+                        var best=normalizeTwitterImageUrl(src);
+                        if(best) found.push(best);
+                    }
+                    var unique=[];var map={};
+                    for(var j=0;j<found.length;j++){
+                        var key=normalizeUrl(found[j]);
+                        if(!key || map[key]) continue;
+                        map[key]=1;
+                        unique.push(found[j]);
+                    }
+                    return unique;
+                }
+                function tweetKey(t){
+                    var tid=String((t&&t.tweetId)||'').trim();
+                    if(tid) return 'id:'+tid;
+                    if(!C.enableDedupePro) return ((t.user||'').trim()+'|'+(t.text||'').trim());
+                    var user=normalizeText(t.user||'');
+                    var text=normalizeText(t.text||'').slice(0,280);
+                    var video=normalizeUrl(t.video||t.gif||'');
+                    var imgs=(t.imgs&&t.imgs.length)?t.imgs.map(normalizeUrl).sort().join('|'):normalizeUrl(t.img||'');
+                    return user+'|'+text+'|'+video+'|'+imgs;
+                }
+                function patchResolvedVideo(tweetId,videoUrl){
+                    if(!tweetId || !videoUrl) return;
+                    var cache=getCache();
+                    var changed=false;
+                    for(var i=0;i<cache.length;i++){
+                        var it=cache[i]||{};
+                        if(it.tweetId===tweetId && it.video!==videoUrl){
+                            it.video=videoUrl;
+                            changed=true;
+                        }
+                    }
+                    if(changed){
+                        cache=dedupe(trim(cache));
+                        setCache(cache);
+                        totalWrites++;
+                        upd();
+                        emitStatus(true);
+                    }
+                }
                 function dedupe(cache){
-                    var out=[];var map=new Set();
+                    var out=[];var map=new Set();var removed=0;
                     for(var i=0;i<cache.length;i++){
                         var t=cache[i]||{};
-                        var k=(t.user||'')+'|'+(t.text||'').slice(0,120)+'|'+(t.video||'')+'|'+((t.imgs||[]).join(','));
-                        if(!map.has(k)){map.add(k);out.push(t)}
+                        var k=tweetKey(t);
+                        if(map.has(k)){removed++;continue;}
+                        map.add(k);out.push(t);
                     }
+                    totalDupes += removed;
                     return out;
                 }
                 function trim(cache){
                     if(C.trimCache && cache.length > C.maxCacheTweets){
+                        var removed=cache.length-C.maxCacheTweets;
+                        totalDupes += removed;
                         cache = cache.slice(cache.length - C.maxCacheTweets);
                     }
                     return cache;
                 }
+                function emitStatus(force){
+                    if(!C.enableLiveMonitor || !syncWin || syncWin.closed) return;
+                    if(!force && now()-lastStatusAt<1200) return;
+                    lastStatusAt=now();
+                    var payload={type:'ct_status',data:{
+                        cacheSize:getCache().length,
+                        scanCount:scanCount,
+                        pausedUntil:pausedUntil,
+                        nextDelay:nextDelayMs,
+                        dynDelayMul:dynDelayMul,
+                        dynMaxTweets:dynMaxTweets,
+                        totalAdded:totalAdded,
+                        totalDupes:totalDupes,
+                        cacheWrites:totalWrites,
+                        lastScanMs:lastScanMs,
+                        status:(pausedUntil>now()?TT.paused:TT.active),
+                        ts:Date.now()
+                    }};
+                    try{syncWin.postMessage(payload,'*')}catch(e){}
+                }
                 function upd(txt){
                     var c=getCache();
-                    if(B) B.innerText = txt || (pausedUntil>now() ? '⏸️ Pause' : badgeIcon + ' ' + c.length);
+                    if(B) B.innerText = txt || (pausedUntil>now() ? TT.pause : badgeIcon + ' ' + c.length);
                 }
                 function getVideoSrc(t){
                     var v=t.querySelector('video');
                     if(!v) return null;
+                    if(v.currentSrc) return v.currentSrc;
                     if(v.src) return v.src;
                     var s=v.querySelector('source');
                     if(s && s.src) return s.src;
                     return null;
                 }
+                function getTweetId(t){
+                    var links=t.querySelectorAll('a[href*="/status/"]');
+                    for(var i=0;i<links.length;i++){
+                        var href=links[i].getAttribute('href')||links[i].href||'';
+                        var m=String(href).match(/\\/status\\/(\\d+)/);
+                        if(m && m[1]) return m[1];
+                    }
+                    return '';
+                }
+                function isLikelyMp4Url(url){
+                    if(!url) return false;
+                    var u=String(url);
+                    if(u.indexOf('blob:')===0) return false;
+                    if(!/^https?:/i.test(u)) return false;
+                    if(/\\.m3u8(\\?|$)/i.test(u)) return false;
+                    return /\\.mp4(\\?|$)/i.test(u) || u.indexOf('video.twimg.com')>=0;
+                }
+                function pickBestMp4(variants){
+                    if(!Array.isArray(variants)) return '';
+                    var mp4=variants.filter(function(v){
+                        return v && typeof v.url==='string' && v.url && String(v.content_type||'').indexOf('mp4')>=0;
+                    });
+                    if(!mp4.length) return '';
+                    mp4.sort(function(a,b){ return (Number(b.bitrate)||0)-(Number(a.bitrate)||0); });
+                    return mp4[0].url||'';
+                }
+                function readBestFromMediaObj(m){
+                    if(!m) return '';
+                    var list=(m.video_info&&m.video_info.variants)||m.variants||[];
+                    return pickBestMp4(list);
+                }
+                function resolveVideoByTweetId(tweetId){
+                    if(!tweetId) return Promise.resolve('');
+                    var token=Math.floor(Math.random()*1e9);
+                    var url='https://cdn.syndication.twimg.com/tweet-result?id='+encodeURIComponent(tweetId)+'&lang='+(L==='en'?'en':'de')+'&token='+token;
+                    return fetch(url,{method:'GET',credentials:'omit',cache:'no-store'})
+                        .then(function(r){ if(!r.ok) throw new Error('http_'+r.status); return r.json(); })
+                        .then(function(p){
+                            var best='';
+                            if(p && Array.isArray(p.mediaDetails)){
+                                for(var i=0;i<p.mediaDetails.length;i++){
+                                    best = readBestFromMediaObj(p.mediaDetails[i]) || best;
+                                    if(best) return best;
+                                }
+                            }
+                            if(p && p.video && Array.isArray(p.video.variants)){
+                                best = pickBestMp4(p.video.variants) || best;
+                                if(best) return best;
+                            }
+                            if(p && p.entities && Array.isArray(p.entities.media)){
+                                for(var j=0;j<p.entities.media.length;j++){
+                                    best = readBestFromMediaObj(p.entities.media[j]) || best;
+                                    if(best) return best;
+                                }
+                            }
+                            return best||'';
+                        })
+                        .catch(function(){ return ''; });
+                }
                 function dlMedia(url,name){
-                    fetch(url).then(function(r){return r.blob()}).then(function(blob){
+                    return fetch(url).then(function(r){
+                        if(!r.ok) throw new Error('http_'+r.status);
+                        return r.blob();
+                    }).then(function(blob){
                         var a=document.createElement('a');
                         a.href=URL.createObjectURL(blob);
                         a.download=name;
                         a.click();
-                    }).catch(function(){});
+                    });
                 }
                 function addDL(){
                     if(!C.showDlButtons) return;
@@ -522,16 +1928,43 @@
                     list.forEach(function(t){
                         if(t.dataset.ctDl) return;
                         t.dataset.ctDl='1';
-                        var imgs=t.querySelectorAll('img[src*="media"]');
+                        var imgUrls=extractImageUrls(t);
                         var vidSrc=getVideoSrc(t);
-                        if(!(imgs.length>0 || vidSrc)) return;
+                        if(!(imgUrls.length>0 || vidSrc)) return;
                         var btn=document.createElement('button');
                         btn.innerText='💾';
                         btn.style.cssText='position:absolute!important;top:6px!important;left:6px!important;z-index:9999!important;background:rgba(0,0,0,0.65)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important';
                         btn.onclick=function(e){
                             e.preventDefault();e.stopPropagation();
-                            if(vidSrc) dlMedia(vidSrc,'video_'+Date.now()+'.mp4');
-                            else imgs.forEach(function(img,i){dlMedia(img.src,'img_'+Date.now()+'_'+i+'.jpg')});
+                            var currentVid=getVideoSrc(t) || vidSrc;
+                            var tweetId=getTweetId(t);
+                            var seed=(tweetId||String(Date.now()))+'_'+Math.floor(Math.random()*100000);
+                            var saveImages=function(){
+                                var latest=extractImageUrls(t);
+                                var target=latest.length?latest:imgUrls;
+                                target.forEach(function(src,i){ dlMedia(src,'img_'+seed+'_'+i+'.jpg').catch(function(){}); });
+                            };
+                            var saveVideo=function(url){
+                                if(!url){ saveImages(); return; }
+                                dlMedia(url,'video_'+seed+'.mp4').catch(function(){
+                                    try{ window.open(url,'_blank','noopener,noreferrer'); }catch(e){}
+                                    saveImages();
+                                });
+                            };
+                            if(currentVid && isLikelyMp4Url(currentVid)){
+                                saveVideo(currentVid);
+                                return;
+                            }
+                            if(tweetId){
+                                resolveVideoByTweetId(tweetId).then(function(resolved){
+                                    if(resolved) { saveVideo(resolved); return; }
+                                    if(currentVid && /^https?:/i.test(currentVid) && !/\\.m3u8(\\?|$)/i.test(currentVid)) { saveVideo(currentVid); return; }
+                                    saveImages();
+                                });
+                                return;
+                            }
+                            if(currentVid && /^https?:/i.test(currentVid) && !/\\.m3u8(\\?|$)/i.test(currentVid)) { saveVideo(currentVid); return; }
+                            saveImages();
                         };
                         t.style.position='relative';
                         t.appendChild(btn);
@@ -550,36 +1983,40 @@
                     b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:'+badgeColor+'!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:80px!important;';
 
                     var view=document.createElement('button');
-                    view.innerText='👀 View';
+                    view.innerText=TT.view;
                     view.style.cssText='all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     view.onclick=function(){
-                        var cache=getCache();
-                        var w=window.open(DASH,'ct_dashboard');
-                        upd('⏳ Sync');
+                        var cache=getCache().slice();
+                        syncWin=window.open(DASH,'ct_dashboard');
+                        upd(TT.sync);
                         var tries=0;
                         var timer=setInterval(function(){
-                            if(w) w.postMessage({type:'import_tweets',data:cache},'*');
+                            if(syncWin) syncWin.postMessage({type:'import_tweets',data:cache},'*');
+                            emitStatus(true);
                             tries++;
                             if(tries>10){clearInterval(timer);upd();}
                         },550);
                     };
 
                     var clear=document.createElement('button');
-                    clear.innerText='🗑️ Clear';
+                    clear.innerText=TT.clear;
                     clear.style.cssText='all:initial!important;background:#ff4444!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     clear.onclick=function(){
-                        if(confirm('Twitter/X Cache löschen?')){
-                            localStorage.removeItem(KEY);
-                            seen.clear();
-                            scanCount=0;
-                            upd('✅ 0');
-                            setTimeout(function(){upd();},900);
+                        if(confirm(TT.clearConfirm)){
+                            clearCacheStore().finally(function(){
+                                seen.clear();
+                                scanCount=0;
+                                totalWrites++;
+                                upd('✅ 0');
+                                emitStatus(true);
+                                setTimeout(function(){upd();},900);
+                            });
                         }
                     };
 
                     var sc=document.createElement('button');
                     sc.id='ct-as';
-                    sc.innerText='🔽 Scroll';
+                    sc.innerText=TT.scroll;
                     sc.style.cssText='all:initial!important;background:#888!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     sc.onclick=function(){if(isScrolling) stopScroll(); else startScroll();};
 
@@ -591,7 +2028,7 @@
                 function startScroll(){
                     if(scrollTimer) return;
                     isScrolling=true;
-                    if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText='⏸️ Stop';}
+                    if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText=TT.stop;}
                     scrollTimer=setInterval(function(){
                         if(!isScrolling) return;
                         if(pausedUntil>now()) return;
@@ -601,7 +2038,7 @@
                 function stopScroll(){
                     isScrolling=false;
                     if(scrollTimer){clearInterval(scrollTimer);scrollTimer=null;}
-                    if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText='🔽 Scroll';}
+                    if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText=TT.scroll;}
                 }
                 function markActivity(){lastActivity=now();if(isScrolling) stopScroll();}
 
@@ -612,10 +2049,15 @@
                 window.addEventListener('message',function(e){
                     if(!e || !e.data) return;
                     if(e.data.type==='CMD_CLEAR_CACHE'){
-                        localStorage.removeItem(KEY);
-                        seen.clear();
-                        scanCount=0;
-                        upd('✅ 0');
+                        clearCacheStore().finally(function(){
+                            seen.clear();
+                            scanCount=0;
+                            totalWrites++;
+                            upd('✅ 0');
+                            emitStatus(true);
+                        });
+                    } else if(e.data.type==='CMD_PING_STATUS'){
+                        emitStatus(true);
                     }
                 });
 
@@ -624,74 +2066,182 @@
                     return txt.indexOf('reposted')>=0 || txt.indexOf('retweeted')>=0 || txt.indexOf('retweet')>=0;
                 }
 
-                function scan(){
-                    if(C.pauseOnHiddenTab && document.hidden){ scheduleScan(1500); return; }
-                    if(pausedUntil > now()){ upd(); scheduleScan(1000); return; }
+                function maybeAutoTune(scanMs,added,processed){
+                    if(!C.autoTune) return;
+                    var st=Math.max(1,Math.min(5,Number(C.autoTuneStrength||2)));
+                    if(scanMs>1200 || processed>=dynMaxTweets){
+                        dynDelayMul=Math.min(2.8,dynDelayMul+0.03*st);
+                        dynMaxTweets=Math.max(10,dynMaxTweets-st);
+                    } else if(added>0 && scanMs<650){
+                        dynDelayMul=Math.max(1,dynDelayMul-0.02*st);
+                        dynMaxTweets=Math.min(C.maxTweetsPerScan,dynMaxTweets+1);
+                    } else if(added===0 && processed>25){
+                        dynDelayMul=Math.min(2.4,dynDelayMul+0.01*st);
+                    }
+                }
 
+                function calcDelay(){
+                    var base;
+                    var minDelay=Number(C.minScanDelay); if(!isFinite(minDelay)) minDelay=2200;
+                    var maxDelay=Number(C.maxScanDelay); if(!isFinite(maxDelay)) maxDelay=6500;
+                    var low=Math.min(minDelay,maxDelay);
+                    var high=Math.max(minDelay,maxDelay);
+                    if(C.stealthMode) base=Math.floor(Math.random()*(high-low+1))+low;
+                    else base=low;
+                    if(C.autoTune) base=Math.floor(base*dynDelayMul);
+                    nextDelayMs=Math.max(100,Math.min(300000,base));
+                    return nextDelayMs;
+                }
+                function scheduleScan(forceDelay){
+                    var d=(typeof forceDelay==='number')?forceDelay:calcDelay();
+                    nextDelayMs=d;
+                    setTimeout(scan, Math.max(100,d));
+                }
+
+                function scan(){
+                    if(C.pauseOnHiddenTab && document.hidden){ scheduleScan(1500); emitStatus(false); return; }
+                    if(pausedUntil > now()){ upd(); scheduleScan(1000); emitStatus(false); return; }
+
+                    var started=now();
                     var tweets=document.querySelectorAll('article[data-testid="tweet"]');
                     var cache=getCache();
-                    var added=0;
-                    var seenThisScan=0;
+                    var keySet=new Set();
+                    var byTweetId={};
+                    for(var ci=0;ci<cache.length;ci++){
+                        var existingItem=cache[ci]||{};
+                        keySet.add(tweetKey(existingItem));
+                        if(existingItem.tweetId) byTweetId[String(existingItem.tweetId)]=existingItem;
+                    }
+                    var added=0, updatedThis=0, dupThis=0, seenThisScan=0;
+                    var limit=C.autoTune?dynMaxTweets:C.maxTweetsPerScan;
 
                     for(var i=0;i<tweets.length;i++){
-                        if(seenThisScan >= C.maxTweetsPerScan) break;
+                        if(seenThisScan >= limit) break;
                         var t=tweets[i];
                         if(C.skipRetweets && isLikelyRetweet(t)) continue;
 
                         var txtEl=t.querySelector('[data-testid="tweetText"]');
                         var userEl=t.querySelector('[data-testid="User-Name"]');
-                        var imgs=Array.from(t.querySelectorAll('img[src*="media"]'));
-                        var vidSrc=getVideoSrc(t);
-                        if(!(userEl && (txtEl || imgs.length>0 || vidSrc))) continue;
+                        var tweetId=getTweetId(t);
+                        var imgSrcs=extractImageUrls(t);
+                        var rawVid=getVideoSrc(t);
+                        var hasVideoElement=!!t.querySelector('video');
+                        var vidSrc='';
+                        if(rawVid && isLikelyMp4Url(rawVid)) vidSrc=rawVid;
+                        if(!vidSrc && tweetId && videoByTweetId[tweetId]) vidSrc=videoByTweetId[tweetId];
+                        if(!(userEl && (txtEl || imgSrcs.length>0 || rawVid || hasVideoElement || vidSrc))) continue;
 
                         var text=txtEl ? txtEl.innerText : '';
-                        var user=userEl.innerText.split('\n')[0];
-                        var id=user+'|'+text.substring(0,80)+'|'+(vidSrc||'')+'|'+imgs.length;
+                        var user=userEl.innerText.split('\\n')[0];
+                        var id=tweetKey({tweetId:tweetId,user:user,text:text,video:vidSrc,imgs:imgSrcs});
                         seenThisScan++;
+                        var existingById=(tweetId && byTweetId[String(tweetId)]) ? byTweetId[String(tweetId)] : null;
 
-                        if(seen.has(id)) continue;
-                        seen.add(id);
+                        if(existingById){
+                            var changed=false;
+                            if(user && (!existingById.user || String(existingById.user)!==String(user))){
+                                existingById.user=user; changed=true;
+                            }
+                            if(text && (!existingById.text || String(text).length > String(existingById.text||'').length)){
+                                existingById.text=text; changed=true;
+                            }
+                            if(imgSrcs.length){
+                                var prevImgs=Array.isArray(existingById.imgs)?existingById.imgs:[];
+                                var mapImgs={};
+                                var mergedImgs=[];
+                                for(var pi=0;pi<prevImgs.length;pi++){
+                                    var pv=prevImgs[pi];
+                                    var pk=normalizeUrl(pv);
+                                    if(pk && !mapImgs[pk]){ mapImgs[pk]=1; mergedImgs.push(pv); }
+                                }
+                                for(var ni=0;ni<imgSrcs.length;ni++){
+                                    var nv=imgSrcs[ni];
+                                    var nk=normalizeUrl(nv);
+                                    if(nk && !mapImgs[nk]){ mapImgs[nk]=1; mergedImgs.push(nv); changed=true; }
+                                }
+                                if(mergedImgs.length) existingById.imgs=mergedImgs;
+                            }
+                            if(vidSrc && existingById.video!==vidSrc){
+                                existingById.video=vidSrc; changed=true;
+                            }
+                            if(C.detectThreads && ((document.title||'').toLowerCase().indexOf('thread')>=0) && !existingById.isThread){
+                                existingById.isThread=true; changed=true;
+                            }
+                            if((rawVid || hasVideoElement) && tweetId && !videoByTweetId[tweetId] && !videoResolveBusy[tweetId]){
+                                (function(tid){
+                                    videoResolveBusy[tid]=1;
+                                    resolveVideoByTweetId(tid).then(function(resolved){
+                                        if(resolved){
+                                            videoByTweetId[tid]=resolved;
+                                            patchResolvedVideo(tid,resolved);
+                                        }
+                                    }).finally(function(){
+                                        delete videoResolveBusy[tid];
+                                    });
+                                })(tweetId);
+                            }
+                            if(changed) updatedThis++;
+                            continue;
+                        }
 
-                        var exists=cache.some(function(x){return x.text===text && x.user===user});
-                        if(exists) continue;
+                        if(!tweetId){
+                            if(seen.has(id)){dupThis++;continue;}
+                            seen.add(id);
+                        }
+                        if(keySet.has(id)){dupThis++;continue;}
+                        keySet.add(id);
 
                         var item={user:user,text:text,date:Date.now()};
+                        if(tweetId) item.tweetId=tweetId;
                         if(vidSrc) item.video=vidSrc;
-                        else if(imgs.length>0) item.imgs=imgs.map(function(im){return im.src});
+                        if(imgSrcs.length>0) item.imgs=imgSrcs;
                         if(C.detectThreads && ((document.title||'').toLowerCase().indexOf('thread')>=0)) item.isThread=true;
-
                         cache.push(item);
+                        if(tweetId) byTweetId[String(tweetId)]=item;
+                        if((rawVid || hasVideoElement) && tweetId && !videoByTweetId[tweetId] && !videoResolveBusy[tweetId]){
+                            (function(tid){
+                                videoResolveBusy[tid]=1;
+                                resolveVideoByTweetId(tid).then(function(resolved){
+                                    if(resolved){
+                                        videoByTweetId[tid]=resolved;
+                                        patchResolvedVideo(tid,resolved);
+                                    }
+                                }).finally(function(){
+                                    delete videoResolveBusy[tid];
+                                });
+                            })(tweetId);
+                        }
                         added++;
                         scanCount++;
                     }
 
-                    if(added>0){
-                        cache = dedupe(trim(cache));
+                    if(added>0 || updatedThis>0 || dupThis>0){
+                        var before=cache.length;
+                        cache=dedupe(trim(cache));
                         setCache(cache);
+                        totalWrites++;
+                        if(before>cache.length) totalDupes += (before-cache.length);
                         if(B){B.style.borderColor='#0f8'; setTimeout(function(){B.style.borderColor='#333';},450);}
                     }
+                    if(added>0) totalAdded += added;
+                    if(dupThis>0) totalDupes += dupThis;
+
+                    lastScanMs=now()-started;
+                    maybeAutoTune(lastScanMs,added,seenThisScan);
                     upd();
 
                     if(C.rateLimit && scanCount >= C.maxTweetsBeforePause){
                         pausedUntil = now() + C.pauseDurationMs;
                         scanCount = 0;
-                        upd('⏸️ Limit');
+                        upd(TT.limit);
                     } else if(C.humanBreak && Math.random()*100 < C.humanBreakChance){
                         var extra = 30000 + Math.floor(Math.random() * 70000);
                         pausedUntil = now() + extra;
-                        upd('☕ Break');
+                        upd(TT.break);
                     }
 
+                    emitStatus(false);
                     scheduleScan();
-                }
-
-                function scheduleScan(forceDelay){
-                    var delay = forceDelay;
-                    if(typeof delay!=='number'){
-                        if(C.stealthMode) delay = Math.floor(Math.random() * (C.maxScanDelay - C.minScanDelay + 1)) + C.minScanDelay;
-                        else delay = C.minScanDelay;
-                    }
-                    setTimeout(scan, Math.max(400, delay));
                 }
 
                 function ensurePanel(){
@@ -702,24 +2252,43 @@
                     }
                 }
 
-                ensurePanel();
-                addDL();
-                scan();
-                setInterval(ensurePanel, 2200);
-                setInterval(addDL, 2100);
-                alert('⚠️ CleanTwitter v5.3 BETA gestartet');
+                function startAll(){
+                    ensurePanel();
+                    addDL();
+                    scan();
+                    setInterval(ensurePanel, 2200);
+                    setInterval(addDL, 2100);
+                    setInterval(function(){emitStatus(false);}, 5000);
+                    alert(TT.started);
+                }
+                if(IS_MOBILE){
+                    alert(TT.mobileBlocked);
+                    return;
+                }
+                readCache().then(function(initial){
+                    cacheMem=Array.isArray(initial)?initial:[];
+                    startAll();
+                }).catch(function(){
+                    STORE='local';
+                    cacheMem=lsGet();
+                    startAll();
+                });
             })();`;
 
             document.getElementById('bookmarkletBtn').href = `javascript:${source.replace(/\n\s+/g, ' ')}`;
         }
 
         function copyCode() {
-            const txt = document.getElementById('bookmarkletBtn').href;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(txt).then(() => alert('✅ Code kopiert!')).catch(() => prompt('Kopiere den Code manuell:', txt));
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
                 return;
             }
-            prompt('Kopiere den Code manuell:', txt);
+            const txt = document.getElementById('bookmarkletBtn').href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt).then(() => alert(tr('alertCodeCopied'))).catch(() => prompt(tr('manualCopyCode'), txt));
+                return;
+            }
+            prompt(tr('manualCopyCode'), txt);
         }
 
         function openHelpMenu() {
@@ -732,8 +2301,47 @@
         }
 
         function getSafetyGuideText() {
+            if (settings.language === 'en') {
+                return [
+                    'CleanTwitter v5.3 - Anti-ban quick guide',
+                    '',
+                    'Mode at the top:',
+                    '- Use v5.2 = Beginner mode (simple)',
+                    '- v5.3 Pro mode = all settings',
+                    '',
+                    'Safe start:',
+                    '- Stealth: ON',
+                    '- Min/Max scan: 2200/6500 ms',
+                    '- Rate limit: ON, 45 tweets, 30000 ms pause',
+                    '- Human break: ON, 8%',
+                    '- Pause on hidden tab: ON',
+                    '- Max tweets/scan: 35',
+                    '',
+                    'Optional to disable:',
+                    '- Render limit: OFF = show all tweets',
+                    '- ZIP throttle: OFF = no throttling, faster but higher load',
+                    '- Live monitor: OFF = no runtime panel',
+                    '- Export Pro: OFF = standard ZIP export',
+                    '- Auto-tuning: OFF = only fixed values from settings',
+                    '',
+                    'Storage mode (important):',
+                    '- Auto = best default (Desktop prefers IndexedDB)',
+                    '- Prefer IndexedDB = for very large runs',
+                    '- LocalStorage only = legacy/debug fallback',
+                    '',
+                    'Do not be too aggressive:',
+                    '- Min scan not below 1500 ms',
+                    '- Max tweets/scan not above 80',
+                    '- Scroll speed not above 120',
+                    '- Do not disable rate limit for long sessions'
+                ].join('\n');
+            }
             return [
                 'CleanTwitter v5.3 - Anti-Ban Kurzguide',
+                '',
+                'Moduswahl oben:',
+                '- v5.2 benutzen = Anfänger-Modus (einfach)',
+                '- v5.3 Pro-Modus = alle Einstellungen',
                 '',
                 'Sicherer Start:',
                 '- Stealth: AN',
@@ -746,25 +2354,37 @@
                 'Optional komplett ausschaltbar:',
                 '- Render-Limit: AUS = zeigt alle Tweets (wie altes v5 Verhalten)',
                 '- ZIP Throttle: AUS = keine Drossel, schneller aber mehr Last',
+                '- Live Monitor: AUS = kein Runtime-Panel',
+                '- Export Pro: AUS = normaler ZIP Export',
+                '- Auto-Tuning: AUS = feste Werte nur aus Settings',
+                '',
+                'Speicher-Modus (wichtig):',
+                '- Auto = beste Standardwahl (Desktop bevorzugt IndexedDB)',
+                '- IndexedDB bevorzugen = für sehr große Läufe',
+                '- Nur localStorage = Legacy/Debug-Fallback',
                 '',
                 'Nicht zu aggressiv:',
                 '- Min Scan nicht unter 1500 ms',
                 '- Max Tweets/Scan nicht über 80',
                 '- ScrollSpeed nicht über 120',
                 '- RateLimit nicht ausschalten bei Dauerlauf'
-            ].join('\\n');
+            ].join('\n');
         }
 
         function copySafetyGuide() {
             const txt = getSafetyGuideText();
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(txt).then(() => alert('✅ Anleitung kopiert!')).catch(() => prompt('Kopiere die Anleitung manuell:', txt));
+                navigator.clipboard.writeText(txt).then(() => alert(tr('guideCopied'))).catch(() => prompt(tr('manualCopyGuide'), txt));
                 return;
             }
-            prompt('Kopiere die Anleitung manuell:', txt);
+            prompt(tr('manualCopyGuide'), txt);
         }
 
         function applyPreset(mode) {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const next = { ...settings };
             if (mode === 'safe') {
                 Object.assign(next, {
@@ -772,8 +2392,10 @@
                     rateLimit: true, maxTweetsBeforePause: 38, pauseDurationMs: 38000,
                     humanBreak: true, humanBreakChance: 10, pauseOnHiddenTab: true,
                     maxTweetsPerScan: 25, scrollSpeed: 24, scrollPause: 2500,
+                    enableLiveMonitor: true, autoTune: true, autoTuneStrength: 2, enableDedupePro: true,
                     trimCache: true, maxCacheTweets: 7000, enableRenderLimit: true,
-                    renderLimit: 260, enableZipThrottle: true, zipThrottleMs: 100
+                    renderLimit: 260, enableZipThrottle: true, zipThrottleMs: 100,
+                    enableExportPro: false, exportFolderByUserDate: true, exportMetaJSON: true, exportMetaCSV: false
                 });
             } else if (mode === 'balanced') {
                 Object.assign(next, {
@@ -781,8 +2403,10 @@
                     rateLimit: true, maxTweetsBeforePause: 45, pauseDurationMs: 30000,
                     humanBreak: true, humanBreakChance: 8, pauseOnHiddenTab: true,
                     maxTweetsPerScan: 35, scrollSpeed: 30, scrollPause: 2000,
+                    enableLiveMonitor: true, autoTune: false, autoTuneStrength: 2, enableDedupePro: true,
                     trimCache: true, maxCacheTweets: 8000, enableRenderLimit: true,
-                    renderLimit: 350, enableZipThrottle: true, zipThrottleMs: 60
+                    renderLimit: 350, enableZipThrottle: true, zipThrottleMs: 60,
+                    enableExportPro: false, exportFolderByUserDate: true, exportMetaJSON: true, exportMetaCSV: false
                 });
             } else if (mode === 'fast') {
                 Object.assign(next, {
@@ -790,8 +2414,10 @@
                     rateLimit: true, maxTweetsBeforePause: 60, pauseDurationMs: 25000,
                     humanBreak: true, humanBreakChance: 5, pauseOnHiddenTab: true,
                     maxTweetsPerScan: 55, scrollSpeed: 48, scrollPause: 1800,
+                    enableLiveMonitor: true, autoTune: true, autoTuneStrength: 3, enableDedupePro: true,
                     trimCache: true, maxCacheTweets: 10000, enableRenderLimit: true,
-                    renderLimit: 450, enableZipThrottle: true, zipThrottleMs: 40
+                    renderLimit: 450, enableZipThrottle: true, zipThrottleMs: 40,
+                    enableExportPro: false, exportFolderByUserDate: true, exportMetaJSON: true, exportMetaCSV: false
                 });
             }
 
@@ -799,11 +2425,16 @@
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
             updateBookmarklet();
+            applyMobileAccessState();
             loadCache();
-            alert('✅ Preset angewendet. Jetzt Bookmarklet neu in die Leiste ziehen.');
+            alert(tr('alertPresetApplied'));
         }
 
         function exportSettings() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -811,169 +2442,355 @@
             a.click();
         }
 
+        function parseMaybeJsonObject(value) {
+            if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+            if (typeof value !== 'string') return null;
+            const txt = value.trim();
+            if (!txt) return null;
+            try {
+                const parsed = JSON.parse(txt);
+                return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function extractImportSettingsPayload(parsed) {
+            const root = parseMaybeJsonObject(parsed);
+            if (!root) throw new Error('invalid_root');
+
+            const candidates = [
+                root[SETTINGS_KEY],
+                root.settings,
+                root.config,
+                root.preferences,
+                root.payload,
+                root.data,
+                root.ct_settings_v53,
+                root.ctSettings
+            ];
+            for (const item of candidates) {
+                const obj = parseMaybeJsonObject(item);
+                if (obj) return obj;
+            }
+            return root;
+        }
+
         function importSettings() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'application/json,.json';
+            input.accept = '.json,application/json,text/json,text/plain';
             input.onchange = () => {
                 const f = input.files && input.files[0];
                 if (!f) return;
                 const r = new FileReader();
-                r.onload = () => {
+                r.onload = async () => {
                     try {
-                        const parsed = JSON.parse(String(r.result || '{}'));
-                        settings = sanitizeSettings(parsed);
+                        const rawText = String(r.result || '').replace(/^\uFEFF/, '').trim();
+                        if (!rawText) throw new Error('empty_import');
+                        const parsed = JSON.parse(rawText);
+                        const payload = extractImportSettingsPayload(parsed);
+                        settings = sanitizeSettings({ ...settings, ...payload });
                         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
                         applySettingsToUI();
+                        await activateStorageBackend({ migrate: true }).catch(() => {});
                         updateBookmarklet();
+                        applyMobileAccessState();
                         loadCache();
-                        alert('✅ Settings importiert');
+                        alert(tr('alertSettingsImported'));
                     } catch {
-                        alert('❌ Ungültige JSON-Datei');
+                        alert(tr('alertInvalidJson'));
                     }
                 };
+                r.onerror = () => alert(tr('alertInvalidJson'));
                 r.readAsText(f);
             };
             input.click();
         }
 
         function getCache() {
-            try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); }
-            catch { return []; }
+            return Array.isArray(runtimeState.cache) ? runtimeState.cache : [];
         }
 
-        function setCache(data) {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        function setCache(data, options = {}) {
+            runtimeState.cache = Array.isArray(data) ? data : [];
+            cachePersistQueued = true;
+            queuePersistRuntimeCache(options).catch(() => {});
         }
 
-        function normalizeCache(data) {
+        function normalizeCache(data, options = {}) {
+            const opts = { trackDupes: true, ...options };
             const map = new Set();
             const out = [];
+            let removed = 0;
             for (const t of data) {
-                const key = `${t.user || ''}|${(t.text || '').slice(0, 120)}|${t.video || ''}|${(t.imgs || []).join(',')}`;
-                if (map.has(key)) continue;
+                const key = buildTweetKey(t || {});
+                if (map.has(key)) {
+                    removed++;
+                    continue;
+                }
                 map.add(key);
                 out.push(t);
             }
             if (settings.trimCache && out.length > settings.maxCacheTweets) {
-                return out.slice(out.length - settings.maxCacheTweets);
+                const trimmed = out.slice(out.length - settings.maxCacheTweets);
+                removed += out.length - trimmed.length;
+                if (opts.trackDupes) monitorState.dupes += Math.max(0, removed);
+                return trimmed;
             }
+            if (opts.trackDupes) monitorState.dupes += Math.max(0, removed);
             return out;
         }
 
         function dedupeCache() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const c = getCache();
             const before = c.length;
             const after = normalizeCache(c);
             setCache(after);
+            monitorState.writes++;
+            monitorState.status = tr('monitorStatusDedupe');
+            updateMonitorView();
             loadCache();
-            alert(`✅ Dedupe fertig: ${before - after.length} Duplikate entfernt`);
+            alert(tr('alertDedupeDone')(before - after.length));
+        }
+
+        function deleteTweetByKey(deleteKey) {
+            const key = String(deleteKey || '').trim();
+            if (!key) return;
+            if (!confirm(tr('confirmDeletePost'))) return;
+
+            deletedPostKeys.add(key);
+            persistDeletedPostKeys();
+
+            const current = getCache();
+            const filtered = current.filter((tweet) => buildStableTweetKey(tweet || {}) !== key);
+            if (filtered.length !== current.length) {
+                setCache(normalizeCache(filtered, { trackDupes: false }), { immediate: true });
+                monitorState.writes++;
+            }
+            monitorState.status = tr('postDeleted');
+            updateMonitorView();
+            loadCache();
+        }
+
+        function deleteTweetFromEncoded(encodedKey) {
+            try {
+                const key = decodeURIComponent(String(encodedKey || ''));
+                deleteTweetByKey(key);
+            } catch {}
         }
 
         function downloadMedia(url, filename) {
-            fetch(url)
+            if (!url) return Promise.resolve(false);
+            return fetch(url)
                 .then(res => res.blob())
                 .then(blob => {
                     const a = document.createElement('a');
                     a.href = URL.createObjectURL(blob);
-                    a.download = filename;
+                    a.download = uniqueDownloadFilename(filename);
                     a.click();
+                    return true;
                 })
-                .catch(() => {});
+                .catch(() => false);
         }
 
         function downloadGallery(urls) {
             if (!urls || urls.length === 0) return;
             urls.forEach((url, i) => {
                 setTimeout(() => {
-                    const ext = url.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                    downloadMedia(url, `image_${Date.now()}_${i}.${ext}`);
+                    const src = normalizeTwitterImageUrl(url) || url;
+                    const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                    downloadMedia(src, `image_${Date.now()}_${i}.${ext}`);
                 }, i * 280);
             });
         }
 
+        function downloadGalleryFromEncoded(encodedJson) {
+            try {
+                const urls = JSON.parse(decodeURIComponent(encodedJson));
+                downloadGallery(Array.isArray(urls) ? urls : []);
+            } catch {}
+        }
+
+        async function downloadTweetVideoFromEncoded(encodedTweet) {
+            try {
+                const tweet = JSON.parse(decodeURIComponent(encodedTweet));
+                const bestUrl = await resolveBestVideoUrlForTweet(tweet);
+                if (!bestUrl) return;
+                await downloadMedia(bestUrl, `video_${tweet.tweetId || Date.now()}.mp4`);
+            } catch {}
+        }
+
         async function downloadZIP() {
-            const data = getCache();
-            if (!data.length) return alert('Cache ist leer!');
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
+            const data = filterDeletedTweets(getCache());
+            if (!data.length) return alert(tr('alertCacheEmpty'));
 
             const zip = new JSZip();
-            const imgFolder = zip.folder('images');
-            const vidFolder = zip.folder('videos');
             const status = document.getElementById('loadingStatus');
             document.getElementById('loadingOverlay').style.display = 'flex';
+            monitorState.status = tr('zipWorking');
+            updateMonitorView();
 
             let total = 0;
-            data.forEach(t => { if (t.imgs) total += t.imgs.length; else if (t.img || t.video) total++; });
+            data.forEach(t => {
+                if (Array.isArray(t.imgs) && t.imgs.length) total += t.imgs.length;
+                else if (t.img) total += 1;
+                if (t.video) total += 1;
+            });
 
             let processed = 0, imgIdx = 1, vidIdx = 1;
             const throttle = settings.enableZipThrottle ? settings.zipThrottleMs : 0;
+            const exportPro = settings.enableExportPro;
+            const metadata = [];
+            let cacheUpdated = false;
+
+            const putFile = async (tweet, type, src, blob, index) => {
+                const extMatch = src.match(/\.(jpg|jpeg|png|webp|mp4)/i);
+                const ext = extMatch ? extMatch[1].toLowerCase() : (type === 'video' ? 'mp4' : 'jpg');
+                const base = type === 'video' ? `video_${index}` : `image_${index}`;
+                const filename = `${base}.${ext}`;
+                if (!exportPro) {
+                    const folder = type === 'video' ? zip.folder('videos') : zip.folder('images');
+                    folder.file(filename, blob);
+                    return { path: `${type === 'video' ? 'videos' : 'images'}/${filename}`, filename };
+                }
+
+                const user = sanitizeFileName(tweet.user || 'unknown_user');
+                const day = formatDay(tweet.date);
+                const folderPrefix = settings.exportFolderByUserDate ? `${user}/${day}` : 'all';
+                const mediaFolder = type === 'video' ? 'videos' : 'images';
+                const fullPath = `${folderPrefix}/${mediaFolder}/${filename}`;
+                zip.file(fullPath, blob);
+                return { path: fullPath, filename };
+            };
+
+            const pushMeta = (tweet, type, src, saved) => {
+                if (!exportPro) return;
+                metadata.push({
+                    user: tweet.user || '',
+                    date: new Date(tweet.date || Date.now()).toISOString(),
+                    text: tweet.text || '',
+                    type,
+                    source: src,
+                    file: saved.path
+                });
+            };
 
             for (const t of data) {
                 try {
-                    if (t.imgs && t.imgs.length) {
-                        for (const src of t.imgs) {
+                    const imageList = [];
+                    if (Array.isArray(t.imgs) && t.imgs.length) imageList.push(...t.imgs);
+                    else if (t.img) imageList.push(t.img);
+
+                    for (const srcRaw of imageList) {
+                        const src = normalizeTwitterImageUrl(srcRaw) || srcRaw;
+                        try {
+                            const r = await fetch(src);
+                            if (r.ok) {
+                                const b = await r.blob();
+                                const saved = await putFile(t, 'image', src, b, imgIdx++);
+                                pushMeta(t, 'image', src, saved);
+                            }
+                        } catch {}
+                        processed++;
+                        status.innerText = tr('processingLabel')(processed, total);
+                        if (throttle > 0) await new Promise(r => setTimeout(r, throttle));
+                    }
+
+                    if (t.video) {
+                        const bestVideo = await resolveBestVideoUrlForTweet(t);
+                        if (bestVideo) {
+                            if (bestVideo !== t.video) {
+                                t.video = bestVideo;
+                                cacheUpdated = true;
+                            }
                             try {
-                                const r = await fetch(src);
+                                const r = await fetch(bestVideo);
                                 if (r.ok) {
                                     const b = await r.blob();
-                                    const ext = src.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                    imgFolder.file(`image_${imgIdx++}.${ext}`, b);
+                                    const saved = await putFile(t, 'video', bestVideo, b, vidIdx++);
+                                    pushMeta(t, 'video', bestVideo, saved);
                                 }
                             } catch {}
-                            processed++;
-                            status.innerText = `Verarbeite... (${processed}/${total})`;
-                            if (throttle > 0) await new Promise(r => setTimeout(r, throttle));
                         }
-                    } else if (t.img) {
-                        try {
-                            const r = await fetch(t.img);
-                            if (r.ok) {
-                                const b = await r.blob();
-                                const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                                imgFolder.file(`image_${imgIdx++}.${ext}`, b);
-                            }
-                        } catch {}
                         processed++;
-                    } else if (t.video) {
-                        try {
-                            const r = await fetch(t.video);
-                            if (r.ok) {
-                                const b = await r.blob();
-                                vidFolder.file(`video_${vidIdx++}.mp4`, b);
-                            }
-                        } catch {}
-                        processed++;
+                        status.innerText = tr('processingLabel')(processed, total);
+                        if (throttle > 0) await new Promise(r => setTimeout(r, throttle));
                     }
 
                     if (processed % 20 === 0) {
-                        status.innerText = `Verarbeite... (${processed}/${total})`;
+                        status.innerText = tr('processingLabel')(processed, total);
                         await new Promise(r => setTimeout(r, 80));
                     }
                 } catch {}
             }
 
-            status.innerText = 'Erstelle ZIP...';
+            if (cacheUpdated) {
+                setCache(getCache(), { immediate: true });
+            }
+
+            if (exportPro) {
+                if (settings.exportMetaJSON) {
+                    zip.file('metadata/media.json', JSON.stringify(metadata, null, 2));
+                }
+                if (settings.exportMetaCSV) {
+                    const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+                    const header = ['user', 'date', 'type', 'source', 'file', 'text'].map(esc).join(',');
+                    const rows = metadata.map(m => [m.user, m.date, m.type, m.source, m.file, m.text].map(esc).join(','));
+                    zip.file('metadata/media.csv', [header, ...rows].join('\n'));
+                }
+            }
+
+            status.innerText = tr('creatingZip');
             const content = await zip.generateAsync({ type: 'blob' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(content);
-            a.download = `twitter_media_v53_${Date.now()}.zip`;
+            a.download = exportPro ? `twitter_media_v53_pro_${Date.now()}.zip` : `twitter_media_v53_${Date.now()}.zip`;
             a.click();
             document.getElementById('loadingOverlay').style.display = 'none';
-            alert('✅ ZIP-Download erfolgreich!');
+            monitorState.status = tr('zipDone');
+            updateMonitorView();
+            alert(tr('alertZipSuccess'));
         }
 
-        function clearCache() {
-            if (!confirm('Wirklich alle gespeicherten Tweets löschen?\n\nTipp: Vorher ZIP exportieren.')) return;
-            localStorage.removeItem(CACHE_KEY);
+        async function clearCache() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
+            if (!confirm(tr('confirmClearCache'))) return;
+            await clearRuntimeStorage();
+            deletedPostKeys = new Set();
+            persistDeletedPostKeys();
             if (window.opener) {
                 try { window.opener.postMessage({ type: 'CMD_CLEAR_CACHE' }, '*'); } catch {}
             }
+            monitorState.writes++;
+            monitorState.status = tr('cacheDeleted');
+            renderStorageStatusText();
+            renderCompatibility();
             loadCache();
         }
 
         function downloadArchive() {
-            const data = getCache();
-            if (!data.length) return alert('Cache ist leer!');
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
+            const data = filterDeletedTweets(getCache());
+            if (!data.length) return alert(tr('alertCacheEmpty'));
 
             let html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv</title><style>body{font-family:system-ui;background:#eee;padding:20px;max-width:860px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}</style></head><body>';
             html += `<h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
@@ -982,9 +2799,12 @@
                 const safeUser = escapeHtml(t.user || '');
                 const safeText = escapeHtml(t.text || '').replace(/\n/g, '<br>');
                 let media = '';
-                if (t.video) media = `<video src="${t.video}" controls></video>`;
-                else if (t.imgs?.length) media = `<div class="grid">${t.imgs.map(s => `<img src="${s}">`).join('')}</div>`;
-                else if (t.img) media = `<img src="${t.img}">`;
+                if (t.video) media += `<video src="${t.video}" controls></video>`;
+                if (t.imgs?.length) {
+                    media += `<div class="grid">${t.imgs.map(s => `<img src="${normalizeTwitterImageUrl(s) || s}">`).join('')}</div>`;
+                } else if (t.img) {
+                    media += `<img src="${normalizeTwitterImageUrl(t.img) || t.img}">`;
+                }
                 html += `<div class="card"><div>👤 ${safeUser} • ${new Date(t.date).toLocaleString()}</div><div>${safeText}</div>${media}</div>`;
             }
             html += '</body></html>';
@@ -996,20 +2816,72 @@
             a.click();
         }
 
-        function loadCache() {
-            const raw = localStorage.getItem(CACHE_KEY);
-            const data = raw ? JSON.parse(raw) : [];
-            const normalized = normalizeCache(data);
-            if (normalized.length !== data.length) setCache(normalized);
+        function attachViewerMediaFallbacks() {
+            document.querySelectorAll('.tweet-card').forEach((card) => {
+                const tweetId = String(card.dataset.tweetId || '').trim();
+                const fallbackText = settings.language === 'en'
+                    ? '⚠️ Media could not be loaded in viewer.'
+                    : '⚠️ Media konnte im Viewer nicht geladen werden.';
 
-            const cache = normalized;
+                card.querySelectorAll('img[data-media-src]').forEach((img) => {
+                    const src = img.getAttribute('data-media-src') || img.getAttribute('src') || '';
+                    const candidates = buildTwitterImageCandidates(src);
+                    if (!candidates.length) return;
+                    let idx = candidates.findIndex((x) => x === img.getAttribute('src'));
+                    if (idx < 0) idx = 0;
+                    img.addEventListener('error', () => {
+                        idx += 1;
+                        if (idx < candidates.length) {
+                            img.setAttribute('src', candidates[idx]);
+                            return;
+                        }
+                        img.style.display = 'none';
+                    });
+                });
+
+                const video = card.querySelector('video.tweet-video');
+                if (!video) return;
+                let triedResolve = false;
+                video.addEventListener('error', async () => {
+                    if (!triedResolve) {
+                        triedResolve = true;
+                        const resolved = await resolveBestVideoUrlForTweet({ tweetId, video: video.currentSrc || video.src });
+                        if (resolved && resolved !== video.getAttribute('src')) {
+                            video.setAttribute('src', resolved);
+                            video.load();
+                            return;
+                        }
+                    }
+                    video.style.display = 'none';
+                    let msg = card.querySelector('.media-fallback-text');
+                    if (!msg) {
+                        msg = document.createElement('div');
+                        msg.className = 'subtle media-fallback-text';
+                        msg.style.marginTop = '8px';
+                        card.appendChild(msg);
+                    }
+                    msg.textContent = fallbackText;
+                });
+            });
+        }
+
+        function loadCache() {
+            const current = getCache();
+            const normalized = normalizeCache(Array.isArray(current) ? current : [], { trackDupes: false });
+            const filtered = filterDeletedTweets(normalized);
+            if (filtered.length !== current.length || normalized.length !== current.length) {
+                setCache(filtered);
+                monitorState.writes++;
+            }
+
+            const cache = filtered;
             const grid = document.getElementById('grid');
             const empty = document.getElementById('empty');
             const renderHint = document.getElementById('renderHint');
 
             document.getElementById('countDisplay').innerText = cache.length;
 
-            const sizeKB = Math.round(new Blob([JSON.stringify(cache)]).size / 1024);
+            const sizeKB = Math.round((JSON.stringify(cache).length * 2) / 1024);
             document.getElementById('sizeDisplay').innerText = sizeKB;
             const sizeInfo = document.getElementById('sizeInfo');
             if (sizeKB > 5000) {
@@ -1044,8 +2916,12 @@
             document.getElementById('renderedCount').innerText = visible.length;
             const hidden = cache.length - visible.length;
             renderHint.innerText = settings.enableRenderLimit
-                ? (hidden > 0 ? `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).` : '')
-                : 'Render-Limit ist AUS: alle Tweets werden angezeigt.';
+                ? (hidden > 0
+                    ? (settings.language === 'en'
+                        ? `Performance mode: ${hidden} older tweets not rendered (still in cache).`
+                        : `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).`)
+                    : '')
+                : tr('renderHintOff');
 
             const frag = document.createDocumentFragment();
             visible.forEach((t, idx) => {
@@ -1054,61 +2930,159 @@
 
                 const safeText = escapeHtml(t.text || '');
                 const safeUser = escapeHtml(t.user || '');
+                const deleteKey = buildStableTweetKey(t || {});
+                const encodedDeleteKey = encodeURIComponent(deleteKey);
 
                 let mediaHTML = '', badge = '', dlBtn = '';
-                if (t.video) {
-                    mediaHTML = `<video src="${t.video}" class="tweet-video" controls preload="metadata"></video>`;
-                    badge = '<div class="media-badge">🎥 VIDEO</div>';
-                    dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.video}','video_${idx}.mp4')">💾 Video</button>`;
-                } else if (t.imgs && t.imgs.length > 0) {
-                    mediaHTML = '<div class="img-grid">' + t.imgs.map(src => `<img src="${src}" loading="lazy">`).join('') + '</div>';
-                    badge = `<div class="media-badge">🖼️ ${t.imgs.length} IMGS</div>`;
-                    dlBtn = `<button class="tweet-dl-btn" onclick="downloadGallery(['${t.imgs.join("','")}'])">💾 Alle ${t.imgs.length} Bilder</button>`;
-                } else if (t.img) {
-                    mediaHTML = `<img src="${t.img}" class="tweet-img" loading="lazy">`;
-                    badge = '<div class="media-badge">🖼️ IMG</div>';
-                    const ext = t.img.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
-                    dlBtn = `<button class="tweet-dl-btn" onclick="downloadMedia('${t.img}','image_${idx}.${ext}')">💾 Bild</button>`;
+                const badgeParts = [];
+                const dlParts = [];
+                if (t.tweetId) card.dataset.tweetId = String(t.tweetId);
+
+                const videoCandidate = t.video ? String(t.video) : '';
+                const safeVideoSrc = videoCandidate && isLikelyMp4ForDownload(videoCandidate) ? videoCandidate : '';
+                if (safeVideoSrc) {
+                    mediaHTML += `<video src="${escapeHtml(safeVideoSrc)}" class="tweet-video" controls preload="metadata"></video>`;
+                    badgeParts.push('🎥 VIDEO');
+                    const encodedTweet = encodeURIComponent(JSON.stringify({
+                        tweetId: t.tweetId || '',
+                        video: videoCandidate || '',
+                        user: t.user || '',
+                        date: t.date || Date.now()
+                    }));
+                    dlParts.push(`<button class="tweet-dl-btn" onclick="downloadTweetVideoFromEncoded('${encodedTweet}')">💾 Video</button>`);
+                } else if (videoCandidate) {
+                    badgeParts.push('🎥 VIDEO');
+                    mediaHTML += `<div class="subtle media-fallback-text">${settings.language === 'en' ? 'Video URL needs refresh.' : 'Video-URL muss aktualisiert werden.'}</div>`;
+                    const encodedTweet = encodeURIComponent(JSON.stringify({
+                        tweetId: t.tweetId || '',
+                        video: videoCandidate || '',
+                        user: t.user || '',
+                        date: t.date || Date.now()
+                    }));
+                    dlParts.push(`<button class="tweet-dl-btn" onclick="downloadTweetVideoFromEncoded('${encodedTweet}')">💾 Video</button>`);
                 }
 
+                if (t.imgs && t.imgs.length > 0) {
+                    const imgList = t.imgs.map(src => normalizeTwitterImageUrl(src) || src);
+                    mediaHTML += '<div class="img-grid">' + imgList.map(src => `<img src="${escapeHtml(src)}" data-media-src="${escapeHtml(src)}" loading="lazy">`).join('') + '</div>';
+                    badgeParts.push(`🖼️ ${imgList.length} IMGS`);
+                    const encodedImgs = encodeURIComponent(JSON.stringify(imgList));
+                    dlParts.push(`<button class="tweet-dl-btn" onclick="downloadGalleryFromEncoded('${encodedImgs}')">💾 Alle ${imgList.length} Bilder</button>`);
+                } else if (t.img) {
+                    const singleImg = normalizeTwitterImageUrl(t.img) || t.img;
+                    mediaHTML += `<img src="${escapeHtml(singleImg)}" data-media-src="${escapeHtml(singleImg)}" class="tweet-img" loading="lazy">`;
+                    badgeParts.push('🖼️ IMG');
+                    const ext = singleImg.match(/\.(jpg|jpeg|png|webp)/i)?.[1] || 'jpg';
+                    dlParts.push(`<button class="tweet-dl-btn" onclick="downloadMedia('${singleImg}','image_${idx}.${ext}')">💾 Bild</button>`);
+                }
+
+                if (badgeParts.length) badge = `<div class="media-badge">${badgeParts.join(' · ')}</div>`;
+                dlBtn = dlParts.join('');
+                const deleteBtn = deleteKey
+                    ? `<button class="tweet-del-btn" onclick="deleteTweetFromEncoded('${encodedDeleteKey}')">${settings.language === 'en' ? '🗑️ Remove post' : '🗑️ Post löschen'}</button>`
+                    : '';
+
                 const threadLabel = t.isThread ? '<span class="subtle"> • Thread</span>' : '';
-                card.innerHTML = `${badge}<div class="tweet-user">👤 ${safeUser}${threadLabel}</div><div class="tweet-text">${safeText}</div>${mediaHTML}${settings.showDlButtons ? dlBtn : ''}<div class="subtle" style="margin-top:10px; border-top:1px solid #333; padding-top:6px;">🕒 ${new Date(t.date).toLocaleString()}</div>`;
+                card.innerHTML = `${badge}<div class="tweet-user">👤 ${safeUser}${threadLabel}</div><div class="tweet-text">${safeText}</div>${mediaHTML}${settings.showDlButtons ? dlBtn : ''}${deleteBtn}<div class="subtle" style="margin-top:10px; border-top:1px solid #333; padding-top:6px;">🕒 ${new Date(t.date).toLocaleString()}</div>`;
                 frag.appendChild(card);
             });
 
             grid.appendChild(frag);
+            attachViewerMediaFallbacks();
+            if (settings.enableLiveMonitor) {
+                if (!monitorState.status || monitorState.status === 'Idle') monitorState.status = tr('cacheLoaded');
+                updateMonitorView();
+            }
         }
 
         window.addEventListener('message', (event) => {
-            if (!(event.data && event.data.type === 'import_tweets')) return;
+            if (!(event && event.data && event.data.type)) return;
+
+            if (event.data.type === 'ct_status') {
+                if (!settings.enableLiveMonitor) return;
+                const st = event.data.data || {};
+                if (Number.isFinite(st.lastScanMs)) monitorState.lastScanMs = Math.round(st.lastScanMs);
+                if (Number.isFinite(st.nextDelay)) monitorState.nextDelayMs = Math.round(st.nextDelay);
+                if (Number.isFinite(st.dynDelayMul)) monitorState.tuneFactor = Number(st.dynDelayMul);
+                if (Number.isFinite(st.dynMaxTweets)) monitorState.tuneTweets = Number(st.dynMaxTweets);
+                if (Number.isFinite(st.totalAdded)) monitorState.added = Math.max(monitorState.added, Number(st.totalAdded));
+                if (Number.isFinite(st.totalDupes)) monitorState.dupes = Math.max(monitorState.dupes, Number(st.totalDupes));
+                if (Number.isFinite(st.cacheWrites)) monitorState.writes = Math.max(monitorState.writes, Number(st.cacheWrites));
+                if (typeof st.status === 'string' && st.status) monitorState.status = st.status;
+                updateMonitorView();
+                return;
+            }
+
+            if (event.data.type !== 'import_tweets') return;
+            if (isUsageBlocked()) return;
+
             const incoming = Array.isArray(event.data.data) ? event.data.data : [];
             if (!incoming.length) return;
 
-            const current = getCache();
+            let current = getCache();
+            const withoutDeleted = filterDeletedTweets(current);
+            const removedDeleted = Math.max(0, current.length - withoutDeleted.length);
+            if (removedDeleted > 0) current = withoutDeleted;
+            const currentKeys = new Set(current.map(buildTweetKey));
             let added = 0;
             for (const nt of incoming) {
-                if (!current.some(c => c.text === nt.text && c.user === nt.user)) {
+                if (isTweetMarkedDeleted(nt)) continue;
+                const k = buildTweetKey(nt || {});
+                if (!currentKeys.has(k)) {
                     current.push(nt);
+                    currentKeys.add(k);
                     added++;
                 }
             }
 
-            if (added > 0) {
+            if (added > 0 || removedDeleted > 0) {
                 const normalized = normalizeCache(current);
                 setCache(normalized);
+                monitorState.writes++;
+                if (added > 0) {
+                    monitorState.added += added;
+                    monitorState.status = tr('importPlus')(added);
+                }
+                updateMonitorView();
                 loadCache();
 
-                const info = document.createElement('div');
-                info.innerText = `✅ ${added} neue Tweets importiert`;
-                info.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
-                document.body.appendChild(info);
-                setTimeout(() => info.remove(), 2600);
+                if (added > 0) {
+                    const info = document.createElement('div');
+                    info.innerText = tr('importAdded')(added);
+                    info.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
+                    document.body.appendChild(info);
+                    setTimeout(() => info.remove(), 2600);
+                }
+            } else {
+                monitorState.status = tr('monitorStatusImportNone');
+                updateMonitorView();
             }
         });
 
-        renderCompatibility();
-        loadSettings();
-        loadCache();
+        function pingBookmarkletStatus() {
+            if (!settings.enableLiveMonitor) return;
+            if (!window.opener) return;
+            try { window.opener.postMessage({ type: 'CMD_PING_STATUS' }, '*'); } catch {}
+        }
+
+        window.addEventListener('pagehide', () => {
+            queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+        });
+        window.addEventListener('beforeunload', () => {
+            queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+        });
+
+        (async () => {
+            await loadSettings();
+            monitorState.status = tr('monitorStatusReady');
+            loadCache();
+            applyMobileAccessState();
+            updateMonitorView();
+            setInterval(() => {
+                updateMonitorView();
+                pingBookmarkletStatus();
+            }, 2000);
+        })();
     </script>
 </body>
 </html>
