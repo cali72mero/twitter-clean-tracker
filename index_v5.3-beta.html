@@ -293,6 +293,9 @@
         <a id="bookmarkletBtn" class="btn btn-drag" href="javascript:void(0);" draggable="true">⚠️ CleanTwitter v5.3 BETA</a>
         <br><br>
         <button id="btnCopyCode" class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
+        <button id="btnLiveApply" class="btn btn-soft" onclick="applyRuntimeConfigLive()">⚡ Live auf X anwenden</button>
+        <button id="btnRuntimeOn" class="btn btn-soft" onclick="startRuntimeLive()">▶️ Runtime starten</button>
+        <button id="btnRuntimeOff" class="btn btn-soft" onclick="stopRuntimeLive()">🛑 Runtime stoppen</button>
         <button id="btnExportSettings" class="btn btn-soft" onclick="exportSettings()">💾 Settings exportieren</button>
         <button id="btnImportSettings" class="btn btn-soft" onclick="importSettings()">📥 Settings importieren</button>
         <button id="btnDedupe" class="btn btn-soft" onclick="dedupeCache()">🧹 Duplikate entfernen</button>
@@ -531,7 +534,11 @@
                 cacheLoaded: 'Cache geladen',
                 importPlus: (n) => `Import +${n}`,
                 confirmDeletePost: 'Diesen Post wirklich löschen und vom ZIP-Export ausschließen?',
-                postDeleted: 'Post gelöscht und vom Export ausgeschlossen.'
+                postDeleted: 'Post gelöscht und vom Export ausgeschlossen.',
+                runtimeNoOpener: 'Kein verbundenes Twitter/X-Fenster gefunden. Öffne das Dashboard über den View-Button im Panel.',
+                runtimeConfigSent: 'Live-Konfiguration an Twitter/X gesendet.',
+                runtimeOffSent: 'Runtime-Stopp an Twitter/X gesendet.',
+                runtimeOnSent: 'Runtime-Start an Twitter/X gesendet.'
             },
             en: {
                 langLabel: 'Language',
@@ -572,7 +579,11 @@
                 cacheLoaded: 'Cache loaded',
                 importPlus: (n) => `Import +${n}`,
                 confirmDeletePost: 'Delete this post and exclude it from ZIP export?',
-                postDeleted: 'Post deleted and excluded from export.'
+                postDeleted: 'Post deleted and excluded from export.',
+                runtimeNoOpener: 'No connected Twitter/X window found. Open this dashboard via the panel view button.',
+                runtimeConfigSent: 'Live config sent to Twitter/X runtime.',
+                runtimeOffSent: 'Runtime stop sent to Twitter/X.',
+                runtimeOnSent: 'Runtime start sent to Twitter/X.'
             }
         };
 
@@ -745,6 +756,7 @@
         function setLanguage(lang) {
             settings.language = lang === 'en' ? 'en' : 'de';
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            updateBookmarklet();
             applyLanguage();
             renderStorageStatusText();
             updateRiskWarningText();
@@ -752,6 +764,7 @@
             applyMobileAccessState();
             updateMonitorView();
             loadCache();
+            applyRuntimeConfigLive({ silent: true });
         }
 
         function applyLanguage() {
@@ -795,7 +808,9 @@
             setTxt('groupUI', settings.language === 'en' ? '🎨 UI & controls' : '🎨 UI & Bedienung');
             setTxt('groupStorage', settings.language === 'en' ? '💽 Storage backend' : '💽 Speicher-Backend');
             setTxt('storageModeLabel', settings.language === 'en' ? 'Storage mode:' : 'Speicher-Modus:');
-            setTxt('settingsReloadNote', settings.language === 'en' ? 'After changes, re-drag the bookmarklet into the toolbar.' : 'Nach Änderungen das Bookmarklet neu in die Leiste ziehen.');
+            setTxt('settingsReloadNote', settings.language === 'en'
+                ? 'Use "Apply live on X" to switch settings without reload. Re-drag bookmarklet only if needed.'
+                : 'Mit "Live auf X anwenden" kannst du ohne Reload umschalten. Neu ziehen nur falls nötig.');
             const storageMode = document.getElementById('storageMode');
             if (storageMode && storageMode.options.length >= 3) {
                 storageMode.options[0].text = settings.language === 'en'
@@ -812,6 +827,9 @@
             setTxt('installTitle', '⚠️ CleanTwitter v5.3 BETA');
             setTxt('bookmarkletBtn', '⚠️ CleanTwitter v5.3 BETA');
             setTxt('btnCopyCode', settings.language === 'en' ? '📋 Copy code' : '📋 Code kopieren');
+            setTxt('btnLiveApply', settings.language === 'en' ? '⚡ Apply live on X' : '⚡ Live auf X anwenden');
+            setTxt('btnRuntimeOn', settings.language === 'en' ? '▶️ Start runtime' : '▶️ Runtime starten');
+            setTxt('btnRuntimeOff', settings.language === 'en' ? '🛑 Stop runtime' : '🛑 Runtime stoppen');
             setTxt('btnExportSettings', settings.language === 'en' ? '💾 Export settings' : '💾 Settings exportieren');
             setTxt('btnImportSettings', settings.language === 'en' ? '📥 Import settings' : '📥 Settings importieren');
             setTxt('btnDedupe', settings.language === 'en' ? '🧹 Remove duplicates' : '🧹 Duplikate entfernen');
@@ -936,6 +954,7 @@
             updateBookmarklet();
             applyMobileAccessState();
             loadCache();
+            applyRuntimeConfigLive({ silent: true });
         }
 
         async function loadSettings() {
@@ -996,6 +1015,7 @@
             updateBookmarklet();
             applyMobileAccessState();
             loadCache();
+            applyRuntimeConfigLive({ silent: true });
         }
 
         function isMobileUserAgent() {
@@ -1294,6 +1314,9 @@
                 'basicModeBtn',
                 'proModeBtn',
                 'btnCopyCode',
+                'btnLiveApply',
+                'btnRuntimeOn',
+                'btnRuntimeOff',
                 'btnExportSettings',
                 'btnImportSettings',
                 'btnDedupe',
@@ -1628,31 +1651,53 @@
             const CFG = JSON.stringify(settings);
             const DASH = JSON.stringify(DASHBOARD_URL);
             const source = `(function(){
+                var RUNTIME_KEY='__CT_V53_RUNTIME__';
+                try{
+                    if(window[RUNTIME_KEY] && typeof window[RUNTIME_KEY].shutdown==='function'){
+                        window[RUNTIME_KEY].shutdown({silent:true,full:true});
+                    }
+                }catch(e){}
                 var C=${CFG};
                 var DASH=${DASH};
                 var KEY='tw_clean_cache';
                 var IDB_DB='ct_v53_cache_db';
                 var IDB_STORE='kv';
-                var MODE=(C.storageMode==='idb'||C.storageMode==='local'||C.storageMode==='auto')?C.storageMode:'auto';
+                var MODE='auto';
                 var IS_MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'');
                 var CAN_IDB=(typeof indexedDB!=='undefined' && typeof indexedDB.open==='function' && !IS_MOBILE);
-                var STORE=(MODE==='local')?'local':(CAN_IDB?'idb':'local');
+                var STORE='local';
                 var cacheMem=[];
                 var idbDbPromise=null;
                 var writeTimer=null;
-                var P,B,AS,CL,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
-                var badgeColor=C.greenBadge?'#0f8':'#f44';
-                var badgeIcon=C.greenBadge?'♾️':'🔴';
-                var L=C.language==='en'?'en':'de';
-                var TT=L==='en'
-                    ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started',mobileBlocked:'Mobile browser detected. Please use desktop (Windows/macOS/Linux).'}
-                    : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet',mobileBlocked:'Mobiler Browser erkannt. Bitte Desktop nutzen (Windows/macOS/Linux).'};
+                var P,B,AS,CL,VW,OFF,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
+                var ensureTimer=null,dlTimer=null,statusTimer=null,scanTimer=null;
+                var isRuntimeStopped=false;
+                var wheelHandler=null,touchHandler=null,keyHandler=null,messageHandler=null;
+                var badgeColor='#0f8';
+                var badgeIcon='♾️';
+                var L='de';
+                var TT={};
+                function applyCfg(next){
+                    if(next && typeof next==='object') C=Object.assign({},C,next);
+                    MODE=(C.storageMode==='idb'||C.storageMode==='local'||C.storageMode==='auto')?C.storageMode:'auto';
+                    STORE=(MODE==='local')?'local':(CAN_IDB?'idb':'local');
+                    badgeColor=C.greenBadge?'#0f8':'#f44';
+                    badgeIcon=C.greenBadge?'♾️':'🔴';
+                    L=C.language==='en'?'en':'de';
+                    TT=L==='en'
+                        ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',off:'❌ Off',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',stopped:'Stopped',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started',mobileBlocked:'Mobile browser detected. Please use desktop (Windows/macOS/Linux).'}
+                        : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',off:'❌ Aus',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',stopped:'Gestoppt',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet',mobileBlocked:'Mobiler Browser erkannt. Bitte Desktop nutzen (Windows/macOS/Linux).'};
+                    dynMaxTweets=Math.max(5,Number(C.maxTweetsPerScan)||35);
+                    refreshPanelUI();
+                    if(C.showDlButtons) addDL(); else removeDL();
+                }
                 var syncWin=null;
                 var dynDelayMul=1;
                 var dynMaxTweets=Math.max(5, C.maxTweetsPerScan||35);
                 var totalAdded=0,totalDupes=0,totalWrites=0,lastScanMs=0,nextDelayMs=0,lastStatusAt=0;
                 var videoByTweetId={};
                 var videoResolveBusy={};
+                applyCfg();
 
                 function now(){return Date.now();}
                 function parseCache(v){try{var x=typeof v==='string'?JSON.parse(v):v;return Array.isArray(x)?x:[]}catch(e){return[]}}
@@ -1834,14 +1879,17 @@
                         totalDupes:totalDupes,
                         cacheWrites:totalWrites,
                         lastScanMs:lastScanMs,
-                        status:(pausedUntil>now()?TT.paused:TT.active),
+                        status:(isRuntimeStopped?TT.stopped:(pausedUntil>now()?TT.paused:TT.active)),
                         ts:Date.now()
                     }};
                     try{syncWin.postMessage(payload,'*')}catch(e){}
                 }
                 function upd(txt){
                     var c=getCache();
-                    if(B) B.innerText = txt || (pausedUntil>now() ? TT.pause : badgeIcon + ' ' + c.length);
+                    if(!B) return;
+                    if(txt){ B.innerText=txt; return; }
+                    if(isRuntimeStopped){ B.innerText=TT.stopped+' • '+c.length; return; }
+                    B.innerText = (pausedUntil>now() ? TT.pause : badgeIcon + ' ' + c.length);
                 }
                 function getVideoSrc(t){
                     var v=t.querySelector('video');
@@ -1922,8 +1970,14 @@
                         a.click();
                     });
                 }
+                function removeDL(){
+                    var btns=document.querySelectorAll('button[data-ct-dl-btn="1"]');
+                    btns.forEach(function(btn){ if(btn && btn.parentNode) btn.parentNode.removeChild(btn); });
+                    var tweets=document.querySelectorAll('article[data-testid="tweet"][data-ct-dl="1"]');
+                    tweets.forEach(function(t){ try{ delete t.dataset.ctDl; }catch(e){ t.removeAttribute('data-ct-dl'); } });
+                }
                 function addDL(){
-                    if(!C.showDlButtons) return;
+                    if(isRuntimeStopped || !C.showDlButtons) return;
                     var list=document.querySelectorAll('article[data-testid="tweet"]');
                     list.forEach(function(t){
                         if(t.dataset.ctDl) return;
@@ -1933,6 +1987,7 @@
                         if(!(imgUrls.length>0 || vidSrc)) return;
                         var btn=document.createElement('button');
                         btn.innerText='💾';
+                        btn.setAttribute('data-ct-dl-btn','1');
                         btn.style.cssText='position:absolute!important;top:6px!important;left:6px!important;z-index:9999!important;background:rgba(0,0,0,0.65)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important';
                         btn.onclick=function(e){
                             e.preventDefault();e.stopPropagation();
@@ -2020,13 +2075,29 @@
                     sc.style.cssText='all:initial!important;background:#888!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     sc.onclick=function(){if(isScrolling) stopScroll(); else startScroll();};
 
-                    p.appendChild(b); p.appendChild(view); p.appendChild(clear); p.appendChild(sc);
-                    P=p; B=b; AS=sc; CL=clear;
+                    var off=document.createElement('button');
+                    off.innerText=TT.off;
+                    off.style.cssText='all:initial!important;background:#444!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
+                    off.onclick=function(){ shutdownRuntime({silent:true,keepListeners:true}); };
+
+                    p.appendChild(b); p.appendChild(view); p.appendChild(clear); p.appendChild(sc); p.appendChild(off);
+                    P=p; B=b; AS=sc; CL=clear; VW=view; OFF=off;
                     return p;
                 }
 
+                function refreshPanelUI(){
+                    if(B){
+                        B.style.color=badgeColor;
+                        if(!isRuntimeStopped) upd();
+                    }
+                    if(VW) VW.innerText=TT.view;
+                    if(CL) CL.innerText=TT.clear;
+                    if(AS) AS.innerText=isScrolling?TT.stop:TT.scroll;
+                    if(OFF) OFF.innerText=TT.off;
+                }
+
                 function startScroll(){
-                    if(scrollTimer) return;
+                    if(isRuntimeStopped || scrollTimer) return;
                     isScrolling=true;
                     if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText=TT.stop;}
                     scrollTimer=setInterval(function(){
@@ -2041,12 +2112,55 @@
                     if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText=TT.scroll;}
                 }
                 function markActivity(){lastActivity=now();if(isScrolling) stopScroll();}
-
-                window.addEventListener('wheel',markActivity,{passive:true});
-                window.addEventListener('touchmove',markActivity,{passive:true});
-                window.addEventListener('keydown',markActivity);
-
-                window.addEventListener('message',function(e){
+                function stopCoreLoops(){
+                    stopScroll();
+                    if(scanTimer){clearTimeout(scanTimer);scanTimer=null;}
+                    if(ensureTimer){clearInterval(ensureTimer);ensureTimer=null;}
+                    if(dlTimer){clearInterval(dlTimer);dlTimer=null;}
+                    if(statusTimer){clearInterval(statusTimer);statusTimer=null;}
+                }
+                function removePanel(){
+                    var panel=document.getElementById('ct-p');
+                    if(panel) panel.remove();
+                    P=null;B=null;AS=null;CL=null;VW=null;OFF=null;
+                }
+                function shutdownRuntime(opts){
+                    var O=opts||{};
+                    isRuntimeStopped=true;
+                    stopCoreLoops();
+                    removePanel();
+                    removeDL();
+                    if(writeTimer){
+                        clearTimeout(writeTimer);
+                        writeTimer=null;
+                        flushCache().catch(function(){});
+                    }
+                    if(O.full){
+                        if(wheelHandler) window.removeEventListener('wheel',wheelHandler);
+                        if(touchHandler) window.removeEventListener('touchmove',touchHandler);
+                        if(keyHandler) window.removeEventListener('keydown',keyHandler);
+                        if(messageHandler) window.removeEventListener('message',messageHandler);
+                        wheelHandler=null;touchHandler=null;keyHandler=null;messageHandler=null;
+                        try{ if(window[RUNTIME_KEY] && window[RUNTIME_KEY].id===RUNTIME_KEY) delete window[RUNTIME_KEY]; }catch(e){}
+                    }
+                    emitStatus(true);
+                }
+                function startRuntime(showAlert){
+                    bindRuntimeEvents();
+                    if(!isRuntimeStopped && (ensureTimer || scanTimer)) return;
+                    isRuntimeStopped=false;
+                    ensurePanel();
+                    if(C.showDlButtons) addDL();
+                    if(scanTimer) clearTimeout(scanTimer);
+                    scanTimer=setTimeout(scan,120);
+                    ensureTimer=setInterval(ensurePanel,2200);
+                    dlTimer=setInterval(function(){ if(C.showDlButtons) addDL(); },2100);
+                    statusTimer=setInterval(function(){emitStatus(false);},5000);
+                    refreshPanelUI();
+                    emitStatus(true);
+                    if(showAlert) alert(TT.started);
+                }
+                function onRuntimeMessage(e){
                     if(!e || !e.data) return;
                     if(e.data.type==='CMD_CLEAR_CACHE'){
                         clearCacheStore().finally(function(){
@@ -2058,8 +2172,33 @@
                         });
                     } else if(e.data.type==='CMD_PING_STATUS'){
                         emitStatus(true);
+                    } else if(e.data.type==='CMD_RUNTIME_OFF'){
+                        shutdownRuntime({silent:true,keepListeners:true});
+                    } else if(e.data.type==='CMD_RUNTIME_ON'){
+                        startRuntime(false);
+                    } else if(e.data.type==='CMD_RUNTIME_CONFIG'){
+                        applyCfg(e.data.config||{});
+                        emitStatus(true);
                     }
-                });
+                }
+                function bindRuntimeEvents(){
+                    if(!wheelHandler){
+                        wheelHandler=markActivity;
+                        window.addEventListener('wheel',wheelHandler,{passive:true});
+                    }
+                    if(!touchHandler){
+                        touchHandler=markActivity;
+                        window.addEventListener('touchmove',touchHandler,{passive:true});
+                    }
+                    if(!keyHandler){
+                        keyHandler=markActivity;
+                        window.addEventListener('keydown',keyHandler);
+                    }
+                    if(!messageHandler){
+                        messageHandler=onRuntimeMessage;
+                        window.addEventListener('message',messageHandler);
+                    }
+                }
 
                 function isLikelyRetweet(t){
                     var txt=(t.innerText||'').toLowerCase();
@@ -2093,12 +2232,16 @@
                     return nextDelayMs;
                 }
                 function scheduleScan(forceDelay){
+                    if(isRuntimeStopped) return;
                     var d=(typeof forceDelay==='number')?forceDelay:calcDelay();
                     nextDelayMs=d;
-                    setTimeout(scan, Math.max(100,d));
+                    if(scanTimer) clearTimeout(scanTimer);
+                    scanTimer=setTimeout(scan, Math.max(100,d));
                 }
 
                 function scan(){
+                    if(isRuntimeStopped) return;
+                    scanTimer=null;
                     if(C.pauseOnHiddenTab && document.hidden){ scheduleScan(1500); emitStatus(false); return; }
                     if(pausedUntil > now()){ upd(); scheduleScan(1000); emitStatus(false); return; }
 
@@ -2245,6 +2388,7 @@
                 }
 
                 function ensurePanel(){
+                    if(isRuntimeStopped) return;
                     var e=document.getElementById('ct-p');
                     if(!e || !document.body.contains(e)){
                         document.body.appendChild(makePanel());
@@ -2253,14 +2397,16 @@
                 }
 
                 function startAll(){
-                    ensurePanel();
-                    addDL();
-                    scan();
-                    setInterval(ensurePanel, 2200);
-                    setInterval(addDL, 2100);
-                    setInterval(function(){emitStatus(false);}, 5000);
-                    alert(TT.started);
+                    bindRuntimeEvents();
+                    startRuntime(true);
                 }
+                window[RUNTIME_KEY]={
+                    id:RUNTIME_KEY,
+                    shutdown:function(opts){ shutdownRuntime(Object.assign({silent:true},opts||{})); },
+                    start:function(){ startRuntime(false); },
+                    applyConfig:function(next){ applyCfg(next||{}); emitStatus(true); },
+                    ping:function(){ emitStatus(true); }
+                };
                 if(IS_MOBILE){
                     alert(TT.mobileBlocked);
                     return;
@@ -2276,6 +2422,68 @@
             })();`;
 
             document.getElementById('bookmarkletBtn').href = `javascript:${source.replace(/\n\s+/g, ' ')}`;
+        }
+
+        function postRuntimeCommand(payload, options = {}) {
+            const opts = { silent: false, ...options };
+            let target = null;
+            try { target = window.opener; } catch { target = null; }
+            let closed = true;
+            try { closed = !target || !!target.closed; } catch { closed = true; }
+            if (!target || typeof target.postMessage !== 'function' || closed) {
+                if (!opts.silent) alert(tr('runtimeNoOpener'));
+                return false;
+            }
+            try {
+                target.postMessage(payload, '*');
+                return true;
+            } catch {
+                if (!opts.silent) alert(tr('runtimeNoOpener'));
+                return false;
+            }
+        }
+
+        function applyRuntimeConfigLive(options = {}) {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return false;
+            }
+            const ok = postRuntimeCommand({ type: 'CMD_RUNTIME_CONFIG', config: settings }, options);
+            if (ok) {
+                monitorState.status = tr('runtimeConfigSent');
+                updateMonitorView();
+                if (!options.silent) alert(tr('runtimeConfigSent'));
+            }
+            return ok;
+        }
+
+        function stopRuntimeLive(options = {}) {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return false;
+            }
+            const ok = postRuntimeCommand({ type: 'CMD_RUNTIME_OFF' }, options);
+            if (ok) {
+                monitorState.status = tr('runtimeOffSent');
+                updateMonitorView();
+                if (!options.silent) alert(tr('runtimeOffSent'));
+            }
+            return ok;
+        }
+
+        function startRuntimeLive(options = {}) {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return false;
+            }
+            const ok = postRuntimeCommand({ type: 'CMD_RUNTIME_ON' }, options);
+            if (ok) {
+                applyRuntimeConfigLive({ silent: true });
+                monitorState.status = tr('runtimeOnSent');
+                updateMonitorView();
+                if (!options.silent) alert(tr('runtimeOnSent'));
+            }
+            return ok;
         }
 
         function copyCode() {
@@ -2427,6 +2635,7 @@
             updateBookmarklet();
             applyMobileAccessState();
             loadCache();
+            applyRuntimeConfigLive({ silent: true });
             alert(tr('alertPresetApplied'));
         }
 
@@ -2501,6 +2710,7 @@
                         updateBookmarklet();
                         applyMobileAccessState();
                         loadCache();
+                        applyRuntimeConfigLive({ silent: true });
                         alert(tr('alertSettingsImported'));
                     } catch {
                         alert(tr('alertInvalidJson'));
