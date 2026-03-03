@@ -11,6 +11,8 @@
         h4 { margin: 8px 0; }
         .btn { background: var(--primary); color: #000; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; margin: 5px; text-decoration: none; display: inline-block; font-size: 1rem; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
         .btn:hover { opacity: 0.9; transform: scale(1.03); transition: 0.2s; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-disabled-link { opacity: 0.5; cursor: not-allowed; transform: none; pointer-events: none; }
         .btn-drag { cursor: move; }
         .btn-danger { background: #ff4444; color: #fff; }
         .btn-soft { background: transparent; color: #bbb; border: 1px solid #555; }
@@ -31,6 +33,8 @@
         .setting-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
         .setting-item label { cursor: pointer; color: #ddd; }
         .setting-item input[type="number"] { width: 108px; padding: 6px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; }
+        .setting-item input[type="url"], .setting-item input[type="text"] { min-width: min(640px, 95vw); flex: 1; padding: 9px 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; }
+        .setting-item select { padding: 8px 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; }
         .badge-preview { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(0,0,0,0.9); padding: 5px 10px; border-radius: 5px; border: 1px solid #333; color: var(--accent); display: inline-block; margin-left: 10px; }
         .generator-box { background: #111; padding: 28px; border-radius: 20px; margin-bottom: 36px; text-align: center; border: 2px solid var(--primary); }
         .stats { display: flex; justify-content: center; gap: 14px; margin-bottom: 18px; font-size: 1.04rem; flex-wrap: wrap; }
@@ -78,6 +82,9 @@
         .mode-btn { border-radius: 999px; padding: 8px 12px; border: 1px solid #555; background: #1b1b1b; color: #ddd; cursor: pointer; font-weight: 700; }
         .mode-btn.active { border-color: var(--primary); color: #111; background: var(--primary); }
         .mode-label { margin-left: auto; font-size: 0.85rem; color: #aaa; }
+        .lang-wrap { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+        .lang-wrap label { font-size: 0.85rem; color: #aaa; }
+        .lang-wrap select { background: #1b1b1b; color: #ddd; border: 1px solid #555; border-radius: 999px; padding: 6px 10px; }
         .pro-only { }
         .basic-hide { display: none !important; }
     </style>
@@ -86,41 +93,61 @@
 
     <div id="loadingOverlay">
         <div class="loader"></div>
-        <h2 style="margin-top: 20px;">📦 ZIP wird erstellt...</h2>
+        <h2 id="loadingTitle" style="margin-top: 20px;">📦 ZIP wird erstellt...</h2>
         <p id="loadingStatus" style="color: #aaa;">Bitte warten...</p>
     </div>
 
     <div class="quick-nav">
-        <a href="#settingsSection">⚙️ Einstellungen</a>
-        <a href="#installSection">🔖 Bookmarklet</a>
+        <a id="navSettings" href="#settingsSection">⚙️ Einstellungen</a>
+        <a id="navInstall" href="#installSection">🔖 Bookmarklet</a>
         <a id="monitorNavLink" href="#monitorSection">🛰️ Monitor</a>
-        <a href="#viewerSection">📦 Viewer</a>
+        <a id="navViewer" href="#viewerSection">📦 Viewer</a>
     </div>
 
     <div class="mode-switch">
         <button id="basicModeBtn" class="mode-btn" onclick="setUIMode('basic')">v5.2 benutzen (Anfänger-Modus)</button>
         <button id="proModeBtn" class="mode-btn active" onclick="setUIMode('pro')">v5.3 Pro-Modus</button>
         <span id="modeLabel" class="mode-label">Aktiv: Pro-Modus</span>
+        <div class="lang-wrap">
+            <label id="langLabel" for="languageSelect">Sprache</label>
+            <select id="languageSelect" onchange="setLanguage(this.value)">
+                <option value="de">DE</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
     </div>
 
     <div id="settingsSection" class="settings-box">
-        <h3>⚙️ Einstellungen & Sicherheit (v5.3 BETA) <span class="new-badge">NEW</span></h3>
+        <h3 id="settingsTitle">⚙️ Einstellungen & Sicherheit (v5.3 BETA) <span class="new-badge">NEW</span></h3>
 
         <div class="info-box">
-            <h4>🗑️ Cache korrekt leeren</h4>
-            <p>1) Auf Twitter/X im Panel auf <strong>🗑️ Clear</strong> klicken</p>
-            <p>2) Danach hier im Dashboard auf <strong>"Cache leeren"</strong> klicken</p>
-            <p style="color: #ff9d5c;">Twitter/X und Dashboard nutzen getrennten Storage (Cross-Origin).</p>
+            <h4 id="infoCacheTitle">🗑️ Cache korrekt leeren</h4>
+            <p id="infoCacheStep1">1) Auf Twitter/X im Panel auf <strong>🗑️ Clear</strong> klicken</p>
+            <p id="infoCacheStep2">2) Danach hier im Dashboard auf <strong>"Cache leeren"</strong> klicken</p>
+            <p id="infoCacheStep3" style="color: #ff9d5c;">Twitter/X und Dashboard nutzen getrennten Storage (Cross-Origin).</p>
         </div>
 
         <div id="compatStatus" class="compat-box"></div>
         <div class="setting-item">
-            <button class="btn btn-soft" onclick="openHelpMenu()">📘 Hilfe-Menü öffnen</button>
-            <button class="btn btn-soft" onclick="copySafetyGuide()">📋 Anti-Ban Anleitung kopieren</button>
+            <button id="openHelpBtn" class="btn btn-soft" onclick="openHelpMenu()">📘 Hilfe-Menü öffnen</button>
+            <button id="copyGuideBtn" class="btn btn-soft" onclick="copySafetyGuide()">📋 Anti-Ban Anleitung kopieren</button>
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🛡️ Anti-Ban & Scan-Verhalten</h4>
+            <h4 id="groupStorage" style="color: #aaa;">💽 Speicher-Backend</h4>
+            <div class="setting-item">
+                <label id="storageModeLabel" for="storageMode">Speicher-Modus:</label>
+                <select id="storageMode" onchange="saveSettings()">
+                    <option value="auto">Auto (Desktop: IndexedDB, Fallback: localStorage)</option>
+                    <option value="idb">IndexedDB bevorzugen</option>
+                    <option value="local">Nur localStorage (legacy)</option>
+                </select>
+            </div>
+            <p id="storageStatusText" class="subtle">Storage-Status wird geladen...</p>
+        </div>
+
+        <div class="setting-group">
+            <h4 id="groupAntiBan" style="color: #aaa;">🛡️ Anti-Ban & Scan-Verhalten</h4>
             <div class="setting-item">
                 <input type="checkbox" id="stealthMode" onchange="saveSettings()" checked>
                 <label for="stealthMode"><strong>Stealth Mode:</strong> Zufällige Scan-Intervalle statt fixer Taktung</label>
@@ -159,7 +186,7 @@
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🔽 Auto-Scroller</h4>
+            <h4 id="groupAutoScroller" style="color: #aaa;">🔽 Auto-Scroller</h4>
             <div class="setting-item">
                 <label for="scrollSpeed">Scroll-Geschwindigkeit (px/s):</label>
                 <input type="number" id="scrollSpeed" value="30" min="10" max="220" onchange="saveSettings()">
@@ -169,7 +196,7 @@
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🧠 Smart Filter</h4>
+            <h4 id="groupSmartFilter" style="color: #aaa;">🧠 Smart Filter</h4>
             <div class="setting-item">
                 <input type="checkbox" id="skipRetweets" onchange="saveSettings()">
                 <label for="skipRetweets">Retweets/Reposts ignorieren</label>
@@ -181,7 +208,7 @@
         </div>
 
         <div class="setting-group pro-only">
-            <h4 style="color: #aaa;">🛰️ Monitor, Auto-Tuning & Dedupe 2.0</h4>
+            <h4 id="groupMonitorTune" style="color: #aaa;">🛰️ Monitor, Auto-Tuning & Dedupe 2.0</h4>
             <div class="setting-item">
                 <input type="checkbox" id="enableLiveMonitor" onchange="saveSettings()" checked>
                 <label for="enableLiveMonitor">Live Monitor aktiv</label>
@@ -202,7 +229,7 @@
         </div>
 
         <div class="setting-group pro-only">
-            <h4 style="color: #aaa;">⚡ Performance & Cache</h4>
+            <h4 id="groupPerformance" style="color: #aaa;">⚡ Performance & Cache</h4>
             <div class="setting-item">
                 <input type="checkbox" id="trimCache" onchange="saveSettings()" checked>
                 <label for="trimCache">Cache automatisch begrenzen</label>
@@ -226,7 +253,7 @@
         </div>
 
         <div class="setting-group pro-only">
-            <h4 style="color: #aaa;">📦 Export Pro (optional)</h4>
+            <h4 id="groupExportPro" style="color: #aaa;">📦 Export Pro (optional)</h4>
             <div class="setting-item">
                 <input type="checkbox" id="enableExportPro" onchange="saveSettings()">
                 <label for="enableExportPro">Export Pro aktiv</label>
@@ -245,7 +272,7 @@
         </div>
 
         <div class="setting-group">
-            <h4 style="color: #aaa;">🎨 UI & Bedienung</h4>
+            <h4 id="groupUI" style="color: #aaa;">🎨 UI & Bedienung</h4>
             <div class="setting-item">
                 <input type="checkbox" id="showDlButtons" onchange="saveSettings()" checked>
                 <label for="showDlButtons">Download-Buttons auf Twitter und im Dashboard anzeigen</label>
@@ -256,58 +283,56 @@
             </div>
         </div>
 
-        <p class="warning-inline">Nach Änderungen das Bookmarklet neu in die Leiste ziehen.</p>
+        <p id="settingsReloadNote" class="warning-inline">Nach Änderungen das Bookmarklet neu in die Leiste ziehen.</p>
     </div>
 
     <div id="installSection" class="generator-box">
-        <h1>⚠️ CleanTwitter v5.3 BETA</h1>
-        <p style="color: #aaa; margin-bottom: 14px;"><strong style="font-size: 1.1em; color: var(--primary);">Anti-Ban Controls + Performance Tuning + Stabilerer Sync</strong></p>
-        <p class="subtle">Neu: Live Monitor, Smart Auto-Tuning, Dedupe 2.0, Export Pro, Quick Navigation UI</p>
+        <h1 id="installTitle">⚠️ CleanTwitter v5.3 BETA</h1>
         <a id="bookmarkletBtn" class="btn btn-drag" href="javascript:void(0);" draggable="true">⚠️ CleanTwitter v5.3 BETA</a>
         <br><br>
-        <button class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
-        <button class="btn btn-soft" onclick="exportSettings()">💾 Settings exportieren</button>
-        <button class="btn btn-soft" onclick="importSettings()">📥 Settings importieren</button>
-        <button class="btn btn-soft" onclick="dedupeCache()">🧹 Duplikate entfernen</button>
-        <button class="btn btn-soft" onclick="openHelpMenu()">📘 Anleitung / Menü</button>
+        <button id="btnCopyCode" class="btn btn-soft" onclick="copyCode()">📋 Code kopieren</button>
+        <button id="btnExportSettings" class="btn btn-soft" onclick="exportSettings()">💾 Settings exportieren</button>
+        <button id="btnImportSettings" class="btn btn-soft" onclick="importSettings()">📥 Settings importieren</button>
+        <button id="btnDedupe" class="btn btn-soft" onclick="dedupeCache()">🧹 Duplikate entfernen</button>
+        <button id="btnGuideMenu" class="btn btn-soft" onclick="openHelpMenu()">📘 Anleitung / Menü</button>
     </div>
 
     <div id="monitorSection" class="monitor-panel pro-only">
         <div class="section-title">
-            <h3 class="monitor-title">🛰️ Live Monitor</h3>
+            <h3 id="monitorTitle" class="monitor-title">🛰️ Live Monitor</h3>
             <span id="monitorModePill" class="pill pill-ok">Monitor AN</span>
         </div>
         <div class="monitor-grid">
-            <div class="monitor-item"><div class="monitor-label">Session</div><div id="monSession" class="monitor-value">-</div></div>
-            <div class="monitor-item"><div class="monitor-label">Letzter Scan</div><div id="monLastScan" class="monitor-value">-</div></div>
-            <div class="monitor-item"><div class="monitor-label">Next Delay</div><div id="monNextDelay" class="monitor-value">-</div></div>
-            <div class="monitor-item"><div class="monitor-label">Auto-Tune</div><div id="monTune" class="monitor-value">-</div></div>
-            <div class="monitor-item"><div class="monitor-label">Neue Tweets</div><div id="monAdded" class="monitor-value">0</div></div>
-            <div class="monitor-item"><div class="monitor-label">Duplikate entfernt</div><div id="monDupes" class="monitor-value">0</div></div>
-            <div class="monitor-item"><div class="monitor-label">Cache Writes</div><div id="monWrites" class="monitor-value">0</div></div>
-            <div class="monitor-item"><div class="monitor-label">Status</div><div id="monStatus" class="monitor-value">Idle</div></div>
+            <div class="monitor-item"><div id="monLblSession" class="monitor-label">Session</div><div id="monSession" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblLastScan" class="monitor-label">Letzter Scan</div><div id="monLastScan" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblNextDelay" class="monitor-label">Next Delay</div><div id="monNextDelay" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblAutoTune" class="monitor-label">Auto-Tune</div><div id="monTune" class="monitor-value">-</div></div>
+            <div class="monitor-item"><div id="monLblAdded" class="monitor-label">Neue Tweets</div><div id="monAdded" class="monitor-value">0</div></div>
+            <div class="monitor-item"><div id="monLblDupes" class="monitor-label">Duplikate entfernt</div><div id="monDupes" class="monitor-value">0</div></div>
+            <div class="monitor-item"><div id="monLblWrites" class="monitor-label">Cache Writes</div><div id="monWrites" class="monitor-value">0</div></div>
+            <div class="monitor-item"><div id="monLblStatus" class="monitor-label">Status</div><div id="monStatus" class="monitor-value">Idle</div></div>
         </div>
     </div>
 
     <div id="viewerSection">
-        <h2>📦 Gespeicherte Tweets</h2>
+        <h2 id="viewerTitle">📦 Gespeicherte Tweets</h2>
         <div class="stats">
-            <div class="stat-item">📦 <span id="countDisplay">0</span> Tweets</div>
-            <div class="stat-item">👁️ <span id="renderedCount">0</span> angezeigt</div>
-            <div class="stat-item">🖼️ <span id="imgCount">0</span> Bilder</div>
-            <div class="stat-item">🎥 <span id="vidCount">0</span> Videos</div>
+            <div class="stat-item">📦 <span id="countDisplay">0</span> <span id="statTweetsLabel">Tweets</span></div>
+            <div class="stat-item">👁️ <span id="renderedCount">0</span> <span id="statShownLabel">angezeigt</span></div>
+            <div class="stat-item">🖼️ <span id="imgCount">0</span> <span id="statImagesLabel">Bilder</span></div>
+            <div class="stat-item">🎥 <span id="vidCount">0</span> <span id="statVideosLabel">Videos</span></div>
             <div class="stat-item" id="sizeInfo" style="background: #333;">💾 <span id="sizeDisplay">0</span> KB</div>
         </div>
         <div style="text-align: center;">
-            <button class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
-            <button class="btn" onclick="downloadZIP()" style="background: #4444ff; color:#fff;">🗂️ ZIP-Export</button>
-            <button class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
+            <button id="btnHtmlArchive" class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
+            <button id="btnZipExport" class="btn" onclick="downloadZIP()" style="background: #4444ff; color:#fff;">🗂️ ZIP-Export</button>
+            <button id="btnClearCache" class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
         </div>
         <p id="renderHint" class="subtle" style="text-align:center;"></p>
         <div id="grid" class="tweet-grid"></div>
         <div id="empty" class="empty-state">
-            <h3>Noch leer hier</h3>
-            <p>Bookmarklet auf Twitter/X starten und Feed laden lassen.</p>
+            <h3 id="emptyTitle">Noch leer hier</h3>
+            <p id="emptyText">Bookmarklet auf Twitter/X starten und Feed laden lassen.</p>
         </div>
     </div>
 
@@ -395,6 +420,7 @@
                     <tr><td>Export nach User/Datum strukturieren</td><td class="safe">AN (wenn Export Pro AN)</td><td>AUS wenn du nur einen flachen Ordner willst</td></tr>
                     <tr><td>Metadaten JSON</td><td class="safe">AN (wenn Export Pro AN)</td><td>AUS nur wenn du keine Metadaten willst</td></tr>
                     <tr><td>Metadaten CSV</td><td>Optional</td><td>AUS wenn JSON für dich reicht</td></tr>
+                    <tr><td>Speicher-Modus</td><td class="safe">Auto (Desktop nutzt IndexedDB)</td><td>localStorage nur für Legacy/Debug; Mobile ist blockiert</td></tr>
                     <tr><td>Download-Buttons anzeigen</td><td class="safe">AN</td><td>AUS wenn dich Buttons im Tweet stören</td></tr>
                     <tr><td>Grünes Infinity-Badge</td><td>Optional</td><td>AUS wenn du den roten Stil bevorzugst</td></tr>
                 </tbody>
@@ -427,9 +453,93 @@
     <script>
         const CACHE_KEY = 'tw_clean_cache';
         const SETTINGS_KEY = 'ct_settings_v53';
-        const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index_v5.3-beta.html';
+        const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index.html';
+        const IDB_DB_NAME = 'ct_v53_cache_db';
+        const IDB_STORE_NAME = 'kv';
+        const IDB_VALUE_KEY = CACHE_KEY;
+        const I18N = {
+            de: {
+                langLabel: 'Sprache',
+                navSettings: '⚙️ Einstellungen',
+                navInstall: '🔖 Bookmarklet',
+                navMonitor: '🛰️ Monitor',
+                navViewer: '📦 Viewer',
+                basicBtn: 'v5.2 benutzen (Anfänger-Modus)',
+                proBtn: 'v5.3 Pro-Modus',
+                modeBasic: 'Aktiv: Anfänger-Modus (v5.2-Stil)',
+                modePro: 'Aktiv: Pro-Modus (v5.3)',
+                monitorOn: 'Monitor AN',
+                monitorOff: 'Monitor AUS',
+                monitorStatusIdle: 'Leerlauf',
+                monitorStatusReady: 'Bereit',
+                monitorStatusLoading: 'Cache geladen',
+                monitorStatusDedupe: 'Cache dedupliziert',
+                monitorStatusImportNone: 'Import ohne neue Tweets',
+                renderHintOff: 'Render-Limit ist AUS: alle Tweets werden angezeigt.',
+                importAdded: (n) => `✅ ${n} neue Tweets importiert`,
+                alertCodeCopied: '✅ Code kopiert!',
+                alertSettingsImported: '✅ Settings importiert',
+                alertInvalidJson: '❌ Ungültige JSON-Datei',
+                alertPresetApplied: '✅ Preset angewendet. Jetzt Bookmarklet neu in die Leiste ziehen.',
+                alertDedupeDone: (n) => `✅ Dedupe fertig: ${n} Duplikate entfernt`,
+                alertCacheEmpty: 'Cache ist leer!',
+                alertZipSuccess: '✅ ZIP-Download erfolgreich!',
+                confirmClearCache: 'Wirklich alle gespeicherten Tweets löschen?\n\nTipp: Vorher ZIP exportieren.',
+                manualCopyCode: 'Code manuell kopieren:',
+                guideCopied: '✅ Anleitung kopiert!',
+                manualCopyGuide: 'Anleitung manuell kopieren:',
+                zipWorking: 'ZIP Export läuft',
+                zipDone: 'ZIP Export fertig',
+                cacheDeleted: 'Cache gelöscht',
+                processingLabel: (a, b) => `Verarbeite... (${a}/${b})`,
+                creatingZip: 'Erstelle ZIP...',
+                bookmarkletStarted: '⚠️ CleanTwitter v5.3 BETA BIG gestartet',
+                cacheLoaded: 'Cache geladen',
+                importPlus: (n) => `Import +${n}`
+            },
+            en: {
+                langLabel: 'Language',
+                navSettings: '⚙️ Settings',
+                navInstall: '🔖 Bookmarklet',
+                navMonitor: '🛰️ Monitor',
+                navViewer: '📦 Viewer',
+                basicBtn: 'Use v5.2 (Beginner mode)',
+                proBtn: 'v5.3 Pro mode',
+                modeBasic: 'Active: Beginner mode (v5.2 style)',
+                modePro: 'Active: Pro mode (v5.3)',
+                monitorOn: 'Monitor ON',
+                monitorOff: 'Monitor OFF',
+                monitorStatusIdle: 'Idle',
+                monitorStatusReady: 'Ready',
+                monitorStatusLoading: 'Cache loaded',
+                monitorStatusDedupe: 'Cache deduped',
+                monitorStatusImportNone: 'Import: no new tweets',
+                renderHintOff: 'Render limit is OFF: all tweets are shown.',
+                importAdded: (n) => `✅ ${n} new tweets imported`,
+                alertCodeCopied: '✅ Code copied!',
+                alertSettingsImported: '✅ Settings imported',
+                alertInvalidJson: '❌ Invalid JSON file',
+                alertPresetApplied: '✅ Preset applied. Re-drag the bookmarklet into your toolbar now.',
+                alertDedupeDone: (n) => `✅ Dedupe done: ${n} duplicates removed`,
+                alertCacheEmpty: 'Cache is empty!',
+                alertZipSuccess: '✅ ZIP download complete!',
+                confirmClearCache: 'Delete all saved tweets?\n\nTip: export ZIP first.',
+                manualCopyCode: 'Copy the code manually:',
+                guideCopied: '✅ Guide copied!',
+                manualCopyGuide: 'Copy the guide manually:',
+                zipWorking: 'ZIP export running',
+                zipDone: 'ZIP export complete',
+                cacheDeleted: 'Cache deleted',
+                processingLabel: (a, b) => `Processing... (${a}/${b})`,
+                creatingZip: 'Creating ZIP...',
+                bookmarkletStarted: '⚠️ CleanTwitter v5.3 BETA BIG started',
+                cacheLoaded: 'Cache loaded',
+                importPlus: (n) => `Import +${n}`
+            }
+        };
 
         const defaultSettings = {
+            language: 'de',
             uiMode: 'pro',
             stealthMode: true,
             minScanDelay: 2200,
@@ -453,6 +563,7 @@
             scrollPause: 2000,
             trimCache: true,
             maxCacheTweets: 8000,
+            storageMode: 'auto',
             enableRenderLimit: true,
             renderLimit: 350,
             enableZipThrottle: true,
@@ -475,6 +586,20 @@
             writes: 0,
             status: 'Idle'
         };
+        const runtimeState = {
+            cache: [],
+            requestedStorage: 'auto',
+            effectiveStorage: 'local',
+            storageReason: 'auto_local',
+            storageMigration: '',
+            idbSupported: false,
+            isMobileUA: false,
+            mobileBlocked: false
+        };
+        let idbDbPromise = null;
+        let cachePersistTimer = null;
+        let cachePersistChain = Promise.resolve();
+        let cachePersistQueued = false;
 
         function clamp(n, min, max, fallback) {
             const x = Number(n);
@@ -484,7 +609,9 @@
 
         function sanitizeSettings(raw) {
             const s = { ...defaultSettings, ...(raw || {}) };
+            s.language = s.language === 'en' ? 'en' : 'de';
             s.uiMode = s.uiMode === 'basic' ? 'basic' : 'pro';
+            s.storageMode = ['auto', 'idb', 'local'].includes(s.storageMode) ? s.storageMode : defaultSettings.storageMode;
             s.stealthMode = !!s.stealthMode;
             s.rateLimit = !!s.rateLimit;
             s.humanBreak = !!s.humanBreak;
@@ -522,6 +649,8 @@
         }
 
         function applySettingsToUI() {
+            const langSelect = document.getElementById('languageSelect');
+            if (langSelect) langSelect.value = settings.language;
             document.getElementById('stealthMode').checked = settings.stealthMode;
             document.getElementById('minScanDelay').value = settings.minScanDelay;
             document.getElementById('maxScanDelay').value = settings.maxScanDelay;
@@ -545,6 +674,7 @@
 
             document.getElementById('trimCache').checked = settings.trimCache;
             document.getElementById('maxCacheTweets').value = settings.maxCacheTweets;
+            document.getElementById('storageMode').value = settings.storageMode;
             document.getElementById('enableRenderLimit').checked = settings.enableRenderLimit;
             document.getElementById('renderLimit').value = settings.renderLimit;
             document.getElementById('enableZipThrottle').checked = settings.enableZipThrottle;
@@ -563,7 +693,144 @@
             document.getElementById('showDlButtons').checked = settings.showDlButtons;
             document.getElementById('greenBadge').checked = settings.greenBadge;
             applyModeVisibility();
+            applyLanguage();
+            renderStorageStatusText();
             updateMonitorView();
+        }
+
+        function tr(key) {
+            const dict = I18N[settings.language] || I18N.de;
+            return dict[key] ?? I18N.de[key] ?? key;
+        }
+
+        function setLanguage(lang) {
+            settings.language = lang === 'en' ? 'en' : 'de';
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            applyLanguage();
+            renderStorageStatusText();
+            renderCompatibility();
+            applyMobileAccessState();
+            updateMonitorView();
+            loadCache();
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = settings.language;
+            const setTxt = (id, value) => {
+                const el = document.getElementById(id);
+                if (el && typeof value === 'string') el.textContent = value;
+            };
+            setTxt('langLabel', tr('langLabel'));
+            setTxt('navSettings', tr('navSettings'));
+            setTxt('navInstall', tr('navInstall'));
+            setTxt('monitorNavLink', tr('navMonitor'));
+            setTxt('navViewer', tr('navViewer'));
+            setTxt('basicModeBtn', tr('basicBtn'));
+            setTxt('proModeBtn', tr('proBtn'));
+
+            setTxt('settingsTitle', settings.language === 'en' ? '⚙️ Settings & Security (v5.3 BETA)' : '⚙️ Einstellungen & Sicherheit (v5.3 BETA)');
+            setTxt('infoCacheTitle', settings.language === 'en' ? '🗑️ How to clear cache correctly' : '🗑️ Cache korrekt leeren');
+            const step1 = document.getElementById('infoCacheStep1');
+            const step2 = document.getElementById('infoCacheStep2');
+            const step3 = document.getElementById('infoCacheStep3');
+            if (step1) step1.innerHTML = settings.language === 'en'
+                ? '1) In the Twitter/X panel click <strong>🗑️ Clear</strong>'
+                : '1) Auf Twitter/X im Panel auf <strong>🗑️ Clear</strong> klicken';
+            if (step2) step2.innerHTML = settings.language === 'en'
+                ? '2) Then in this dashboard click <strong>"Clear cache"</strong>'
+                : '2) Danach hier im Dashboard auf <strong>"Cache leeren"</strong> klicken';
+            if (step3) step3.textContent = settings.language === 'en'
+                ? 'Twitter/X and dashboard use separate storage (cross-origin).'
+                : 'Twitter/X und Dashboard nutzen getrennten Storage (Cross-Origin).';
+
+            setTxt('openHelpBtn', settings.language === 'en' ? '📘 Open Help Menu' : '📘 Hilfe-Menü öffnen');
+            setTxt('copyGuideBtn', settings.language === 'en' ? '📋 Copy Anti-Ban Guide' : '📋 Anti-Ban Anleitung kopieren');
+
+            setTxt('groupAntiBan', settings.language === 'en' ? '🛡️ Anti-ban & scan behavior' : '🛡️ Anti-Ban & Scan-Verhalten');
+            setTxt('groupAutoScroller', settings.language === 'en' ? '🔽 Auto scroller' : '🔽 Auto-Scroller');
+            setTxt('groupSmartFilter', settings.language === 'en' ? '🧠 Smart filter' : '🧠 Smart Filter');
+            setTxt('groupMonitorTune', settings.language === 'en' ? '🛰️ Monitor, auto-tuning & dedupe 2.0' : '🛰️ Monitor, Auto-Tuning & Dedupe 2.0');
+            setTxt('groupPerformance', settings.language === 'en' ? '⚡ Performance & cache' : '⚡ Performance & Cache');
+            setTxt('groupExportPro', settings.language === 'en' ? '📦 Export Pro (optional)' : '📦 Export Pro (optional)');
+            setTxt('groupUI', settings.language === 'en' ? '🎨 UI & controls' : '🎨 UI & Bedienung');
+            setTxt('groupStorage', settings.language === 'en' ? '💽 Storage backend' : '💽 Speicher-Backend');
+            setTxt('storageModeLabel', settings.language === 'en' ? 'Storage mode:' : 'Speicher-Modus:');
+            setTxt('settingsReloadNote', settings.language === 'en' ? 'After changes, re-drag the bookmarklet into the toolbar.' : 'Nach Änderungen das Bookmarklet neu in die Leiste ziehen.');
+            const storageMode = document.getElementById('storageMode');
+            if (storageMode && storageMode.options.length >= 3) {
+                storageMode.options[0].text = settings.language === 'en'
+                    ? 'Auto (Desktop: IndexedDB, fallback: localStorage)'
+                    : 'Auto (Desktop: IndexedDB, Fallback: localStorage)';
+                storageMode.options[1].text = settings.language === 'en'
+                    ? 'Prefer IndexedDB'
+                    : 'IndexedDB bevorzugen';
+                storageMode.options[2].text = settings.language === 'en'
+                    ? 'LocalStorage only (legacy)'
+                    : 'Nur localStorage (legacy)';
+            }
+
+            setTxt('installTitle', '⚠️ CleanTwitter v5.3 BETA');
+            setTxt('bookmarkletBtn', '⚠️ CleanTwitter v5.3 BETA');
+            setTxt('btnCopyCode', settings.language === 'en' ? '📋 Copy code' : '📋 Code kopieren');
+            setTxt('btnExportSettings', settings.language === 'en' ? '💾 Export settings' : '💾 Settings exportieren');
+            setTxt('btnImportSettings', settings.language === 'en' ? '📥 Import settings' : '📥 Settings importieren');
+            setTxt('btnDedupe', settings.language === 'en' ? '🧹 Remove duplicates' : '🧹 Duplikate entfernen');
+            setTxt('btnGuideMenu', settings.language === 'en' ? '📘 Guide / menu' : '📘 Anleitung / Menü');
+
+            setTxt('monitorTitle', settings.language === 'en' ? '🛰️ Live monitor' : '🛰️ Live Monitor');
+            setTxt('monLblSession', settings.language === 'en' ? 'Session' : 'Session');
+            setTxt('monLblLastScan', settings.language === 'en' ? 'Last scan' : 'Letzter Scan');
+            setTxt('monLblNextDelay', settings.language === 'en' ? 'Next delay' : 'Next Delay');
+            setTxt('monLblAutoTune', 'Auto-Tune');
+            setTxt('monLblAdded', settings.language === 'en' ? 'New tweets' : 'Neue Tweets');
+            setTxt('monLblDupes', settings.language === 'en' ? 'Duplicates removed' : 'Duplikate entfernt');
+            setTxt('monLblWrites', settings.language === 'en' ? 'Cache writes' : 'Cache Writes');
+            setTxt('monLblStatus', settings.language === 'en' ? 'Status' : 'Status');
+
+            setTxt('viewerTitle', settings.language === 'en' ? '📦 Saved tweets' : '📦 Gespeicherte Tweets');
+            setTxt('statTweetsLabel', settings.language === 'en' ? 'tweets' : 'Tweets');
+            setTxt('statShownLabel', settings.language === 'en' ? 'shown' : 'angezeigt');
+            setTxt('statImagesLabel', settings.language === 'en' ? 'images' : 'Bilder');
+            setTxt('statVideosLabel', settings.language === 'en' ? 'videos' : 'Videos');
+            setTxt('btnHtmlArchive', settings.language === 'en' ? '📥 HTML archive' : '📥 HTML-Archiv');
+            setTxt('btnZipExport', settings.language === 'en' ? '🗂️ ZIP export' : '🗂️ ZIP-Export');
+            setTxt('btnClearCache', settings.language === 'en' ? '🗑️ Clear cache' : '🗑️ Cache leeren');
+            setTxt('emptyTitle', settings.language === 'en' ? 'No data yet' : 'Noch leer hier');
+            setTxt('emptyText', settings.language === 'en' ? 'Start the bookmarklet on Twitter/X and let the feed load.' : 'Bookmarklet auf Twitter/X starten und Feed laden lassen.');
+
+            const setLabel = (forId, text, html = false) => {
+                const el = document.querySelector(`label[for="${forId}"]`);
+                if (!el) return;
+                if (html) el.innerHTML = text; else el.textContent = text;
+            };
+            setLabel('stealthMode', settings.language === 'en' ? '<strong>Stealth mode:</strong> random scan intervals instead of fixed timing' : '<strong>Stealth Mode:</strong> Zufällige Scan-Intervalle statt fixer Taktung', true);
+            setLabel('rateLimit', settings.language === 'en' ? 'Rate-limit protection enabled' : 'Rate Limit Schutz aktiv');
+            setLabel('maxTweetsBeforePause', settings.language === 'en' ? 'Pause after tweets:' : 'Pause nach Tweets:');
+            setLabel('pauseDurationMs', settings.language === 'en' ? 'Pause (ms):' : 'Pause (ms):');
+            setLabel('humanBreak', settings.language === 'en' ? 'Human-like random breaks enabled' : 'Menschliche Zufallspausen aktiv');
+            setLabel('humanBreakChance', settings.language === 'en' ? 'Chance %:' : 'Chance %:');
+            setLabel('pauseOnHiddenTab', settings.language === 'en' ? 'Pause scans when tab is in background' : 'Scans pausieren, wenn Tab im Hintergrund ist');
+            setLabel('maxTweetsPerScan', settings.language === 'en' ? 'Max tweets per scan:' : 'Max Tweets pro Scan:');
+            setLabel('scrollSpeed', settings.language === 'en' ? 'Scroll speed (px/s):' : 'Scroll-Geschwindigkeit (px/s):');
+            setLabel('scrollPause', settings.language === 'en' ? 'Pause after activity (ms):' : 'Pause nach Aktivität (ms):');
+            setLabel('skipRetweets', settings.language === 'en' ? 'Ignore retweets/reposts' : 'Retweets/Reposts ignorieren');
+            setLabel('detectThreads', settings.language === 'en' ? 'Mark thread detection' : 'Thread-Erkennung markieren');
+            setLabel('enableLiveMonitor', settings.language === 'en' ? 'Live monitor enabled' : 'Live Monitor aktiv');
+            setLabel('autoTune', settings.language === 'en' ? 'Smart auto-tuning enabled' : 'Smart Auto-Tuning aktiv');
+            setLabel('autoTuneStrength', settings.language === 'en' ? 'Strength:' : 'Stärke:');
+            setLabel('enableDedupePro', settings.language === 'en' ? 'Duplicate engine 2.0 enabled' : 'Duplicate-Engine 2.0 aktiv');
+            setLabel('trimCache', settings.language === 'en' ? 'Auto-limit cache size' : 'Cache automatisch begrenzen');
+            setLabel('maxCacheTweets', settings.language === 'en' ? 'Max tweets in cache:' : 'Max Tweets im Cache:');
+            setLabel('enableRenderLimit', settings.language === 'en' ? 'Render limit enabled' : 'Render-Limit aktiv');
+            setLabel('renderLimit', settings.language === 'en' ? 'Dashboard render limit:' : 'Dashboard Render-Limit:');
+            setLabel('enableZipThrottle', settings.language === 'en' ? 'ZIP throttle enabled' : 'ZIP Throttle aktiv');
+            setLabel('zipThrottleMs', settings.language === 'en' ? 'ZIP throttle (ms):' : 'ZIP Throttle (ms):');
+            setLabel('enableExportPro', settings.language === 'en' ? 'Export Pro enabled' : 'Export Pro aktiv');
+            setLabel('exportFolderByUserDate', settings.language === 'en' ? 'Structure ZIP folders by user/date' : 'ZIP-Ordner nach User/Datum strukturieren');
+            setLabel('exportMetaJSON', settings.language === 'en' ? 'Include metadata JSON in ZIP' : 'Metadaten als JSON in ZIP');
+            setLabel('exportMetaCSV', settings.language === 'en' ? 'Include metadata CSV in ZIP' : 'Metadaten als CSV in ZIP');
+            setLabel('showDlButtons', settings.language === 'en' ? 'Show download buttons on Twitter and dashboard' : 'Download-Buttons auf Twitter und im Dashboard anzeigen');
+            setLabel('greenBadge', settings.language === 'en' ? 'Green infinity badge instead of red <span class="badge-preview">♾️ 42</span>' : 'Grünes Infinity-Badge statt rot <span class="badge-preview">♾️ 42</span>', true);
         }
 
         function applyModeVisibility() {
@@ -578,8 +845,8 @@
             if (basicBtn) basicBtn.classList.toggle('active', isBasic);
             if (proBtn) proBtn.classList.toggle('active', !isBasic);
             if (modeLabel) modeLabel.innerText = isBasic
-                ? 'Aktiv: Anfänger-Modus (v5.2-Stil)'
-                : 'Aktiv: Pro-Modus (v5.3)';
+                ? tr('modeBasic')
+                : tr('modePro');
             if (monitorNav) monitorNav.style.display = isBasic ? 'none' : '';
         }
 
@@ -627,19 +894,25 @@
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
             updateBookmarklet();
+            applyMobileAccessState();
             loadCache();
         }
 
-        function loadSettings() {
+        async function loadSettings() {
             const saved = localStorage.getItem(SETTINGS_KEY);
             settings = sanitizeSettings(saved ? JSON.parse(saved) : defaultSettings);
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
+            await activateStorageBackend({ migrate: true });
+            renderCompatibility();
             updateBookmarklet();
+            applyMobileAccessState();
         }
 
-        function saveSettings() {
+        async function saveSettings() {
+            const prevStorageMode = settings.storageMode;
             settings = sanitizeSettings({
+                language: document.getElementById('languageSelect').value,
                 stealthMode: document.getElementById('stealthMode').checked,
                 minScanDelay: document.getElementById('minScanDelay').value,
                 maxScanDelay: document.getElementById('maxScanDelay').value,
@@ -660,6 +933,7 @@
                 enableDedupePro: document.getElementById('enableDedupePro').checked,
                 trimCache: document.getElementById('trimCache').checked,
                 maxCacheTweets: document.getElementById('maxCacheTweets').value,
+                storageMode: document.getElementById('storageMode').value,
                 enableRenderLimit: document.getElementById('enableRenderLimit').checked,
                 renderLimit: document.getElementById('renderLimit').value,
                 enableZipThrottle: document.getElementById('enableZipThrottle').checked,
@@ -674,9 +948,363 @@
             });
 
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            if (prevStorageMode !== settings.storageMode) {
+                await activateStorageBackend({ migrate: true });
+            }
             applySettingsToUI();
             updateBookmarklet();
+            applyMobileAccessState();
             loadCache();
+        }
+
+        function isMobileUserAgent() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+        }
+
+        function hasIndexedDBSupport() {
+            try { return typeof indexedDB !== 'undefined' && typeof indexedDB.open === 'function'; }
+            catch { return false; }
+        }
+
+        function safeParseCacheArray(raw) {
+            try {
+                const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function localReadCache() {
+            try { return safeParseCacheArray(localStorage.getItem(CACHE_KEY) || '[]'); }
+            catch { return []; }
+        }
+
+        function localWriteCache(data) {
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify(Array.isArray(data) ? data : [])); }
+            catch {}
+        }
+
+        function localClearCache() {
+            try { localStorage.removeItem(CACHE_KEY); }
+            catch {}
+        }
+
+        function openIndexedDB() {
+            if (idbDbPromise) return idbDbPromise;
+            idbDbPromise = new Promise((resolve, reject) => {
+                try {
+                    const req = indexedDB.open(IDB_DB_NAME, 1);
+                    req.onupgradeneeded = () => {
+                        const db = req.result;
+                        if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+                            db.createObjectStore(IDB_STORE_NAME);
+                        }
+                    };
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error || new Error('idb_open_failed'));
+                } catch (err) {
+                    reject(err);
+                }
+            }).catch((err) => {
+                idbDbPromise = null;
+                throw err;
+            });
+            return idbDbPromise;
+        }
+
+        async function idbReadCache() {
+            const db = await openIndexedDB();
+            const raw = await new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE_NAME, 'readonly');
+                const store = tx.objectStore(IDB_STORE_NAME);
+                const req = store.get(IDB_VALUE_KEY);
+                req.onsuccess = () => resolve(req.result || '[]');
+                req.onerror = () => reject(req.error || new Error('idb_read_failed'));
+            });
+            return safeParseCacheArray(raw);
+        }
+
+        async function idbWriteCache(data) {
+            const db = await openIndexedDB();
+            const payload = JSON.stringify(Array.isArray(data) ? data : []);
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+                const store = tx.objectStore(IDB_STORE_NAME);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error || new Error('idb_write_failed'));
+                tx.onabort = () => reject(tx.error || new Error('idb_abort'));
+                store.put(payload, IDB_VALUE_KEY);
+            });
+        }
+
+        async function idbClearCache() {
+            const db = await openIndexedDB();
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+                const store = tx.objectStore(IDB_STORE_NAME);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error || new Error('idb_delete_failed'));
+                tx.onabort = () => reject(tx.error || new Error('idb_abort'));
+                store.delete(IDB_VALUE_KEY);
+            });
+        }
+
+        function resolveStorageRuntime(storageMode) {
+            const requestedStorage = ['auto', 'idb', 'local'].includes(storageMode) ? storageMode : 'auto';
+            const isMobileUA = isMobileUserAgent();
+            const idbSupported = hasIndexedDBSupport();
+            let effectiveStorage = 'local';
+            let storageReason = 'auto_local';
+
+            if (requestedStorage === 'local') {
+                effectiveStorage = 'local';
+                storageReason = 'forced_local';
+            } else if (isMobileUA) {
+                effectiveStorage = 'local';
+                storageReason = 'mobile_block';
+            } else if (idbSupported) {
+                effectiveStorage = 'idb';
+                storageReason = requestedStorage === 'idb' ? 'forced_idb' : 'auto_idb';
+            } else {
+                effectiveStorage = 'local';
+                storageReason = 'idb_missing';
+            }
+
+            return {
+                requestedStorage,
+                effectiveStorage,
+                storageReason,
+                storageMigration: '',
+                idbSupported,
+                isMobileUA,
+                mobileBlocked: isMobileUA
+            };
+        }
+
+        async function activateStorageBackend(options = {}) {
+            const opts = { migrate: true, ...options };
+            await queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+            Object.assign(runtimeState, resolveStorageRuntime(settings.storageMode));
+
+            let active = [];
+            if (runtimeState.effectiveStorage === 'idb') {
+                try {
+                    active = await idbReadCache();
+                } catch {
+                    runtimeState.effectiveStorage = 'local';
+                    runtimeState.storageReason = 'idb_error';
+                    active = localReadCache();
+                }
+            } else {
+                active = localReadCache();
+            }
+
+            runtimeState.storageMigration = '';
+            if (opts.migrate) {
+                if (runtimeState.effectiveStorage === 'idb') {
+                    const legacy = localReadCache();
+                    if (legacy.length > 0) {
+                        if (active.length === 0) {
+                            active = legacy;
+                            runtimeState.storageMigration = 'local_to_idb';
+                        } else {
+                            const merged = normalizeCache(active.concat(legacy), { trackDupes: false });
+                            if (merged.length !== active.length) {
+                                active = merged;
+                                runtimeState.storageMigration = 'merge_local_idb';
+                            }
+                        }
+                        try { await idbWriteCache(active); } catch {}
+                    }
+                } else if (runtimeState.effectiveStorage === 'local' && runtimeState.idbSupported && !runtimeState.isMobileUA) {
+                    try {
+                        const fromIdb = await idbReadCache();
+                        if (fromIdb.length > 0) {
+                            if (active.length === 0) {
+                                active = fromIdb;
+                                runtimeState.storageMigration = 'idb_to_local';
+                            } else {
+                                const merged = normalizeCache(active.concat(fromIdb), { trackDupes: false });
+                                if (merged.length !== active.length) {
+                                    active = merged;
+                                    runtimeState.storageMigration = 'merge_idb_local';
+                                }
+                            }
+                            localWriteCache(active);
+                        }
+                    } catch {}
+                }
+            }
+
+            runtimeState.cache = normalizeCache(Array.isArray(active) ? active : [], { trackDupes: false });
+            cachePersistQueued = true;
+            await queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+        }
+
+        function renderStorageStatusText() {
+            const el = document.getElementById('storageStatusText');
+            if (!el) return;
+            const req = settings.storageMode || 'auto';
+            const reqTxt = req === 'idb' ? 'IndexedDB' : (req === 'local' ? 'localStorage' : 'Auto');
+            const activeTxt = runtimeState.effectiveStorage === 'idb' ? 'IndexedDB' : 'localStorage';
+            const migrationTxt = runtimeState.storageMigration === 'local_to_idb'
+                ? (settings.language === 'en' ? ' Existing localStorage cache was migrated to IndexedDB.' : ' Vorhandener localStorage-Cache wurde nach IndexedDB migriert.')
+                : runtimeState.storageMigration === 'idb_to_local'
+                    ? (settings.language === 'en' ? ' Existing IndexedDB cache was migrated to localStorage.' : ' Vorhandener IndexedDB-Cache wurde nach localStorage migriert.')
+                    : runtimeState.storageMigration === 'merge_local_idb'
+                        ? (settings.language === 'en' ? ' localStorage + IndexedDB were merged into IndexedDB.' : ' localStorage + IndexedDB wurden in IndexedDB zusammengeführt.')
+                        : runtimeState.storageMigration === 'merge_idb_local'
+                            ? (settings.language === 'en' ? ' IndexedDB + localStorage were merged into localStorage.' : ' IndexedDB + localStorage wurden in localStorage zusammengeführt.')
+                    : '';
+
+            let detail = '';
+            if (runtimeState.storageReason === 'auto_idb') {
+                detail = settings.language === 'en'
+                    ? 'Desktop + IndexedDB support detected.'
+                    : 'Desktop + IndexedDB Unterstützung erkannt.';
+            } else if (runtimeState.storageReason === 'forced_idb') {
+                detail = settings.language === 'en'
+                    ? 'Manual IndexedDB mode active.'
+                    : 'Manueller IndexedDB-Modus aktiv.';
+            } else if (runtimeState.storageReason === 'forced_local') {
+                detail = settings.language === 'en'
+                    ? 'Manual localStorage mode active.'
+                    : 'Manueller localStorage-Modus aktiv.';
+            } else if (runtimeState.storageReason === 'idb_missing') {
+                detail = settings.language === 'en'
+                    ? 'IndexedDB unavailable, using legacy localStorage fallback.'
+                    : 'IndexedDB nicht verfügbar, nutze legacy localStorage Fallback.';
+            } else if (runtimeState.storageReason === 'idb_error') {
+                detail = settings.language === 'en'
+                    ? 'IndexedDB error detected, switched to localStorage fallback.'
+                    : 'IndexedDB-Fehler erkannt, auf localStorage Fallback gewechselt.';
+            } else if (runtimeState.storageReason === 'mobile_block') {
+                detail = settings.language === 'en'
+                    ? 'Mobile device detected: usage is blocked, switch to desktop browser.'
+                    : 'Mobiles Gerät erkannt: Nutzung ist blockiert, bitte Desktop-Browser verwenden.';
+            } else {
+                detail = settings.language === 'en'
+                    ? 'Using localStorage fallback.'
+                    : 'Nutze localStorage Fallback.';
+            }
+
+            el.textContent = settings.language === 'en'
+                ? `Requested: ${reqTxt} | Active: ${activeTxt}. ${detail}${migrationTxt}`
+                : `Gewählt: ${reqTxt} | Aktiv: ${activeTxt}. ${detail}${migrationTxt}`;
+        }
+
+        function applyMobileAccessState() {
+            const blocked = !!runtimeState.mobileBlocked;
+            const controls = document.querySelectorAll('#settingsSection input, #settingsSection select');
+            controls.forEach((el) => {
+                if (el.id === 'languageSelect') return;
+                el.disabled = blocked;
+            });
+
+            [
+                'basicModeBtn',
+                'proModeBtn',
+                'btnCopyCode',
+                'btnExportSettings',
+                'btnImportSettings',
+                'btnDedupe',
+                'btnGuideMenu',
+                'btnHtmlArchive',
+                'btnZipExport',
+                'btnClearCache',
+                'openHelpBtn',
+                'copyGuideBtn'
+            ].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = blocked;
+            });
+
+            const dragBtn = document.getElementById('bookmarkletBtn');
+            if (dragBtn) {
+                if (blocked) {
+                    dragBtn.classList.add('btn-disabled-link');
+                    dragBtn.setAttribute('aria-disabled', 'true');
+                    dragBtn.href = 'javascript:void(0);';
+                } else {
+                    dragBtn.classList.remove('btn-disabled-link');
+                    dragBtn.removeAttribute('aria-disabled');
+                    if (dragBtn.href === 'javascript:void(0);') updateBookmarklet();
+                }
+            }
+        }
+
+        function isUsageBlocked() {
+            return !!runtimeState.mobileBlocked;
+        }
+
+        function showMobileBlockedAlert() {
+            alert(settings.language === 'en'
+                ? 'Mobile mode is blocked and IndexedDB mode is disabled on this device. Please use a desktop PC (Windows 10/11, macOS or Linux) with a supported browser.'
+                : 'Mobile-Nutzung ist blockiert und IndexedDB ist auf diesem Gerät deaktiviert. Bitte nutze einen Desktop-PC (Windows 10/11, macOS oder Linux) mit unterstütztem Browser.');
+        }
+
+        async function persistRuntimeCache() {
+            const data = Array.isArray(runtimeState.cache) ? runtimeState.cache : [];
+            if (runtimeState.effectiveStorage === 'idb') {
+                try {
+                    await idbWriteCache(data);
+                    return;
+                } catch {
+                    runtimeState.effectiveStorage = 'local';
+                    runtimeState.storageReason = 'idb_error';
+                }
+            }
+            localWriteCache(data);
+        }
+
+        function queuePersistRuntimeCache(options = {}) {
+            const opts = { immediate: false, ...options };
+            if (!opts.immediate) {
+                cachePersistQueued = true;
+                if (cachePersistTimer) clearTimeout(cachePersistTimer);
+                cachePersistTimer = setTimeout(() => {
+                    cachePersistTimer = null;
+                    queuePersistRuntimeCache({ immediate: true });
+                }, 120);
+                return cachePersistChain;
+            }
+
+            if (cachePersistTimer) {
+                clearTimeout(cachePersistTimer);
+                cachePersistTimer = null;
+            }
+            if (!cachePersistQueued) return cachePersistChain;
+            cachePersistQueued = false;
+            cachePersistChain = cachePersistChain
+                .catch(() => {})
+                .then(() => persistRuntimeCache())
+                .then(() => {
+                    renderStorageStatusText();
+                    renderCompatibility();
+                });
+            return cachePersistChain;
+        }
+
+        async function clearRuntimeStorage() {
+            if (cachePersistTimer) {
+                clearTimeout(cachePersistTimer);
+                cachePersistTimer = null;
+            }
+            cachePersistQueued = false;
+            await cachePersistChain.catch(() => {});
+            runtimeState.cache = [];
+            localClearCache();
+            if (runtimeState.idbSupported && !runtimeState.isMobileUA) {
+                try {
+                    await idbClearCache();
+                } catch {
+                    if (runtimeState.effectiveStorage === 'idb') {
+                        runtimeState.effectiveStorage = 'local';
+                        runtimeState.storageReason = 'idb_error';
+                    }
+                }
+            }
         }
 
         function getCompatibilityInfo() {
@@ -687,7 +1315,7 @@
                 postMessage: typeof window.postMessage === 'function'
             };
 
-            const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+            const isMobileUA = runtimeState.isMobileUA || isMobileUserAgent();
             return { features, isMobileUA };
         }
 
@@ -695,15 +1323,28 @@
             const compat = getCompatibilityInfo();
             const unsupported = Object.entries(compat.features).filter(([, ok]) => !ok).map(([name]) => name);
             const target = document.getElementById('compatStatus');
-            if (unsupported.length > 0) {
-                target.innerHTML = `<strong class="compat-bad">Kompatibilität:</strong> Fehlende Features: ${unsupported.join(', ')}`;
+            if (!target) return;
+
+            if (unsupported.length > 0 && !runtimeState.mobileBlocked) {
+                target.innerHTML = settings.language === 'en'
+                    ? `<strong class="compat-bad">Compatibility:</strong> Missing features: ${unsupported.join(', ')}`
+                    : `<strong class="compat-bad">Kompatibilität:</strong> Fehlende Features: ${unsupported.join(', ')}`;
                 return;
             }
-            if (compat.isMobileUA) {
-                target.innerHTML = '<strong class="compat-bad">Hinweis:</strong> Mobile Browser sind für Bookmarklets meist eingeschränkt. Desktop empfohlen.';
+
+            if (runtimeState.mobileBlocked) {
+                target.innerHTML = settings.language === 'en'
+                    ? '<strong class="compat-bad">Mobile blocked:</strong> IndexedDB mode is disabled on iPhone Safari / Android browsers. This page is view-only here. Use desktop (Windows 10/11, macOS, Linux) with Chrome, Vivaldi, Edge, Firefox or Safari (macOS).'
+                    : '<strong class="compat-bad">Mobile blockiert:</strong> IndexedDB-Modus ist auf iPhone Safari / Android Browsern deaktiviert. Diese Seite ist hier nur Ansicht. Nutze Desktop (Windows 10/11, macOS, Linux) mit Chrome, Vivaldi, Edge, Firefox oder Safari (macOS).';
                 return;
             }
-            target.innerHTML = '<strong class="compat-ok">Kompatibilität:</strong> Browser erfüllt alle Kernanforderungen für Windows, macOS und Linux Desktop.';
+
+            const storageLine = settings.language === 'en'
+                ? `Storage: requested ${settings.storageMode}, active ${runtimeState.effectiveStorage}.`
+                : `Storage: gewählt ${settings.storageMode}, aktiv ${runtimeState.effectiveStorage}.`;
+            target.innerHTML = settings.language === 'en'
+                ? `<strong class="compat-ok">Compatibility:</strong> Browser meets core requirements for Windows, macOS and Linux desktop.<br><span class="subtle">${storageLine}</span>`
+                : `<strong class="compat-ok">Kompatibilität:</strong> Browser erfüllt alle Kernanforderungen für Windows, macOS und Linux Desktop.<br><span class="subtle">${storageLine}</span>`;
         }
 
         function escapeHtml(text) {
@@ -759,7 +1400,7 @@
             if (!panel || !pill) return;
             panel.style.display = settings.enableLiveMonitor ? 'block' : 'none';
             pill.className = `pill ${settings.enableLiveMonitor ? 'pill-ok' : 'pill-warn'}`;
-            pill.innerText = settings.enableLiveMonitor ? 'Monitor AN' : 'Monitor AUS';
+            pill.innerText = settings.enableLiveMonitor ? tr('monitorOn') : tr('monitorOff');
             if (!settings.enableLiveMonitor) return;
 
             document.getElementById('monSession').innerText = formatSessionDuration(Date.now() - monitorState.sessionStartedAt);
@@ -769,26 +1410,127 @@
             document.getElementById('monAdded').innerText = String(monitorState.added);
             document.getElementById('monDupes').innerText = String(monitorState.dupes);
             document.getElementById('monWrites').innerText = String(monitorState.writes);
-            document.getElementById('monStatus').innerText = monitorState.status;
+            document.getElementById('monStatus').innerText = monitorState.status || tr('monitorStatusIdle');
         }
 
         function updateBookmarklet() {
             const CFG = JSON.stringify(settings);
+            const DASH = JSON.stringify(DASHBOARD_URL);
             const source = `(function(){
                 var C=${CFG};
-                var DASH='${DASHBOARD_URL}';
+                var DASH=${DASH};
                 var KEY='tw_clean_cache';
+                var IDB_DB='ct_v53_cache_db';
+                var IDB_STORE='kv';
+                var MODE=(C.storageMode==='idb'||C.storageMode==='local'||C.storageMode==='auto')?C.storageMode:'auto';
+                var IS_MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+                var CAN_IDB=(typeof indexedDB!=='undefined' && typeof indexedDB.open==='function' && !IS_MOBILE);
+                var STORE=(MODE==='local')?'local':(CAN_IDB?'idb':'local');
+                var cacheMem=[];
+                var idbDbPromise=null;
+                var writeTimer=null;
                 var P,B,AS,CL,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
                 var badgeColor=C.greenBadge?'#0f8':'#f44';
                 var badgeIcon=C.greenBadge?'♾️':'🔴';
+                var L=C.language==='en'?'en':'de';
+                var TT=L==='en'
+                    ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started',mobileBlocked:'Mobile browser detected. Please use desktop (Windows/macOS/Linux).'}
+                    : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet',mobileBlocked:'Mobiler Browser erkannt. Bitte Desktop nutzen (Windows/macOS/Linux).'};
                 var syncWin=null;
                 var dynDelayMul=1;
                 var dynMaxTweets=Math.max(5, C.maxTweetsPerScan||35);
                 var totalAdded=0,totalDupes=0,totalWrites=0,lastScanMs=0,nextDelayMs=0,lastStatusAt=0;
 
                 function now(){return Date.now();}
-                function getCache(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
-                function setCache(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}}
+                function parseCache(v){try{var x=typeof v==='string'?JSON.parse(v):v;return Array.isArray(x)?x:[]}catch(e){return[]}}
+                function lsGet(){try{return parseCache(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+                function lsSet(v){try{localStorage.setItem(KEY,JSON.stringify(Array.isArray(v)?v:[]))}catch(e){}}
+                function openDb(){
+                    if(!CAN_IDB) return Promise.reject(new Error('idb_disabled'));
+                    if(idbDbPromise) return idbDbPromise;
+                    idbDbPromise=new Promise(function(resolve,reject){
+                        try{
+                            var req=indexedDB.open(IDB_DB,1);
+                            req.onupgradeneeded=function(){
+                                var db=req.result;
+                                if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                            };
+                            req.onsuccess=function(){resolve(req.result);};
+                            req.onerror=function(){reject(req.error||new Error('idb_open_failed'));};
+                        }catch(err){reject(err);}
+                    }).catch(function(err){idbDbPromise=null;throw err;});
+                    return idbDbPromise;
+                }
+                function idbGet(){
+                    return openDb().then(function(db){
+                        return new Promise(function(resolve,reject){
+                            var tx=db.transaction(IDB_STORE,'readonly');
+                            var store=tx.objectStore(IDB_STORE);
+                            var req=store.get(KEY);
+                            req.onsuccess=function(){resolve(parseCache(req.result||'[]'));};
+                            req.onerror=function(){reject(req.error||new Error('idb_get_failed'));};
+                        });
+                    });
+                }
+                function idbSet(v){
+                    return openDb().then(function(db){
+                        return new Promise(function(resolve,reject){
+                            var tx=db.transaction(IDB_STORE,'readwrite');
+                            var store=tx.objectStore(IDB_STORE);
+                            tx.oncomplete=function(){resolve();};
+                            tx.onerror=function(){reject(tx.error||new Error('idb_set_failed'));};
+                            tx.onabort=function(){reject(tx.error||new Error('idb_abort'));};
+                            store.put(JSON.stringify(Array.isArray(v)?v:[]),KEY);
+                        });
+                    });
+                }
+                function idbDel(){
+                    return openDb().then(function(db){
+                        return new Promise(function(resolve,reject){
+                            var tx=db.transaction(IDB_STORE,'readwrite');
+                            var store=tx.objectStore(IDB_STORE);
+                            tx.oncomplete=function(){resolve();};
+                            tx.onerror=function(){reject(tx.error||new Error('idb_del_failed'));};
+                            tx.onabort=function(){reject(tx.error||new Error('idb_abort'));};
+                            store.delete(KEY);
+                        });
+                    });
+                }
+                function readCache(){
+                    if(STORE!=='idb') return Promise.resolve(lsGet());
+                    return idbGet().then(function(idbData){
+                        if(Array.isArray(idbData) && idbData.length>0) return idbData;
+                        var legacy=lsGet();
+                        if(legacy.length>0){
+                            return idbSet(legacy).then(function(){return legacy;}).catch(function(){return legacy;});
+                        }
+                        return Array.isArray(idbData)?idbData:[];
+                    }).catch(function(){STORE='local';return lsGet();});
+                }
+                function flushCache(){
+                    if(STORE==='idb'){
+                        return idbSet(cacheMem).catch(function(){STORE='local';lsSet(cacheMem);});
+                    }
+                    lsSet(cacheMem);
+                    return Promise.resolve();
+                }
+                function scheduleFlush(){
+                    if(writeTimer) clearTimeout(writeTimer);
+                    writeTimer=setTimeout(function(){
+                        writeTimer=null;
+                        flushCache();
+                    },80);
+                }
+                function getCache(){return cacheMem;}
+                function setCache(v){cacheMem=Array.isArray(v)?v:[];scheduleFlush();}
+                function clearCacheStore(){
+                    cacheMem=[];
+                    try{localStorage.removeItem(KEY)}catch(e){}
+                    if(CAN_IDB){
+                        return idbDel().catch(function(){STORE='local';});
+                    }
+                    return Promise.resolve();
+                }
                 function normalizeText(v){return (v||'').toLowerCase().replace(/\\s+/g,' ').trim();}
                 function normalizeUrl(u){if(!u)return '';var x=String(u).split('?')[0];return x.replace(/:[a-z0-9_]+$/i,'');}
                 function tweetKey(t){
@@ -833,30 +1575,93 @@
                         totalDupes:totalDupes,
                         cacheWrites:totalWrites,
                         lastScanMs:lastScanMs,
-                        status:(pausedUntil>now()?'Pause':'Aktiv'),
+                        status:(pausedUntil>now()?TT.paused:TT.active),
                         ts:Date.now()
                     }};
                     try{syncWin.postMessage(payload,'*')}catch(e){}
                 }
                 function upd(txt){
                     var c=getCache();
-                    if(B) B.innerText = txt || (pausedUntil>now() ? '⏸️ Pause' : badgeIcon + ' ' + c.length);
+                    if(B) B.innerText = txt || (pausedUntil>now() ? TT.pause : badgeIcon + ' ' + c.length);
                 }
                 function getVideoSrc(t){
                     var v=t.querySelector('video');
                     if(!v) return null;
+                    if(v.currentSrc) return v.currentSrc;
                     if(v.src) return v.src;
                     var s=v.querySelector('source');
                     if(s && s.src) return s.src;
                     return null;
                 }
+                function getTweetId(t){
+                    var links=t.querySelectorAll('a[href*="/status/"]');
+                    for(var i=0;i<links.length;i++){
+                        var href=links[i].getAttribute('href')||links[i].href||'';
+                        var m=String(href).match(/\\/status\\/(\\d+)/);
+                        if(m && m[1]) return m[1];
+                    }
+                    return '';
+                }
+                function isLikelyMp4Url(url){
+                    if(!url) return false;
+                    var u=String(url);
+                    if(u.indexOf('blob:')===0) return false;
+                    if(!/^https?:/i.test(u)) return false;
+                    if(/\\.m3u8(\\?|$)/i.test(u)) return false;
+                    return /\\.mp4(\\?|$)/i.test(u) || u.indexOf('video.twimg.com')>=0;
+                }
+                function pickBestMp4(variants){
+                    if(!Array.isArray(variants)) return '';
+                    var mp4=variants.filter(function(v){
+                        return v && typeof v.url==='string' && v.url && String(v.content_type||'').indexOf('mp4')>=0;
+                    });
+                    if(!mp4.length) return '';
+                    mp4.sort(function(a,b){ return (Number(b.bitrate)||0)-(Number(a.bitrate)||0); });
+                    return mp4[0].url||'';
+                }
+                function readBestFromMediaObj(m){
+                    if(!m) return '';
+                    var list=(m.video_info&&m.video_info.variants)||m.variants||[];
+                    return pickBestMp4(list);
+                }
+                function resolveVideoByTweetId(tweetId){
+                    if(!tweetId) return Promise.resolve('');
+                    var token=Math.floor(Math.random()*1e9);
+                    var url='https://cdn.syndication.twimg.com/tweet-result?id='+encodeURIComponent(tweetId)+'&lang='+(L==='en'?'en':'de')+'&token='+token;
+                    return fetch(url,{method:'GET',credentials:'omit',cache:'no-store'})
+                        .then(function(r){ if(!r.ok) throw new Error('http_'+r.status); return r.json(); })
+                        .then(function(p){
+                            var best='';
+                            if(p && Array.isArray(p.mediaDetails)){
+                                for(var i=0;i<p.mediaDetails.length;i++){
+                                    best = readBestFromMediaObj(p.mediaDetails[i]) || best;
+                                    if(best) return best;
+                                }
+                            }
+                            if(p && p.video && Array.isArray(p.video.variants)){
+                                best = pickBestMp4(p.video.variants) || best;
+                                if(best) return best;
+                            }
+                            if(p && p.entities && Array.isArray(p.entities.media)){
+                                for(var j=0;j<p.entities.media.length;j++){
+                                    best = readBestFromMediaObj(p.entities.media[j]) || best;
+                                    if(best) return best;
+                                }
+                            }
+                            return best||'';
+                        })
+                        .catch(function(){ return ''; });
+                }
                 function dlMedia(url,name){
-                    fetch(url).then(function(r){return r.blob()}).then(function(blob){
+                    return fetch(url).then(function(r){
+                        if(!r.ok) throw new Error('http_'+r.status);
+                        return r.blob();
+                    }).then(function(blob){
                         var a=document.createElement('a');
                         a.href=URL.createObjectURL(blob);
                         a.download=name;
                         a.click();
-                    }).catch(function(){});
+                    });
                 }
                 function addDL(){
                     if(!C.showDlButtons) return;
@@ -872,8 +1677,32 @@
                         btn.style.cssText='position:absolute!important;top:6px!important;left:6px!important;z-index:9999!important;background:rgba(0,0,0,0.65)!important;color:#fff!important;border:none!important;border-radius:50%!important;width:24px!important;height:24px!important;cursor:pointer!important;font-size:12px!important';
                         btn.onclick=function(e){
                             e.preventDefault();e.stopPropagation();
-                            if(vidSrc) dlMedia(vidSrc,'video_'+Date.now()+'.mp4');
-                            else imgs.forEach(function(img,i){dlMedia(img.src,'img_'+Date.now()+'_'+i+'.jpg')});
+                            var currentVid=getVideoSrc(t) || vidSrc;
+                            var tweetId=getTweetId(t);
+                            var saveImages=function(){
+                                imgs.forEach(function(img,i){ dlMedia(img.src,'img_'+Date.now()+'_'+i+'.jpg').catch(function(){}); });
+                            };
+                            var saveVideo=function(url){
+                                if(!url){ saveImages(); return; }
+                                dlMedia(url,'video_'+Date.now()+'.mp4').catch(function(){
+                                    try{ window.open(url,'_blank','noopener,noreferrer'); }catch(e){}
+                                    saveImages();
+                                });
+                            };
+                            if(currentVid && isLikelyMp4Url(currentVid)){
+                                saveVideo(currentVid);
+                                return;
+                            }
+                            if(tweetId){
+                                resolveVideoByTweetId(tweetId).then(function(resolved){
+                                    if(resolved) { saveVideo(resolved); return; }
+                                    if(currentVid && /^https?:/i.test(currentVid) && !/\\.m3u8(\\?|$)/i.test(currentVid)) { saveVideo(currentVid); return; }
+                                    saveImages();
+                                });
+                                return;
+                            }
+                            if(currentVid && /^https?:/i.test(currentVid) && !/\\.m3u8(\\?|$)/i.test(currentVid)) { saveVideo(currentVid); return; }
+                            saveImages();
                         };
                         t.style.position='relative';
                         t.appendChild(btn);
@@ -892,12 +1721,12 @@
                     b.style.cssText='all:initial!important;background:rgba(0,0,0,0.95)!important;color:'+badgeColor+'!important;padding:8px 12px!important;border-radius:8px!important;font:bold 11px monospace!important;border:2px solid #333!important;text-align:center!important;display:block!important;min-width:80px!important;';
 
                     var view=document.createElement('button');
-                    view.innerText='👀 View';
+                    view.innerText=TT.view;
                     view.style.cssText='all:initial!important;background:'+badgeColor+'!important;color:#000!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     view.onclick=function(){
-                        var cache=getCache();
+                        var cache=getCache().slice();
                         syncWin=window.open(DASH,'ct_dashboard');
-                        upd('⏳ Sync');
+                        upd(TT.sync);
                         var tries=0;
                         var timer=setInterval(function(){
                             if(syncWin) syncWin.postMessage({type:'import_tweets',data:cache},'*');
@@ -908,23 +1737,24 @@
                     };
 
                     var clear=document.createElement('button');
-                    clear.innerText='🗑️ Clear';
+                    clear.innerText=TT.clear;
                     clear.style.cssText='all:initial!important;background:#ff4444!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     clear.onclick=function(){
-                        if(confirm('Twitter/X Cache löschen?')){
-                            localStorage.removeItem(KEY);
-                            seen.clear();
-                            scanCount=0;
-                            totalWrites++;
-                            upd('✅ 0');
-                            emitStatus(true);
-                            setTimeout(function(){upd();},900);
+                        if(confirm(TT.clearConfirm)){
+                            clearCacheStore().finally(function(){
+                                seen.clear();
+                                scanCount=0;
+                                totalWrites++;
+                                upd('✅ 0');
+                                emitStatus(true);
+                                setTimeout(function(){upd();},900);
+                            });
                         }
                     };
 
                     var sc=document.createElement('button');
                     sc.id='ct-as';
-                    sc.innerText='🔽 Scroll';
+                    sc.innerText=TT.scroll;
                     sc.style.cssText='all:initial!important;background:#888!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     sc.onclick=function(){if(isScrolling) stopScroll(); else startScroll();};
 
@@ -936,7 +1766,7 @@
                 function startScroll(){
                     if(scrollTimer) return;
                     isScrolling=true;
-                    if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText='⏸️ Stop';}
+                    if(AS){AS.style.background=badgeColor;AS.style.color='#000';AS.innerText=TT.stop;}
                     scrollTimer=setInterval(function(){
                         if(!isScrolling) return;
                         if(pausedUntil>now()) return;
@@ -946,7 +1776,7 @@
                 function stopScroll(){
                     isScrolling=false;
                     if(scrollTimer){clearInterval(scrollTimer);scrollTimer=null;}
-                    if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText='🔽 Scroll';}
+                    if(AS){AS.style.background='#888';AS.style.color='#fff';AS.innerText=TT.scroll;}
                 }
                 function markActivity(){lastActivity=now();if(isScrolling) stopScroll();}
 
@@ -957,12 +1787,13 @@
                 window.addEventListener('message',function(e){
                     if(!e || !e.data) return;
                     if(e.data.type==='CMD_CLEAR_CACHE'){
-                        localStorage.removeItem(KEY);
-                        seen.clear();
-                        scanCount=0;
-                        totalWrites++;
-                        upd('✅ 0');
-                        emitStatus(true);
+                        clearCacheStore().finally(function(){
+                            seen.clear();
+                            scanCount=0;
+                            totalWrites++;
+                            upd('✅ 0');
+                            emitStatus(true);
+                        });
                     } else if(e.data.type==='CMD_PING_STATUS'){
                         emitStatus(true);
                     }
@@ -1062,11 +1893,11 @@
                     if(C.rateLimit && scanCount >= C.maxTweetsBeforePause){
                         pausedUntil = now() + C.pauseDurationMs;
                         scanCount = 0;
-                        upd('⏸️ Limit');
+                        upd(TT.limit);
                     } else if(C.humanBreak && Math.random()*100 < C.humanBreakChance){
                         var extra = 30000 + Math.floor(Math.random() * 70000);
                         pausedUntil = now() + extra;
-                        upd('☕ Break');
+                        upd(TT.break);
                     }
 
                     emitStatus(false);
@@ -1081,25 +1912,43 @@
                     }
                 }
 
-                ensurePanel();
-                addDL();
-                scan();
-                setInterval(ensurePanel, 2200);
-                setInterval(addDL, 2100);
-                setInterval(function(){emitStatus(false);}, 5000);
-                alert('⚠️ CleanTwitter v5.3 BETA BIG gestartet');
+                function startAll(){
+                    ensurePanel();
+                    addDL();
+                    scan();
+                    setInterval(ensurePanel, 2200);
+                    setInterval(addDL, 2100);
+                    setInterval(function(){emitStatus(false);}, 5000);
+                    alert(TT.started);
+                }
+                if(IS_MOBILE){
+                    alert(TT.mobileBlocked);
+                    return;
+                }
+                readCache().then(function(initial){
+                    cacheMem=Array.isArray(initial)?initial:[];
+                    startAll();
+                }).catch(function(){
+                    STORE='local';
+                    cacheMem=lsGet();
+                    startAll();
+                });
             })();`;
 
             document.getElementById('bookmarkletBtn').href = `javascript:${source.replace(/\n\s+/g, ' ')}`;
         }
 
         function copyCode() {
-            const txt = document.getElementById('bookmarkletBtn').href;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(txt).then(() => alert('✅ Code kopiert!')).catch(() => prompt('Kopiere den Code manuell:', txt));
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
                 return;
             }
-            prompt('Kopiere den Code manuell:', txt);
+            const txt = document.getElementById('bookmarkletBtn').href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt).then(() => alert(tr('alertCodeCopied'))).catch(() => prompt(tr('manualCopyCode'), txt));
+                return;
+            }
+            prompt(tr('manualCopyCode'), txt);
         }
 
         function openHelpMenu() {
@@ -1112,6 +1961,36 @@
         }
 
         function getSafetyGuideText() {
+            if (settings.language === 'en') {
+                return [
+                    'CleanTwitter v5.3 - Anti-ban quick guide',
+                    '',
+                    'Mode at the top:',
+                    '- Use v5.2 = Beginner mode (simple)',
+                    '- v5.3 Pro mode = all settings',
+                    '',
+                    'Safe start:',
+                    '- Stealth: ON',
+                    '- Min/Max scan: 2200/6500 ms',
+                    '- Rate limit: ON, 45 tweets, 30000 ms pause',
+                    '- Human break: ON, 8%',
+                    '- Pause on hidden tab: ON',
+                    '- Max tweets/scan: 35',
+                    '',
+                    'Optional to disable:',
+                    '- Render limit: OFF = show all tweets',
+                    '- ZIP throttle: OFF = no throttling, faster but higher load',
+                    '- Live monitor: OFF = no runtime panel',
+                    '- Export Pro: OFF = standard ZIP export',
+                    '- Auto-tuning: OFF = only fixed values from settings',
+                    '',
+                    'Do not be too aggressive:',
+                    '- Min scan not below 1500 ms',
+                    '- Max tweets/scan not above 80',
+                    '- Scroll speed not above 120',
+                    '- Do not disable rate limit for long sessions'
+                ].join('\n');
+            }
             return [
                 'CleanTwitter v5.3 - Anti-Ban Kurzguide',
                 '',
@@ -1139,19 +2018,23 @@
                 '- Max Tweets/Scan nicht über 80',
                 '- ScrollSpeed nicht über 120',
                 '- RateLimit nicht ausschalten bei Dauerlauf'
-            ].join('\\n');
+            ].join('\n');
         }
 
         function copySafetyGuide() {
             const txt = getSafetyGuideText();
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(txt).then(() => alert('✅ Anleitung kopiert!')).catch(() => prompt('Kopiere die Anleitung manuell:', txt));
+                navigator.clipboard.writeText(txt).then(() => alert(tr('guideCopied'))).catch(() => prompt(tr('manualCopyGuide'), txt));
                 return;
             }
-            prompt('Kopiere die Anleitung manuell:', txt);
+            prompt(tr('manualCopyGuide'), txt);
         }
 
         function applyPreset(mode) {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const next = { ...settings };
             if (mode === 'safe') {
                 Object.assign(next, {
@@ -1192,11 +2075,16 @@
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
             updateBookmarklet();
+            applyMobileAccessState();
             loadCache();
-            alert('✅ Preset angewendet. Jetzt Bookmarklet neu in die Leiste ziehen.');
+            alert(tr('alertPresetApplied'));
         }
 
         function exportSettings() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -1204,42 +2092,88 @@
             a.click();
         }
 
+        function parseMaybeJsonObject(value) {
+            if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+            if (typeof value !== 'string') return null;
+            const txt = value.trim();
+            if (!txt) return null;
+            try {
+                const parsed = JSON.parse(txt);
+                return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function extractImportSettingsPayload(parsed) {
+            const root = parseMaybeJsonObject(parsed);
+            if (!root) throw new Error('invalid_root');
+
+            const candidates = [
+                root[SETTINGS_KEY],
+                root.settings,
+                root.config,
+                root.preferences,
+                root.payload,
+                root.data,
+                root.ct_settings_v53,
+                root.ctSettings
+            ];
+            for (const item of candidates) {
+                const obj = parseMaybeJsonObject(item);
+                if (obj) return obj;
+            }
+            return root;
+        }
+
         function importSettings() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'application/json,.json';
+            input.accept = '.json,application/json,text/json,text/plain';
             input.onchange = () => {
                 const f = input.files && input.files[0];
                 if (!f) return;
                 const r = new FileReader();
-                r.onload = () => {
+                r.onload = async () => {
                     try {
-                        const parsed = JSON.parse(String(r.result || '{}'));
-                        settings = sanitizeSettings(parsed);
+                        const rawText = String(r.result || '').replace(/^\uFEFF/, '').trim();
+                        if (!rawText) throw new Error('empty_import');
+                        const parsed = JSON.parse(rawText);
+                        const payload = extractImportSettingsPayload(parsed);
+                        settings = sanitizeSettings({ ...settings, ...payload });
                         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
                         applySettingsToUI();
+                        await activateStorageBackend({ migrate: true }).catch(() => {});
                         updateBookmarklet();
+                        applyMobileAccessState();
                         loadCache();
-                        alert('✅ Settings importiert');
+                        alert(tr('alertSettingsImported'));
                     } catch {
-                        alert('❌ Ungültige JSON-Datei');
+                        alert(tr('alertInvalidJson'));
                     }
                 };
+                r.onerror = () => alert(tr('alertInvalidJson'));
                 r.readAsText(f);
             };
             input.click();
         }
 
         function getCache() {
-            try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); }
-            catch { return []; }
+            return Array.isArray(runtimeState.cache) ? runtimeState.cache : [];
         }
 
-        function setCache(data) {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        function setCache(data, options = {}) {
+            runtimeState.cache = Array.isArray(data) ? data : [];
+            cachePersistQueued = true;
+            queuePersistRuntimeCache(options).catch(() => {});
         }
 
-        function normalizeCache(data) {
+        function normalizeCache(data, options = {}) {
+            const opts = { trackDupes: true, ...options };
             const map = new Set();
             const out = [];
             let removed = 0;
@@ -1255,23 +2189,27 @@
             if (settings.trimCache && out.length > settings.maxCacheTweets) {
                 const trimmed = out.slice(out.length - settings.maxCacheTweets);
                 removed += out.length - trimmed.length;
-                monitorState.dupes += Math.max(0, removed);
+                if (opts.trackDupes) monitorState.dupes += Math.max(0, removed);
                 return trimmed;
             }
-            monitorState.dupes += Math.max(0, removed);
+            if (opts.trackDupes) monitorState.dupes += Math.max(0, removed);
             return out;
         }
 
         function dedupeCache() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const c = getCache();
             const before = c.length;
             const after = normalizeCache(c);
             setCache(after);
             monitorState.writes++;
-            monitorState.status = 'Cache dedupliziert';
+            monitorState.status = tr('monitorStatusDedupe');
             updateMonitorView();
             loadCache();
-            alert(`✅ Dedupe fertig: ${before - after.length} Duplikate entfernt`);
+            alert(tr('alertDedupeDone')(before - after.length));
         }
 
         function downloadMedia(url, filename) {
@@ -1304,13 +2242,17 @@
         }
 
         async function downloadZIP() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const data = getCache();
-            if (!data.length) return alert('Cache ist leer!');
+            if (!data.length) return alert(tr('alertCacheEmpty'));
 
             const zip = new JSZip();
             const status = document.getElementById('loadingStatus');
             document.getElementById('loadingOverlay').style.display = 'flex';
-            monitorState.status = 'ZIP Export läuft';
+            monitorState.status = tr('zipWorking');
             updateMonitorView();
 
             let total = 0;
@@ -1366,7 +2308,7 @@
                                 }
                             } catch {}
                             processed++;
-                            status.innerText = `Verarbeite... (${processed}/${total})`;
+                            status.innerText = tr('processingLabel')(processed, total);
                             if (throttle > 0) await new Promise(r => setTimeout(r, throttle));
                         }
                     } else if (t.img) {
@@ -1392,7 +2334,7 @@
                     }
 
                     if (processed % 20 === 0) {
-                        status.innerText = `Verarbeite... (${processed}/${total})`;
+                        status.innerText = tr('processingLabel')(processed, total);
                         await new Promise(r => setTimeout(r, 80));
                     }
                 } catch {}
@@ -1410,32 +2352,42 @@
                 }
             }
 
-            status.innerText = 'Erstelle ZIP...';
+            status.innerText = tr('creatingZip');
             const content = await zip.generateAsync({ type: 'blob' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(content);
             a.download = exportPro ? `twitter_media_v53_pro_${Date.now()}.zip` : `twitter_media_v53_${Date.now()}.zip`;
             a.click();
             document.getElementById('loadingOverlay').style.display = 'none';
-            monitorState.status = 'ZIP Export fertig';
+            monitorState.status = tr('zipDone');
             updateMonitorView();
-            alert('✅ ZIP-Download erfolgreich!');
+            alert(tr('alertZipSuccess'));
         }
 
-        function clearCache() {
-            if (!confirm('Wirklich alle gespeicherten Tweets löschen?\n\nTipp: Vorher ZIP exportieren.')) return;
-            localStorage.removeItem(CACHE_KEY);
+        async function clearCache() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
+            if (!confirm(tr('confirmClearCache'))) return;
+            await clearRuntimeStorage();
             if (window.opener) {
                 try { window.opener.postMessage({ type: 'CMD_CLEAR_CACHE' }, '*'); } catch {}
             }
             monitorState.writes++;
-            monitorState.status = 'Cache gelöscht';
+            monitorState.status = tr('cacheDeleted');
+            renderStorageStatusText();
+            renderCompatibility();
             loadCache();
         }
 
         function downloadArchive() {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return;
+            }
             const data = getCache();
-            if (!data.length) return alert('Cache ist leer!');
+            if (!data.length) return alert(tr('alertCacheEmpty'));
 
             let html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Twitter Archiv</title><style>body{font-family:system-ui;background:#eee;padding:20px;max-width:860px;margin:0 auto;} .card{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;} img,video{max-width:100%;border-radius:10px;margin-top:10px;} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}</style></head><body>';
             html += `<h1>📦 Twitter Archiv (${data.length} Tweets)</h1>`;
@@ -1459,11 +2411,9 @@
         }
 
         function loadCache() {
-            const raw = localStorage.getItem(CACHE_KEY);
-            let data = [];
-            try { data = raw ? JSON.parse(raw) : []; } catch { data = []; }
-            const normalized = normalizeCache(data);
-            if (normalized.length !== data.length) {
+            const current = getCache();
+            const normalized = normalizeCache(Array.isArray(current) ? current : []);
+            if (normalized.length !== current.length) {
                 setCache(normalized);
                 monitorState.writes++;
             }
@@ -1475,7 +2425,7 @@
 
             document.getElementById('countDisplay').innerText = cache.length;
 
-            const sizeKB = Math.round(new Blob([JSON.stringify(cache)]).size / 1024);
+            const sizeKB = Math.round((JSON.stringify(cache).length * 2) / 1024);
             document.getElementById('sizeDisplay').innerText = sizeKB;
             const sizeInfo = document.getElementById('sizeInfo');
             if (sizeKB > 5000) {
@@ -1510,8 +2460,12 @@
             document.getElementById('renderedCount').innerText = visible.length;
             const hidden = cache.length - visible.length;
             renderHint.innerText = settings.enableRenderLimit
-                ? (hidden > 0 ? `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).` : '')
-                : 'Render-Limit ist AUS: alle Tweets werden angezeigt.';
+                ? (hidden > 0
+                    ? (settings.language === 'en'
+                        ? `Performance mode: ${hidden} older tweets not rendered (still in cache).`
+                        : `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).`)
+                    : '')
+                : tr('renderHintOff');
 
             const frag = document.createDocumentFragment();
             visible.forEach((t, idx) => {
@@ -1545,7 +2499,7 @@
 
             grid.appendChild(frag);
             if (settings.enableLiveMonitor) {
-                if (!monitorState.status || monitorState.status === 'Idle') monitorState.status = 'Cache geladen';
+                if (!monitorState.status || monitorState.status === 'Idle') monitorState.status = tr('cacheLoaded');
                 updateMonitorView();
             }
         }
@@ -1569,6 +2523,7 @@
             }
 
             if (event.data.type !== 'import_tweets') return;
+            if (isUsageBlocked()) return;
 
             const incoming = Array.isArray(event.data.data) ? event.data.data : [];
             if (!incoming.length) return;
@@ -1590,17 +2545,17 @@
                 setCache(normalized);
                 monitorState.writes++;
                 monitorState.added += added;
-                monitorState.status = `Import +${added}`;
+                monitorState.status = tr('importPlus')(added);
                 updateMonitorView();
                 loadCache();
 
                 const info = document.createElement('div');
-                info.innerText = `✅ ${added} neue Tweets importiert`;
+                info.innerText = tr('importAdded')(added);
                 info.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f8;color:#000;padding:10px 20px;border-radius:20px;z-index:9999;font-weight:bold;';
                 document.body.appendChild(info);
                 setTimeout(() => info.remove(), 2600);
             } else {
-                monitorState.status = 'Import ohne neue Tweets';
+                monitorState.status = tr('monitorStatusImportNone');
                 updateMonitorView();
             }
         });
@@ -1611,15 +2566,24 @@
             try { window.opener.postMessage({ type: 'CMD_PING_STATUS' }, '*'); } catch {}
         }
 
-        renderCompatibility();
-        loadSettings();
-        monitorState.status = 'Bereit';
-        loadCache();
-        updateMonitorView();
-        setInterval(() => {
+        window.addEventListener('pagehide', () => {
+            queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+        });
+        window.addEventListener('beforeunload', () => {
+            queuePersistRuntimeCache({ immediate: true }).catch(() => {});
+        });
+
+        (async () => {
+            await loadSettings();
+            monitorState.status = tr('monitorStatusReady');
+            loadCache();
+            applyMobileAccessState();
             updateMonitorView();
-            pingBookmarkletStatus();
-        }, 2000);
+            setInterval(() => {
+                updateMonitorView();
+                pingBookmarkletStatus();
+            }, 2000);
+        })();
     </script>
 </body>
 </html>
