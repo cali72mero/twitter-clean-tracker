@@ -144,6 +144,7 @@
                 </select>
             </div>
             <p id="storageStatusText" class="subtle">Storage-Status wird geladen...</p>
+            <p id="riskWarningText" class="warning-inline" style="display:none;"></p>
         </div>
 
         <div class="setting-group">
@@ -154,9 +155,9 @@
             </div>
             <div class="setting-item pro-only">
                 <label for="minScanDelay">Min Scan (ms):</label>
-                <input type="number" id="minScanDelay" min="1000" max="30000" value="2200" onchange="saveSettings()">
+                <input type="number" id="minScanDelay" min="100" max="300000" value="2200" onchange="saveSettings()">
                 <label for="maxScanDelay">Max Scan (ms):</label>
-                <input type="number" id="maxScanDelay" min="1000" max="45000" value="6500" onchange="saveSettings()">
+                <input type="number" id="maxScanDelay" min="100" max="300000" value="6500" onchange="saveSettings()">
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="rateLimit" onchange="saveSettings()" checked>
@@ -164,15 +165,15 @@
             </div>
             <div class="setting-item pro-only">
                 <label for="maxTweetsBeforePause">Pause nach Tweets:</label>
-                <input type="number" id="maxTweetsBeforePause" min="5" max="250" value="45" onchange="saveSettings()">
+                <input type="number" id="maxTweetsBeforePause" min="1" max="100000" value="45" onchange="saveSettings()">
                 <label for="pauseDurationMs">Pause (ms):</label>
-                <input type="number" id="pauseDurationMs" min="5000" max="240000" value="30000" onchange="saveSettings()">
+                <input type="number" id="pauseDurationMs" min="0" max="86400000" value="30000" onchange="saveSettings()">
             </div>
             <div class="setting-item pro-only">
                 <input type="checkbox" id="humanBreak" onchange="saveSettings()" checked>
                 <label for="humanBreak">Menschliche Zufallspausen aktiv</label>
                 <label for="humanBreakChance">Chance %:</label>
-                <input type="number" id="humanBreakChance" min="0" max="50" value="8" onchange="saveSettings()">
+                <input type="number" id="humanBreakChance" min="0" max="100" value="8" onchange="saveSettings()">
             </div>
             <div class="setting-item pro-only">
                 <input type="checkbox" id="pauseOnHiddenTab" onchange="saveSettings()" checked>
@@ -180,7 +181,7 @@
             </div>
             <div class="setting-item pro-only">
                 <label for="maxTweetsPerScan">Max Tweets pro Scan:</label>
-                <input type="number" id="maxTweetsPerScan" min="5" max="200" value="35" onchange="saveSettings()">
+                <input type="number" id="maxTweetsPerScan" min="1" max="5000" value="35" onchange="saveSettings()">
                 <span class="subtle">Niedriger = unauffälliger + weniger CPU</span>
             </div>
         </div>
@@ -189,9 +190,9 @@
             <h4 id="groupAutoScroller" style="color: #aaa;">🔽 Auto-Scroller</h4>
             <div class="setting-item">
                 <label for="scrollSpeed">Scroll-Geschwindigkeit (px/s):</label>
-                <input type="number" id="scrollSpeed" value="30" min="10" max="220" onchange="saveSettings()">
+                <input type="number" id="scrollSpeed" value="30" min="1" max="5000" onchange="saveSettings()">
                 <label for="scrollPause">Pause nach Aktivität (ms):</label>
-                <input type="number" id="scrollPause" value="2000" min="500" max="12000" onchange="saveSettings()">
+                <input type="number" id="scrollPause" value="2000" min="0" max="120000" onchange="saveSettings()">
             </div>
         </div>
 
@@ -234,20 +235,20 @@
                 <input type="checkbox" id="trimCache" onchange="saveSettings()" checked>
                 <label for="trimCache">Cache automatisch begrenzen</label>
                 <label for="maxCacheTweets">Max Tweets im Cache:</label>
-                <input type="number" id="maxCacheTweets" min="500" max="50000" value="8000" onchange="saveSettings()">
+                <input type="number" id="maxCacheTweets" min="1" max="2000000" value="8000" onchange="saveSettings()">
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="enableRenderLimit" onchange="saveSettings()" checked>
                 <label for="enableRenderLimit">Render-Limit aktiv</label>
                 <label for="renderLimit">Dashboard Render-Limit:</label>
-                <input type="number" id="renderLimit" min="50" max="5000" value="350" onchange="saveSettings()">
+                <input type="number" id="renderLimit" min="1" max="100000" value="350" onchange="saveSettings()">
                 <span class="subtle">Nur letzte N Tweets werden gezeichnet (für flüssige UI)</span>
             </div>
             <div class="setting-item">
                 <input type="checkbox" id="enableZipThrottle" onchange="saveSettings()" checked>
                 <label for="enableZipThrottle">ZIP Throttle aktiv</label>
                 <label for="zipThrottleMs">ZIP Throttle (ms):</label>
-                <input type="number" id="zipThrottleMs" min="0" max="300" value="60" onchange="saveSettings()">
+                <input type="number" id="zipThrottleMs" min="0" max="5000" value="60" onchange="saveSettings()">
                 <span class="subtle">höher = weniger Last, langsamer Export</span>
             </div>
         </div>
@@ -425,6 +426,37 @@
                     <tr><td>Grünes Infinity-Badge</td><td>Optional</td><td>AUS wenn du den roten Stil bevorzugst</td></tr>
                 </tbody>
             </table>
+
+            <h4 style="margin-top: 14px; color: #f0d778;">💽 Speicher-Guide: Auto, IndexedDB, localStorage</h4>
+            <table class="help-table">
+                <thead>
+                    <tr>
+                        <th>Modus</th>
+                        <th>Wann nutzen?</th>
+                        <th>Stärken</th>
+                        <th>Nachteile / Hinweis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Auto (empfohlen)</td><td>Für fast alle Desktop-Nutzer</td><td>Wählt automatisch IndexedDB (wenn verfügbar), sonst localStorage</td><td>Beste Standard-Wahl für normale und große Sessions</td></tr>
+                    <tr><td>IndexedDB bevorzugen</td><td>Wenn du sehr große Caches / lange Läufe machst</td><td>Stabiler bei viel Daten, weniger Speicher-Probleme als localStorage</td><td>Auf Mobile blockiert; nur Desktop sinnvoll</td></tr>
+                    <tr><td>Nur localStorage</td><td>Legacy-Browser, Debug, Notfall-Fallback</td><td>Einfach, kompatibel</td><td>Bei sehr großen Caches langsamer/limitiert</td></tr>
+                </tbody>
+            </table>
+            <div class="help-grid" style="margin-top: 8px;">
+                <div class="help-box">
+                    <h4>Welche Auswahl für welchen Anwendungsfall?</h4>
+                    <p>1. Normaler Gebrauch (1k bis 20k Tweets): <strong>Auto</strong></p>
+                    <p>2. Sehr große Archive / Dauerlauf: <strong>IndexedDB bevorzugen</strong></p>
+                    <p>3. Alter Browser / Kompatibilitäts-Test: <strong>Nur localStorage</strong></p>
+                </div>
+                <div class="help-box">
+                    <h4>Wichtig</h4>
+                    <p>Dashboard und Twitter/X laufen auf unterschiedlichen Seiten (Origins).</p>
+                    <p>Darum immer beide Caches korrekt leeren (Twitter Panel + Dashboard).</p>
+                    <p>Mobile Browser sind nur Ansicht: produktiv bitte Desktop nutzen.</p>
+                </div>
+            </div>
 
             <div class="help-grid" style="margin-top: 10px;">
                 <div class="help-box">
@@ -631,20 +663,19 @@
             s.exportMetaJSON = !!s.exportMetaJSON;
             s.exportMetaCSV = !!s.exportMetaCSV;
 
-            s.minScanDelay = clamp(s.minScanDelay, 1000, 30000, defaultSettings.minScanDelay);
-            s.maxScanDelay = clamp(s.maxScanDelay, 1000, 45000, defaultSettings.maxScanDelay);
-            if (s.maxScanDelay < s.minScanDelay) s.maxScanDelay = s.minScanDelay;
+            s.minScanDelay = clamp(s.minScanDelay, 100, 300000, defaultSettings.minScanDelay);
+            s.maxScanDelay = clamp(s.maxScanDelay, 100, 300000, defaultSettings.maxScanDelay);
 
-            s.maxTweetsBeforePause = clamp(s.maxTweetsBeforePause, 5, 250, defaultSettings.maxTweetsBeforePause);
-            s.pauseDurationMs = clamp(s.pauseDurationMs, 5000, 240000, defaultSettings.pauseDurationMs);
-            s.humanBreakChance = clamp(s.humanBreakChance, 0, 50, defaultSettings.humanBreakChance);
-            s.maxTweetsPerScan = clamp(s.maxTweetsPerScan, 5, 200, defaultSettings.maxTweetsPerScan);
-            s.autoTuneStrength = clamp(s.autoTuneStrength, 1, 5, defaultSettings.autoTuneStrength);
-            s.scrollSpeed = clamp(s.scrollSpeed, 10, 220, defaultSettings.scrollSpeed);
-            s.scrollPause = clamp(s.scrollPause, 500, 12000, defaultSettings.scrollPause);
-            s.maxCacheTweets = clamp(s.maxCacheTweets, 500, 50000, defaultSettings.maxCacheTweets);
-            s.renderLimit = clamp(s.renderLimit, 50, 5000, defaultSettings.renderLimit);
-            s.zipThrottleMs = clamp(s.zipThrottleMs, 0, 300, defaultSettings.zipThrottleMs);
+            s.maxTweetsBeforePause = clamp(s.maxTweetsBeforePause, 1, 100000, defaultSettings.maxTweetsBeforePause);
+            s.pauseDurationMs = clamp(s.pauseDurationMs, 0, 86400000, defaultSettings.pauseDurationMs);
+            s.humanBreakChance = clamp(s.humanBreakChance, 0, 100, defaultSettings.humanBreakChance);
+            s.maxTweetsPerScan = clamp(s.maxTweetsPerScan, 1, 5000, defaultSettings.maxTweetsPerScan);
+            s.autoTuneStrength = clamp(s.autoTuneStrength, 1, 10, defaultSettings.autoTuneStrength);
+            s.scrollSpeed = clamp(s.scrollSpeed, 1, 5000, defaultSettings.scrollSpeed);
+            s.scrollPause = clamp(s.scrollPause, 0, 120000, defaultSettings.scrollPause);
+            s.maxCacheTweets = clamp(s.maxCacheTweets, 1, 2000000, defaultSettings.maxCacheTweets);
+            s.renderLimit = clamp(s.renderLimit, 1, 100000, defaultSettings.renderLimit);
+            s.zipThrottleMs = clamp(s.zipThrottleMs, 0, 5000, defaultSettings.zipThrottleMs);
             return s;
         }
 
@@ -695,6 +726,7 @@
             applyModeVisibility();
             applyLanguage();
             renderStorageStatusText();
+            updateRiskWarningText();
             updateMonitorView();
         }
 
@@ -708,6 +740,7 @@
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applyLanguage();
             renderStorageStatusText();
+            updateRiskWarningText();
             renderCompatibility();
             applyMobileAccessState();
             updateMonitorView();
@@ -1192,6 +1225,29 @@
             el.textContent = settings.language === 'en'
                 ? `Requested: ${reqTxt} | Active: ${activeTxt}. ${detail}${migrationTxt}`
                 : `Gewählt: ${reqTxt} | Aktiv: ${activeTxt}. ${detail}${migrationTxt}`;
+        }
+
+        function updateRiskWarningText() {
+            const el = document.getElementById('riskWarningText');
+            if (!el) return;
+            const warn = [];
+            const en = settings.language === 'en';
+
+            if (settings.minScanDelay < 1500) warn.push(en ? 'Min scan under 1500ms can increase detection risk.' : 'Min Scan unter 1500ms kann das Erkennungsrisiko erhöhen.');
+            if (settings.maxTweetsPerScan > 80) warn.push(en ? 'Max tweets per scan over 80 is aggressive.' : 'Max Tweets pro Scan über 80 ist aggressiv.');
+            if (!settings.rateLimit) warn.push(en ? 'Rate limit is OFF (higher risk in long sessions).' : 'Rate Limit ist AUS (höheres Risiko bei langen Sessions).');
+            if (!settings.stealthMode) warn.push(en ? 'Stealth mode is OFF.' : 'Stealth Mode ist AUS.');
+            if (settings.scrollSpeed > 120) warn.push(en ? 'Scroll speed over 120 can reduce stability.' : 'ScrollSpeed über 120 kann die Stabilität verschlechtern.');
+            if (settings.maxCacheTweets < 500) warn.push(en ? 'Very low max cache can remove old tweets quickly.' : 'Sehr niedriger Max-Cache kann ältere Tweets schnell löschen.');
+            if (settings.maxScanDelay < settings.minScanDelay) warn.push(en ? 'Max scan is lower than min scan. Runtime will auto-use the lower/higher pair.' : 'Max Scan ist kleiner als Min Scan. Runtime nutzt automatisch das kleinere/größere Paar.');
+
+            if (!warn.length) {
+                el.style.display = 'none';
+                el.textContent = '';
+                return;
+            }
+            el.style.display = 'block';
+            el.textContent = (en ? 'Warning: ' : 'Warnung: ') + warn.join(' | ');
         }
 
         function applyMobileAccessState() {
@@ -1820,8 +1876,12 @@
 
                 function calcDelay(){
                     var base;
-                    if(C.stealthMode) base=Math.floor(Math.random()*(C.maxScanDelay-C.minScanDelay+1))+C.minScanDelay;
-                    else base=C.minScanDelay;
+                    var minDelay=Number(C.minScanDelay); if(!isFinite(minDelay)) minDelay=2200;
+                    var maxDelay=Number(C.maxScanDelay); if(!isFinite(maxDelay)) maxDelay=6500;
+                    var low=Math.min(minDelay,maxDelay);
+                    var high=Math.max(minDelay,maxDelay);
+                    if(C.stealthMode) base=Math.floor(Math.random()*(high-low+1))+low;
+                    else base=low;
                     if(C.autoTune) base=Math.floor(base*dynDelayMul);
                     nextDelayMs=Math.max(400,Math.min(45000,base));
                     return nextDelayMs;
