@@ -45,7 +45,11 @@
         .img-grid img:only-child { grid-column: span 2; aspect-ratio: auto; }
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .loader { border: 5px solid #333; border-top: 5px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        .loading-progress-wrap { width: min(560px, 88vw); height: 14px; margin-top: 14px; border-radius: 999px; overflow: hidden; border: 1px solid #3a3a3a; background: #141414; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03); }
+        .loading-progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #00ff88, #ffe45e, #00ff88); background-size: 220% 100%; animation: zipGlow 1.2s linear infinite; transition: width 0.2s ease; }
+        .loading-eta { margin-top: 8px; color: #a9b3bf; font-size: 0.88rem; text-align: center; min-height: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes zipGlow { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
         .new-badge { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 8px; }
         .info-box { background: #0a2a0a; border: 2px solid #0f8; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; }
         .info-box h4 { color: #0f8; margin: 0 0 8px 0; }
@@ -96,6 +100,8 @@
         <div class="loader"></div>
         <h2 id="loadingTitle" style="margin-top: 20px;">📦 ZIP wird erstellt...</h2>
         <p id="loadingStatus" style="color: #aaa;">Bitte warten...</p>
+        <div class="loading-progress-wrap"><div id="loadingProgressBar" class="loading-progress-bar"></div></div>
+        <p id="loadingEta" class="loading-eta">ETA wird berechnet...</p>
     </div>
 
     <div class="quick-nav">
@@ -296,6 +302,7 @@
         <button id="btnLiveApply" class="btn btn-soft" onclick="applyRuntimeConfigLive()">⚡ Live auf X anwenden</button>
         <button id="btnRuntimeOn" class="btn btn-soft" onclick="startRuntimeLive()">▶️ Runtime starten</button>
         <button id="btnRuntimeOff" class="btn btn-soft" onclick="stopRuntimeLive()">🛑 Runtime stoppen</button>
+        <button id="btnRuntimeResume" class="btn btn-soft" onclick="resumeRuntimeLive()">⏭️ Pause lösen</button>
         <button id="btnExportSettings" class="btn btn-soft" onclick="exportSettings()">💾 Settings exportieren</button>
         <button id="btnImportSettings" class="btn btn-soft" onclick="importSettings()">📥 Settings importieren</button>
         <button id="btnDedupe" class="btn btn-soft" onclick="dedupeCache()">🧹 Duplikate entfernen</button>
@@ -332,6 +339,11 @@
             <button id="btnHtmlArchive" class="btn" onclick="downloadArchive()">📥 HTML-Archiv</button>
             <button id="btnZipExport" class="btn" onclick="downloadZIP()" style="background: #4444ff; color:#fff;">🗂️ ZIP-Export</button>
             <button id="btnClearCache" class="btn btn-danger" onclick="clearCache()">🗑️ Cache leeren</button>
+        </div>
+        <div class="setting-item" style="justify-content:center; margin-top:10px;">
+            <label id="userFilterLabel" for="userFilterSelect">Nutzer-Filter:</label>
+            <select id="userFilterSelect" onchange="setUserFilter(this.value)" style="min-width: min(360px, 92vw);"></select>
+            <span id="userFilterHint" class="subtle">Alle Nutzer = zeigt alle Posts</span>
         </div>
         <p id="renderHint" class="subtle" style="text-align:center;"></p>
         <div id="grid" class="tweet-grid"></div>
@@ -489,6 +501,7 @@
     <script>
         const CACHE_KEY = 'tw_clean_cache';
         const DELETED_POSTS_KEY = 'ct_deleted_posts_v53';
+        const VIEW_FILTER_KEY = 'ct_view_filter_v53';
         const SETTINGS_KEY = 'ct_settings_v53';
         const DASHBOARD_URL = 'https://cali72mero.github.io/twitter-clean-tracker/index.html';
         const IDB_DB_NAME = 'ct_v53_cache_db';
@@ -530,6 +543,10 @@
                 cacheDeleted: 'Cache gelöscht',
                 processingLabel: (a, b) => `Verarbeite... (${a}/${b})`,
                 creatingZip: 'Erstelle ZIP...',
+                zipEtaCalculating: 'ETA wird berechnet...',
+                zipEtaLine: (eta, p, f) => `Restzeit ca. ${eta} • Parallel x${p}${f > 0 ? ` • Fehler ${f}` : ''}`,
+                zipFinalizing: 'Packe ZIP zusammen...',
+                alertZipPartial: (ok, fail) => `⚠️ ZIP fertig, aber ${fail} Dateien konnten nicht geladen werden. Erfolgreich: ${ok}`,
                 bookmarkletStarted: '⚠️ CleanTwitter v5.3 BETA BIG gestartet',
                 cacheLoaded: 'Cache geladen',
                 importPlus: (n) => `Import +${n}`,
@@ -538,7 +555,8 @@
                 runtimeNoOpener: 'Kein verbundenes Twitter/X-Fenster gefunden. Öffne das Dashboard über den View-Button im Panel.',
                 runtimeConfigSent: 'Live-Konfiguration an Twitter/X gesendet.',
                 runtimeOffSent: 'Runtime-Stopp an Twitter/X gesendet.',
-                runtimeOnSent: 'Runtime-Start an Twitter/X gesendet.'
+                runtimeOnSent: 'Runtime-Start an Twitter/X gesendet.',
+                runtimeResumeSent: 'Pause in Twitter/X aufgehoben.'
             },
             en: {
                 langLabel: 'Language',
@@ -575,6 +593,10 @@
                 cacheDeleted: 'Cache deleted',
                 processingLabel: (a, b) => `Processing... (${a}/${b})`,
                 creatingZip: 'Creating ZIP...',
+                zipEtaCalculating: 'ETA is being calculated...',
+                zipEtaLine: (eta, p, f) => `Remaining ~ ${eta} • Parallel x${p}${f > 0 ? ` • Failed ${f}` : ''}`,
+                zipFinalizing: 'Building ZIP package...',
+                alertZipPartial: (ok, fail) => `⚠️ ZIP finished, but ${fail} files failed. Success: ${ok}`,
                 bookmarkletStarted: '⚠️ CleanTwitter v5.3 BETA BIG started',
                 cacheLoaded: 'Cache loaded',
                 importPlus: (n) => `Import +${n}`,
@@ -583,7 +605,8 @@
                 runtimeNoOpener: 'No connected Twitter/X window found. Open this dashboard via the panel view button.',
                 runtimeConfigSent: 'Live config sent to Twitter/X runtime.',
                 runtimeOffSent: 'Runtime stop sent to Twitter/X.',
-                runtimeOnSent: 'Runtime start sent to Twitter/X.'
+                runtimeOnSent: 'Runtime start sent to Twitter/X.',
+                runtimeResumeSent: 'Pause was cleared on Twitter/X runtime.'
             }
         };
 
@@ -650,6 +673,7 @@
         let cachePersistChain = Promise.resolve();
         let cachePersistQueued = false;
         let deletedPostKeys = new Set();
+        const viewFilterState = { user: 'all' };
 
         function clamp(n, min, max, fallback) {
             const x = Number(n);
@@ -830,10 +854,14 @@
             setTxt('btnLiveApply', settings.language === 'en' ? '⚡ Apply live on X' : '⚡ Live auf X anwenden');
             setTxt('btnRuntimeOn', settings.language === 'en' ? '▶️ Start runtime' : '▶️ Runtime starten');
             setTxt('btnRuntimeOff', settings.language === 'en' ? '🛑 Stop runtime' : '🛑 Runtime stoppen');
+            setTxt('btnRuntimeResume', settings.language === 'en' ? '⏭️ Clear pause' : '⏭️ Pause lösen');
             setTxt('btnExportSettings', settings.language === 'en' ? '💾 Export settings' : '💾 Settings exportieren');
             setTxt('btnImportSettings', settings.language === 'en' ? '📥 Import settings' : '📥 Settings importieren');
             setTxt('btnDedupe', settings.language === 'en' ? '🧹 Remove duplicates' : '🧹 Duplikate entfernen');
             setTxt('btnGuideMenu', settings.language === 'en' ? '📘 Guide / menu' : '📘 Anleitung / Menü');
+            setTxt('loadingTitle', settings.language === 'en' ? '📦 Creating ZIP...' : '📦 ZIP wird erstellt...');
+            setTxt('loadingStatus', settings.language === 'en' ? 'Please wait...' : 'Bitte warten...');
+            setTxt('loadingEta', tr('zipEtaCalculating'));
 
             setTxt('monitorTitle', settings.language === 'en' ? '🛰️ Live monitor' : '🛰️ Live Monitor');
             setTxt('monLblSession', settings.language === 'en' ? 'Session' : 'Session');
@@ -855,6 +883,8 @@
             setTxt('btnClearCache', settings.language === 'en' ? '🗑️ Clear cache' : '🗑️ Cache leeren');
             setTxt('emptyTitle', settings.language === 'en' ? 'No data yet' : 'Noch leer hier');
             setTxt('emptyText', settings.language === 'en' ? 'Start the bookmarklet on Twitter/X and let the feed load.' : 'Bookmarklet auf Twitter/X starten und Feed laden lassen.');
+            setTxt('userFilterLabel', settings.language === 'en' ? 'User filter:' : 'Nutzer-Filter:');
+            setTxt('userFilterHint', settings.language === 'en' ? 'All users = show all posts' : 'Alle Nutzer = zeigt alle Posts');
 
             const setLabel = (forId, text, html = false) => {
                 const el = document.querySelector(`label[for="${forId}"]`);
@@ -961,6 +991,7 @@
             const saved = localStorage.getItem(SETTINGS_KEY);
             settings = sanitizeSettings(saved ? JSON.parse(saved) : defaultSettings);
             loadDeletedPostKeys();
+            loadViewFilter();
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             applySettingsToUI();
             await activateStorageBackend({ migrate: true });
@@ -1051,6 +1082,21 @@
             catch {}
         }
 
+        function loadViewFilter() {
+            try {
+                const raw = String(localStorage.getItem(VIEW_FILTER_KEY) || 'all').trim();
+                viewFilterState.user = raw || 'all';
+            } catch {
+                viewFilterState.user = 'all';
+            }
+        }
+
+        function persistViewFilter() {
+            try {
+                localStorage.setItem(VIEW_FILTER_KEY, String(viewFilterState.user || 'all'));
+            } catch {}
+        }
+
         function safeParseStringArray(raw) {
             try {
                 const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -1073,6 +1119,71 @@
             try {
                 localStorage.setItem(DELETED_POSTS_KEY, JSON.stringify(Array.from(deletedPostKeys)));
             } catch {}
+        }
+
+        function getAllUsersFromCache(cache) {
+            if (!Array.isArray(cache) || !cache.length) return [];
+            const byKey = new Map();
+            cache.forEach((tweet) => {
+                const user = String((tweet && tweet.user) || '').trim();
+                if (!user) return;
+                const key = normalizeText(user);
+                if (!key) return;
+                if (!byKey.has(key)) byKey.set(key, user);
+            });
+            return Array.from(byKey.values()).sort((a, b) => a.localeCompare(b));
+        }
+
+        function setUserFilter(value) {
+            viewFilterState.user = String(value || 'all');
+            persistViewFilter();
+            loadCache();
+        }
+
+        function refreshUserFilterOptions(cache) {
+            const select = document.getElementById('userFilterSelect');
+            if (!select) return;
+
+            const users = getAllUsersFromCache(cache);
+            const previous = String(viewFilterState.user || 'all');
+            select.innerHTML = '';
+
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = settings.language === 'en' ? 'All users' : 'Alle Nutzer';
+            select.appendChild(allOption);
+
+            users.forEach((user) => {
+                const opt = document.createElement('option');
+                opt.value = user;
+                opt.textContent = user;
+                select.appendChild(opt);
+            });
+
+            let selected = 'all';
+            if (previous !== 'all') {
+                const exact = users.find((u) => u === previous);
+                if (exact) selected = exact;
+                else {
+                    const normPrev = normalizeText(previous);
+                    const loose = users.find((u) => normalizeText(u) === normPrev);
+                    if (loose) selected = loose;
+                }
+            }
+
+            select.value = selected;
+            if (selected !== viewFilterState.user) {
+                viewFilterState.user = selected;
+                persistViewFilter();
+            }
+        }
+
+        function applyUserFilter(cache) {
+            if (!Array.isArray(cache) || !cache.length) return [];
+            const selected = String(viewFilterState.user || 'all');
+            if (!selected || selected === 'all') return cache;
+            const key = normalizeText(selected);
+            return cache.filter((tweet) => normalizeText((tweet && tweet.user) || '') === key);
         }
 
         function openIndexedDB() {
@@ -1317,6 +1428,7 @@
                 'btnLiveApply',
                 'btnRuntimeOn',
                 'btnRuntimeOff',
+                'btnRuntimeResume',
                 'btnExportSettings',
                 'btnImportSettings',
                 'btnDedupe',
@@ -1628,6 +1740,58 @@
             return `${sec}s`;
         }
 
+        function sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
+        }
+
+        function formatEta(ms) {
+            const totalSec = Math.max(0, Math.ceil((Number(ms) || 0) / 1000));
+            const h = Math.floor(totalSec / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            const s = totalSec % 60;
+            if (h > 0) return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function computeZipParallelism() {
+            const hw = Number(navigator.hardwareConcurrency) || 4;
+            let workers = Math.max(2, Math.min(8, hw - 1));
+            if (settings.enableZipThrottle) workers = Math.max(1, Math.min(workers, 3));
+            return workers;
+        }
+
+        async function fetchBlobWithRetry(url, options = {}) {
+            const opts = {
+                attempts: 4,
+                timeoutMs: 24000,
+                baseDelayMs: 280,
+                ...options
+            };
+
+            const runOnce = async () => {
+                const ac = new AbortController();
+                const timer = setTimeout(() => ac.abort(), opts.timeoutMs);
+                try {
+                    const res = await fetch(url, { method: 'GET', cache: 'no-store', credentials: 'omit', signal: ac.signal });
+                    if (!res.ok) throw new Error(`http_${res.status}`);
+                    return await res.blob();
+                } finally {
+                    clearTimeout(timer);
+                }
+            };
+
+            for (let attempt = 1; attempt <= opts.attempts; attempt++) {
+                try {
+                    return await runOnce();
+                } catch {
+                    if (attempt >= opts.attempts) break;
+                    const jitter = Math.floor(Math.random() * 120);
+                    await sleep(opts.baseDelayMs * Math.pow(1.8, attempt - 1) + jitter);
+                }
+            }
+            return null;
+        }
+
         function updateMonitorView() {
             const panel = document.getElementById('monitorSection');
             const pill = document.getElementById('monitorModePill');
@@ -1669,7 +1833,7 @@
                 var cacheMem=[];
                 var idbDbPromise=null;
                 var writeTimer=null;
-                var P,B,AS,CL,VW,OFF,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
+                var P,B,AS,CL,VW,OFF,RS,seen=new Set(),scanCount=0,pausedUntil=0,scrollTimer=null,isScrolling=false,lastActivity=Date.now();
                 var ensureTimer=null,dlTimer=null,statusTimer=null,scanTimer=null;
                 var isRuntimeStopped=false;
                 var wheelHandler=null,touchHandler=null,keyHandler=null,messageHandler=null;
@@ -1677,17 +1841,51 @@
                 var badgeIcon='♾️';
                 var L='de';
                 var TT={};
+                function clampNum(v,min,max,fallback){
+                    var n=Number(v);
+                    if(!isFinite(n)) return fallback;
+                    if(n<min) return min;
+                    if(n>max) return max;
+                    return n;
+                }
                 function applyCfg(next){
                     if(next && typeof next==='object') C=Object.assign({},C,next);
+                    C.language = C.language==='en'?'en':'de';
+                    C.storageMode = (C.storageMode==='idb'||C.storageMode==='local'||C.storageMode==='auto')?C.storageMode:'auto';
+                    C.stealthMode = !!C.stealthMode;
+                    C.rateLimit = !!C.rateLimit;
+                    C.humanBreak = !!C.humanBreak;
+                    C.pauseOnHiddenTab = !!C.pauseOnHiddenTab;
+                    C.skipRetweets = !!C.skipRetweets;
+                    C.detectThreads = !!C.detectThreads;
+                    C.enableLiveMonitor = !!C.enableLiveMonitor;
+                    C.autoTune = !!C.autoTune;
+                    C.enableDedupePro = !!C.enableDedupePro;
+                    C.showDlButtons = !!C.showDlButtons;
+                    C.greenBadge = !!C.greenBadge;
+                    C.trimCache = !!C.trimCache;
+                    C.minScanDelay = clampNum(C.minScanDelay,100,300000,2200);
+                    C.maxScanDelay = clampNum(C.maxScanDelay,100,300000,6500);
+                    C.maxTweetsBeforePause = clampNum(C.maxTweetsBeforePause,1,100000,45);
+                    C.pauseDurationMs = clampNum(C.pauseDurationMs,0,86400000,30000);
+                    C.humanBreakChance = clampNum(C.humanBreakChance,0,100,8);
+                    C.maxTweetsPerScan = clampNum(C.maxTweetsPerScan,1,5000,35);
+                    C.autoTuneStrength = clampNum(C.autoTuneStrength,1,10,2);
+                    C.scrollSpeed = clampNum(C.scrollSpeed,1,5000,30);
+                    C.scrollPause = clampNum(C.scrollPause,0,120000,2000);
+                    C.maxCacheTweets = clampNum(C.maxCacheTweets,1,2000000,8000);
+
                     MODE=(C.storageMode==='idb'||C.storageMode==='local'||C.storageMode==='auto')?C.storageMode:'auto';
                     STORE=(MODE==='local')?'local':(CAN_IDB?'idb':'local');
                     badgeColor=C.greenBadge?'#0f8':'#f44';
                     badgeIcon=C.greenBadge?'♾️':'🔴';
                     L=C.language==='en'?'en':'de';
                     TT=L==='en'
-                        ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',off:'❌ Off',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',stopped:'Stopped',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started',mobileBlocked:'Mobile browser detected. Please use desktop (Windows/macOS/Linux).'}
-                        : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',off:'❌ Aus',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',stopped:'Gestoppt',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet',mobileBlocked:'Mobiler Browser erkannt. Bitte Desktop nutzen (Windows/macOS/Linux).'};
+                        ? {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',off:'❌ Off',resume:'⏭️ Resume',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Active',paused:'Pause',stopped:'Stopped',clearConfirm:'Delete Twitter/X cache?',started:'⚠️ CleanTwitter v5.3 BETA BIG started',mobileBlocked:'Mobile browser detected. Please use desktop (Windows/macOS/Linux).'}
+                        : {view:'👀 View',clear:'🗑️ Clear',scroll:'🔽 Scroll',stop:'⏸️ Stop',off:'❌ Aus',resume:'⏭️ Weiter',sync:'⏳ Sync',pause:'⏸️ Pause',limit:'⏸️ Limit',break:'☕ Break',active:'Aktiv',paused:'Pause',stopped:'Gestoppt',clearConfirm:'Twitter/X Cache löschen?',started:'⚠️ CleanTwitter v5.3 BETA BIG gestartet',mobileBlocked:'Mobiler Browser erkannt. Bitte Desktop nutzen (Windows/macOS/Linux).'};
                     dynMaxTweets=Math.max(5,Number(C.maxTweetsPerScan)||35);
+                    if(!C.rateLimit) scanCount=0;
+                    if(!C.rateLimit && !C.humanBreak) pausedUntil=0;
                     refreshPanelUI();
                     if(C.showDlButtons) addDL(); else removeDL();
                 }
@@ -2080,8 +2278,13 @@
                     off.style.cssText='all:initial!important;background:#444!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
                     off.onclick=function(){ shutdownRuntime({silent:true,keepListeners:true}); };
 
-                    p.appendChild(b); p.appendChild(view); p.appendChild(clear); p.appendChild(sc); p.appendChild(off);
-                    P=p; B=b; AS=sc; CL=clear; VW=view; OFF=off;
+                    var resume=document.createElement('button');
+                    resume.innerText=TT.resume;
+                    resume.style.cssText='all:initial!important;background:#1f6f4a!important;color:#fff!important;border:none!important;padding:10px 14px!important;border-radius:20px!important;font:bold 12px system-ui!important;cursor:pointer!important;display:block!important';
+                    resume.onclick=function(){ pausedUntil=0; scanCount=0; upd('▶️'); emitStatus(true); };
+
+                    p.appendChild(b); p.appendChild(view); p.appendChild(clear); p.appendChild(sc); p.appendChild(resume); p.appendChild(off);
+                    P=p; B=b; AS=sc; CL=clear; VW=view; OFF=off; RS=resume;
                     return p;
                 }
 
@@ -2093,6 +2296,7 @@
                     if(VW) VW.innerText=TT.view;
                     if(CL) CL.innerText=TT.clear;
                     if(AS) AS.innerText=isScrolling?TT.stop:TT.scroll;
+                    if(RS) RS.innerText=TT.resume;
                     if(OFF) OFF.innerText=TT.off;
                 }
 
@@ -2122,7 +2326,7 @@
                 function removePanel(){
                     var panel=document.getElementById('ct-p');
                     if(panel) panel.remove();
-                    P=null;B=null;AS=null;CL=null;VW=null;OFF=null;
+                    P=null;B=null;AS=null;CL=null;VW=null;OFF=null;RS=null;
                 }
                 function shutdownRuntime(opts){
                     var O=opts||{};
@@ -2178,6 +2382,11 @@
                         startRuntime(false);
                     } else if(e.data.type==='CMD_RUNTIME_CONFIG'){
                         applyCfg(e.data.config||{});
+                        emitStatus(true);
+                    } else if(e.data.type==='CMD_RUNTIME_RESUME'){
+                        pausedUntil=0;
+                        scanCount=0;
+                        upd('▶️');
                         emitStatus(true);
                     }
                 }
@@ -2374,9 +2583,10 @@
                     upd();
 
                     if(C.rateLimit && scanCount >= C.maxTweetsBeforePause){
-                        pausedUntil = now() + C.pauseDurationMs;
+                        var pauseMs = Math.max(0, Number(C.pauseDurationMs)||0);
+                        pausedUntil = pauseMs>0 ? (now() + pauseMs) : 0;
                         scanCount = 0;
-                        upd(TT.limit);
+                        if(pauseMs>0) upd(TT.limit);
                     } else if(C.humanBreak && Math.random()*100 < C.humanBreakChance){
                         var extra = 30000 + Math.floor(Math.random() * 70000);
                         pausedUntil = now() + extra;
@@ -2482,6 +2692,20 @@
                 monitorState.status = tr('runtimeOnSent');
                 updateMonitorView();
                 if (!options.silent) alert(tr('runtimeOnSent'));
+            }
+            return ok;
+        }
+
+        function resumeRuntimeLive(options = {}) {
+            if (isUsageBlocked()) {
+                showMobileBlockedAlert();
+                return false;
+            }
+            const ok = postRuntimeCommand({ type: 'CMD_RUNTIME_RESUME' }, options);
+            if (ok) {
+                monitorState.status = tr('runtimeResumeSent');
+                updateMonitorView();
+                if (!options.silent) alert(tr('runtimeResumeSent'));
             }
             return ok;
         }
@@ -2645,10 +2869,12 @@
                 return;
             }
             const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
+            a.href = blobUrl;
             a.download = `ct_v53_settings_${Date.now()}.json`;
             a.click();
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 45000);
         }
 
         function parseMaybeJsonObject(value) {
@@ -2803,10 +3029,12 @@
             return fetch(url)
                 .then(res => res.blob())
                 .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = URL.createObjectURL(blob);
+                    a.href = blobUrl;
                     a.download = uniqueDownloadFilename(filename);
                     a.click();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 45000);
                     return true;
                 })
                 .catch(() => false);
@@ -2849,22 +3077,62 @@
 
             const zip = new JSZip();
             const status = document.getElementById('loadingStatus');
-            document.getElementById('loadingOverlay').style.display = 'flex';
+            const overlay = document.getElementById('loadingOverlay');
+            const etaLine = document.getElementById('loadingEta');
+            const progressBar = document.getElementById('loadingProgressBar');
+            overlay.style.display = 'flex';
             monitorState.status = tr('zipWorking');
             updateMonitorView();
 
-            let total = 0;
-            data.forEach(t => {
-                if (Array.isArray(t.imgs) && t.imgs.length) total += t.imgs.length;
-                else if (t.img) total += 1;
-                if (t.video) total += 1;
-            });
-
-            let processed = 0, imgIdx = 1, vidIdx = 1;
-            const throttle = settings.enableZipThrottle ? settings.zipThrottleMs : 0;
             const exportPro = settings.enableExportPro;
+            const throttle = settings.enableZipThrottle ? settings.zipThrottleMs : 0;
+            const parallelism = computeZipParallelism();
             const metadata = [];
+            const tasks = [];
+            let imgIdx = 1;
+            let vidIdx = 1;
+            let processed = 0;
+            let failed = 0;
             let cacheUpdated = false;
+            const startTs = Date.now();
+            let lastUiPaint = 0;
+
+            for (const tweet of data) {
+                const imageList = [];
+                if (Array.isArray(tweet.imgs) && tweet.imgs.length) imageList.push(...tweet.imgs);
+                else if (tweet.img) imageList.push(tweet.img);
+                imageList.forEach((srcRaw) => tasks.push({ type: 'image', tweet, src: srcRaw }));
+                if (tweet.video) tasks.push({ type: 'video', tweet, src: tweet.video });
+            }
+
+            const total = tasks.length;
+            if (!total) {
+                overlay.style.display = 'none';
+                return alert(tr('alertCacheEmpty'));
+            }
+
+            const paintProgress = (force = false, customEta = '') => {
+                const nowTs = Date.now();
+                if (!force && (nowTs - lastUiPaint) < 120 && processed < total) return;
+                lastUiPaint = nowTs;
+                const done = Math.min(processed, total);
+                const pct = Math.max(0, Math.min(100, (done / total) * 100));
+                if (progressBar) progressBar.style.width = `${pct.toFixed(2)}%`;
+                if (status) status.innerText = tr('processingLabel')(done, total);
+                if (!etaLine) return;
+                if (customEta) {
+                    etaLine.innerText = customEta;
+                    return;
+                }
+                if (done < 3) {
+                    etaLine.innerText = tr('zipEtaCalculating');
+                    return;
+                }
+                const elapsed = Math.max(1, nowTs - startTs);
+                const avgMs = elapsed / done;
+                const remainingMs = Math.max(0, (total - done) * avgMs);
+                etaLine.innerText = tr('zipEtaLine')(formatEta(remainingMs), parallelism, failed);
+            };
 
             const putFile = async (tweet, type, src, blob, index) => {
                 const extMatch = src.match(/\.(jpg|jpeg|png|webp|mp4)/i);
@@ -2898,81 +3166,103 @@
                 });
             };
 
-            for (const t of data) {
+            const runTask = async (task) => {
+                let isSuccess = false;
                 try {
-                    const imageList = [];
-                    if (Array.isArray(t.imgs) && t.imgs.length) imageList.push(...t.imgs);
-                    else if (t.img) imageList.push(t.img);
-
-                    for (const srcRaw of imageList) {
-                        const src = normalizeTwitterImageUrl(srcRaw) || srcRaw;
-                        try {
-                            const r = await fetch(src);
-                            if (r.ok) {
-                                const b = await r.blob();
-                                const saved = await putFile(t, 'image', src, b, imgIdx++);
-                                pushMeta(t, 'image', src, saved);
-                            }
-                        } catch {}
-                        processed++;
-                        status.innerText = tr('processingLabel')(processed, total);
-                        if (throttle > 0) await new Promise(r => setTimeout(r, throttle));
-                    }
-
-                    if (t.video) {
-                        const bestVideo = await resolveBestVideoUrlForTweet(t);
+                    if (task.type === 'image') {
+                        const src = normalizeTwitterImageUrl(task.src) || task.src;
+                        const blob = await fetchBlobWithRetry(src);
+                        if (blob) {
+                            const saved = await putFile(task.tweet, 'image', src, blob, imgIdx++);
+                            pushMeta(task.tweet, 'image', src, saved);
+                            isSuccess = true;
+                        }
+                    } else {
+                        const bestVideo = await resolveBestVideoUrlForTweet(task.tweet);
                         if (bestVideo) {
-                            if (bestVideo !== t.video) {
-                                t.video = bestVideo;
+                            if (bestVideo !== task.tweet.video) {
+                                task.tweet.video = bestVideo;
                                 cacheUpdated = true;
                             }
-                            try {
-                                const r = await fetch(bestVideo);
-                                if (r.ok) {
-                                    const b = await r.blob();
-                                    const saved = await putFile(t, 'video', bestVideo, b, vidIdx++);
-                                    pushMeta(t, 'video', bestVideo, saved);
-                                }
-                            } catch {}
+                            const blob = await fetchBlobWithRetry(bestVideo);
+                            if (blob) {
+                                const saved = await putFile(task.tweet, 'video', bestVideo, blob, vidIdx++);
+                                pushMeta(task.tweet, 'video', bestVideo, saved);
+                                isSuccess = true;
+                            }
                         }
-                        processed++;
-                        status.innerText = tr('processingLabel')(processed, total);
-                        if (throttle > 0) await new Promise(r => setTimeout(r, throttle));
-                    }
-
-                    if (processed % 20 === 0) {
-                        status.innerText = tr('processingLabel')(processed, total);
-                        await new Promise(r => setTimeout(r, 80));
                     }
                 } catch {}
-            }
+                if (!isSuccess) failed++;
+                if (throttle > 0) await sleep(throttle);
+                processed++;
+                paintProgress();
+            };
 
-            if (cacheUpdated) {
-                setCache(getCache(), { immediate: true });
-            }
+            paintProgress(true);
 
-            if (exportPro) {
-                if (settings.exportMetaJSON) {
-                    zip.file('metadata/media.json', JSON.stringify(metadata, null, 2));
+            try {
+                let cursor = 0;
+                const workerCount = Math.max(1, Math.min(parallelism, total));
+                const worker = async () => {
+                    while (true) {
+                        const i = cursor++;
+                        if (i >= total) return;
+                        await runTask(tasks[i]);
+                    }
+                };
+                await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+                if (cacheUpdated) {
+                    setCache(getCache(), { immediate: true });
                 }
-                if (settings.exportMetaCSV) {
-                    const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-                    const header = ['user', 'date', 'type', 'source', 'file', 'text'].map(esc).join(',');
-                    const rows = metadata.map(m => [m.user, m.date, m.type, m.source, m.file, m.text].map(esc).join(','));
-                    zip.file('metadata/media.csv', [header, ...rows].join('\n'));
-                }
-            }
 
-            status.innerText = tr('creatingZip');
-            const content = await zip.generateAsync({ type: 'blob' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = exportPro ? `twitter_media_v53_pro_${Date.now()}.zip` : `twitter_media_v53_${Date.now()}.zip`;
-            a.click();
-            document.getElementById('loadingOverlay').style.display = 'none';
-            monitorState.status = tr('zipDone');
-            updateMonitorView();
-            alert(tr('alertZipSuccess'));
+                if (exportPro) {
+                    if (settings.exportMetaJSON) {
+                        zip.file('metadata/media.json', JSON.stringify(metadata, null, 2));
+                    }
+                    if (settings.exportMetaCSV) {
+                        const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+                        const header = ['user', 'date', 'type', 'source', 'file', 'text'].map(esc).join(',');
+                        const rows = metadata.map(m => [m.user, m.date, m.type, m.source, m.file, m.text].map(esc).join(','));
+                        zip.file('metadata/media.csv', [header, ...rows].join('\n'));
+                    }
+                }
+
+                status.innerText = tr('zipFinalizing');
+                if (etaLine) etaLine.innerText = tr('zipFinalizing');
+                const content = await zip.generateAsync(
+                    { type: 'blob', compression: 'STORE', streamFiles: true },
+                    (meta) => {
+                        if (progressBar) progressBar.style.width = `${Math.max(0, Math.min(100, Number(meta.percent) || 0)).toFixed(2)}%`;
+                        if (status) status.innerText = `${tr('zipFinalizing')} (${Math.round(Number(meta.percent) || 0)}%)`;
+                        if (etaLine) etaLine.innerText = tr('creatingZip');
+                    }
+                );
+
+                const zipUrl = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = zipUrl;
+                a.download = exportPro ? `twitter_media_v53_pro_${Date.now()}.zip` : `twitter_media_v53_${Date.now()}.zip`;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(zipUrl), 90000);
+                monitorState.status = tr('zipDone');
+                updateMonitorView();
+
+                const okCount = Math.max(0, total - failed);
+                if (failed > 0) alert(tr('alertZipPartial')(okCount, failed));
+                else alert(tr('alertZipSuccess'));
+            } catch {
+                monitorState.status = settings.language === 'en' ? 'ZIP export error' : 'ZIP Export Fehler';
+                updateMonitorView();
+                alert(settings.language === 'en'
+                    ? 'ZIP export failed. Try a smaller batch or disable ZIP throttle.'
+                    : 'ZIP-Export fehlgeschlagen. Versuche kleinere Batches oder deaktiviere ZIP-Throttle.');
+            } finally {
+                if (progressBar) progressBar.style.width = '0%';
+                if (etaLine) etaLine.innerText = tr('zipEtaCalculating');
+                overlay.style.display = 'none';
+            }
         }
 
         async function clearCache() {
@@ -3020,10 +3310,12 @@
             html += '</body></html>';
 
             const blob = new Blob([html], { type: 'text/html' });
+            const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
+            a.href = blobUrl;
             a.download = `twitter_archive_v53_${Date.now()}.html`;
             a.click();
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 45000);
         }
 
         function attachViewerMediaFallbacks() {
@@ -3084,14 +3376,16 @@
                 monitorState.writes++;
             }
 
-            const cache = filtered;
+            const cacheAll = filtered;
+            refreshUserFilterOptions(cacheAll);
+            const cache = applyUserFilter(cacheAll);
             const grid = document.getElementById('grid');
             const empty = document.getElementById('empty');
             const renderHint = document.getElementById('renderHint');
 
             document.getElementById('countDisplay').innerText = cache.length;
 
-            const sizeKB = Math.round((JSON.stringify(cache).length * 2) / 1024);
+            const sizeKB = Math.round((JSON.stringify(cacheAll).length * 2) / 1024);
             document.getElementById('sizeDisplay').innerText = sizeKB;
             const sizeInfo = document.getElementById('sizeInfo');
             if (sizeKB > 5000) {
@@ -3125,13 +3419,19 @@
             const visible = settings.enableRenderLimit ? cache.slice(-settings.renderLimit).reverse() : cache.slice().reverse();
             document.getElementById('renderedCount').innerText = visible.length;
             const hidden = cache.length - visible.length;
-            renderHint.innerText = settings.enableRenderLimit
+            const filterLabel = viewFilterState.user && viewFilterState.user !== 'all'
+                ? (settings.language === 'en' ? `User: ${viewFilterState.user}` : `Nutzer: ${viewFilterState.user}`)
+                : '';
+            const limitHint = settings.enableRenderLimit
                 ? (hidden > 0
                     ? (settings.language === 'en'
                         ? `Performance mode: ${hidden} older tweets not rendered (still in cache).`
                         : `Performance-Modus: ${hidden} ältere Tweets nicht gerendert (im Cache vorhanden).`)
                     : '')
                 : tr('renderHintOff');
+            renderHint.innerText = filterLabel && limitHint
+                ? `${filterLabel} • ${limitHint}`
+                : (filterLabel || limitHint);
 
             const frag = document.createDocumentFragment();
             visible.forEach((t, idx) => {
